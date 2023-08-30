@@ -1,0 +1,131 @@
+{% extends 'layouts/class_teacher_main.html' %}
+
+{% block title %} Dashboard  {% endblock title %} 
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+
+{% endblock stylesheets %}
+
+{% block content %}
+  
+    <!-- partial:partials/_navbar.html -->
+    
+    <!-- partial -->
+    
+      <!-- partial:partials/_settings-panel.html -->
+     
+     
+      <!-- partial -->
+      <!-- partial:partials/_sidebar.html -->
+     
+      <!-- partial -->
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-md-12 grid-margin">
+              <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                  <h1 class="font-weight-bold"> སྐུ་གཟུགས་བཟང་པོ་ལགས།</h1> <br>
+                  <h5 class="font-weight-normal mb-0">WELCOME TO CLASS TEACHER DASHBOARD</h5>
+                </div>
+                <div class="col-12 col-xl-4">
+                 <div class="justify-content-end d-flex">
+                  
+                  <div class="container">
+                    <div class="row">
+                      <div class="col-md-12">
+                         <form method="post">
+                            <!--component-->
+                            <div class="form-group">
+                              <p id="date_admin"></p>
+                            </div>
+                         </form>
+                      </div>
+                    </div>  
+                  </div>
+                  </div>
+                 </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 grid-margin stretch-card">
+              <div class="card tale-bg">
+                  <img src="../static/admin_images/dashboard/homeUA.jpg" alt="iamge of ugyen academy">
+                  <div class="weather-info">
+                    <div class="d-flex">
+                      <div class="ml-2">
+                        <h4 class="location font-weight-normal">Ugyen Academy</h4>
+                        <h6 class="font-weight-normal">Punakha</h6>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+            <div class="col-md-6 grid-margin transparent">
+              <div class="row">
+                <div class="col-md-6 mb-4 stretch-card transparent">
+                  <div class="card card-tale">
+                    <div class="card-body">
+                      <p class="mb-4">TOTAL STAFF :</p>
+                      <p class="fs-30 mb-2">56</p>
+                      <p>10.00% (13 supporting staff)</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 mb-4 stretch-card transparent">
+                  <div class="card card-dark-blue">
+                    <div class="card-body">
+                      <p class="mb-4">TOTAL STUDENT :</p>
+                      <p class="fs-30 mb-2">703</p>
+                      <p>22.00% (30 dayscolor)</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-4 mb-lg-0 stretch-card transparent">
+                  <div class="card card-light-blue">
+                    <div class="card-body">
+                      <p class="mb-4">TOTAL BOYS :</p>
+                      <p class="fs-30 mb-2">332</p>
+                      <p>45.00% (boys of total stds)</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 stretch-card transparent">
+                  <div class="card card-light-danger">
+                    <div class="card-body">
+                      <p class="mb-4">TOTAL GIRLS :</p>
+                      <p class="fs-30 mb-2">412</p>
+                      <p>55.22% (girls of total stds)</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- time table display -->
+        </div>
+        <!-- content-wrapper ends -->
+        <!-- partial:partials/_footer.html -->
+       
+        <!-- partial -->
+      </div>
+      <!-- main-panel ends -->
+    
+    <!-- page-body-wrapper ends -->
+  <!-- </div> -->
+  <!-- container-scroller -->
+  {% include 'flash_messages.html' %}
+  {% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+<script>
+  const d = new Date();
+  document.getElementById("date_admin").innerHTML = d;
+</script>
+{% endblock javascripts %}
+

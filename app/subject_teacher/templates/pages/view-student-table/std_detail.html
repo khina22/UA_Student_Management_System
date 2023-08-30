@@ -1,0 +1,765 @@
+{% extends 'layouts/subject_teacherMain.html' %}
+{% block title %} Student Management System {% endblock title %}
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.css"
+    type="text/css" />
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.css"
+    type="text/css" />
+<link href="../static/vendor/formValidation/tachyons.min.css" type="text/css" rel="stylesheet" />
+<link href="../static/vendor/formValidation/formValidation.min.css" type="text/css" rel="stylesheet" />
+<style>
+    .table th, .table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+    #indiMarksTable {
+    margin-bottom: 20px; /* Adjust the value as needed */
+  }
+</style>
+{% endblock stylesheets %}
+{% block content %}
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Evaluate Student</h4>
+                        <hr>
+                        <div class="pos-rel">
+                            <!-- Nav pills -->
+                            <ul class="nav nav-pills justify-content-center nav-justified" role="tablist">
+                                <li class="nav-item">
+                                    <hr class="horizontal1" />
+                                    <a class="nav-link active btn btn-primary" data-toggle="pill"
+                                        href="#studentDetail">Student Detail</a>
+                                </li>
+                                <li class="nav-item">
+                                    <hr class="horizontal1" />
+                                    <a class="nav-link btn btn-primary" data-toggle="pill" href="#marks_std">Enter
+                                        Marks</a>
+                                <li class="nav-item">
+                                    <a class="nav-link btn btn-primary" data-toggle="pill" href="#marks_view">View
+                                        Marks</a>
+                                </li>
+                                </li>
+
+                            </ul>
+                            <div class="connected-line"></div>
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <div id="studentDetail" class="container tab-pane active">
+                                    <div class="container mt-0">
+                                        <div class="row d-flex justify-content-center">
+                                            <div class="col-md-7">
+                                                <div class="card p-3 py-1">
+                                                    <div class="text-center">
+                                                        <a href="{{ std.half_photo }}" class="image-popup"
+                                                            title="Passport Size Photo">
+                                                            <img src="{{ std.half_photo }}" width="150px"
+                                                                height="140px" class="rounded-circle">
+                                                        </a>
+                                                        <p>Student Photo</p>
+                                                    </div>
+                                                    <div class="text-center mt-3">
+                                                        <span class="bg-secondary p-1 px-4 rounded text-white">
+                                                            {{std.first_name}}
+                                                            {{std.last_name}}</span>
+                                                        <div class="px-4 mt-1"> <br>
+                                                            <p><b>Student CID:</b> <span id="'stdCid">{{std.student_cid}}</span></p>
+                                                            <p><b>Index Number:</b><span id="indexNo">{{std.index_number}}</span></p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div id="marks_std" class="container tab-pane fade">
+                                    <form action="#" method="#" id="info">
+                                        <input type="hidden" name="sub_id" value="{{current_user.id}}">
+                                        <input type="hidden" name="std_id" id="std_id" value="{{std.id}}">
+
+                                        <div class="row" id="displayForedit">
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label for="class_test" class="control-label col-sm-4 text-right">Class Test 01:</label>
+                                                    <div class="col-sm-8">
+                                                        <div class="input-group">
+                                                            <input type="text" class="form-control" placeholder="Enter Marks *" name="class_test_1" value="" />
+                                                            <div class="input-group-append">
+                                                                <span class="input-group-text">/ 20</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="class_test" class="control-label col-sm-4 text-right">CA:</label>
+                                                    <div class="col-sm-8">
+                                                        <div class="input-group">
+                                                            <input type="text" class="form-control" placeholder="Enter CA *" name="CA" value="" />
+                                                            <div class="input-group-append">
+                                                                <span class="input-group-text">/ 10</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="class_test" class="control-label col-sm-4 text-right">Class Test 02:</label>
+                                                    <div class="col-sm-8">
+                                                        <div class="input-group">
+                                                            <input type="text" class="form-control" placeholder="Enter Marks *" name="class_test_2" value="" />
+                                                            <div class="input-group-append">
+                                                                <span class="input-group-text">/ 20</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label for="fname" class="control-label col-sm-4 text-right">Mid-Term Marks:</label>
+                                                    <div class="col-sm-8">
+                                                        <div class="input-group">
+                                                            <input type="text" class="form-control" placeholder="Mid-term marks *" name="mid_term" value="" />
+                                                            <div class="input-group-append">
+                                                                <span class="input-group-text">/ 100</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="fname" class="control-label col-sm-4 text-right">Annual Exam:</label>
+                                                    <div class="col-sm-8">
+                                                        <div class="input-group">
+                                                            <input type="text" class="form-control" placeholder="Annual Exam Marks *" name="annual_exam" id="annual_exam" value="" />
+                                                            <div class="input-group-append">
+                                                                <span class="input-group-text">/ 100</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="std_status" class="control-label col-sm-4 text-right">Status:</label>
+                                                    <div class="col-sm-8">
+                                                        <select name="std_status" id="std_status" class="form-control">
+                                                            <option value="">---Select Status---</option>
+                                                            <option value="PASS">PASS</option>
+                                                            <option value="FAIL">FAIL</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <div class="row" id="subjectTeacher_div" style="display: none;">
+                                                <h4 class="card-title">Student Remarks</h4>
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
+                                                        <label class="control-label col-sm-4 text-right" for="punctuality">Punctuality:</label>
+                                                        <div class="col-sm-8">
+                                                            <select name="punctuality" id="punctuality" class="form-control">
+                                                                <option value="">---Select---</option>
+                                                              
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="control-label col-sm-4 text-right" for="discipline">Discipline:</label>
+                                                        <div class="col-sm-8">
+                                                            <select name="discipline" id="discipline" class="form-control">
+                                                                <option value="">---Select---</option>
+                                                                
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
+                                                        <label class="control-label col-sm-4 text-right" for="socialservice">Social Service:</label>
+                                                        <div class="col-sm-8">
+                                                            <select name="socialservice" id="socialservice" class="form-control">
+                                                                <option value="">---Select---</option>
+                                                                
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="control-label col-sm-4 text-right" for="leadership">Leadership Quality:</label>
+                                                        <div class="col-sm-8">
+                                                            <select name="leadership" id="leadership" class="form-control">
+                                                                <option value="">---Select---</option>
+                                                                
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="button-center text-center">
+                                            <button type="submit" id="sub_sent" class="btn btn-sm btn-warning"
+                                                style="color: white; width: 101px; height: 40px; font-size: 16px;">Submit</button>
+                                        </div>
+                                    </form>
+                                </div>
+  
+                                <!-- The modal div with the edit form -->
+    <div class="modal fade" id="editFormModal" tabindex="-1" role="dialog" aria-labelledby="editFormModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editFormModalLabel">Edit Ratings</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Your form HTML code goes here -->
+          <div id="marks_std" class="container tab-pane fade">
+                                    <form action="#" method="#" id="info">
+                                        <input type="hidden" name="sub_id" value="{{current_user.id}}">
+                                        <input type="hidden" name="std_id" id="std_id" value="{{std.id}}">
+
+                                        <div class="row" id="displayForedit">
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label for="class_test" class="control-label col-sm-4 text-right">Class Test 01:</label>
+                                                    <div class="col-sm-8">
+                                                        <div class="input-group">
+                                                            <input type="text" class="form-control" placeholder="Enter Marks *" name="class_test_1" value="" />
+                                                            <div class="input-group-append">
+                                                                <span class="input-group-text">/ 20</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="class_test" class="control-label col-sm-4 text-right">CA:</label>
+                                                    <div class="col-sm-8">
+                                                        <div class="input-group">
+                                                            <input type="text" class="form-control" placeholder="Enter CA *" name="CA" value="" />
+                                                            <div class="input-group-append">
+                                                                <span class="input-group-text">/ 10</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="class_test" class="control-label col-sm-4 text-right">Class Test 02:</label>
+                                                    <div class="col-sm-8">
+                                                        <div class="input-group">
+                                                            <input type="text" class="form-control" placeholder="Enter Marks *" name="class_test_2" value="" />
+                                                            <div class="input-group-append">
+                                                                <span class="input-group-text">/ 20</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label for="fname" class="control-label col-sm-4 text-right">Mid-Term Marks:</label>
+                                                    <div class="col-sm-8">
+                                                        <div class="input-group">
+                                                            <input type="text" class="form-control" placeholder="Mid-term marks *" name="mid_term" value="" />
+                                                            <div class="input-group-append">
+                                                                <span class="input-group-text">/ 100</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="fname" class="control-label col-sm-4 text-right">Annual Exam:</label>
+                                                    <div class="col-sm-8">
+                                                        <div class="input-group">
+                                                            <input type="text" class="form-control" placeholder="Annual Exam Marks *" name="annual_exam" id="annual_exam" value="" />
+                                                            <div class="input-group-append">
+                                                                <span class="input-group-text">/ 100</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="std_status" class="control-label col-sm-4 text-right">Status:</label>
+                                                    <div class="col-sm-8">
+                                                        <select name="std_status" id="std_status" class="form-control">
+                                                            <option value="">---Select Status---</option>
+                                                            <option value="PASS">PASS</option>
+                                                            <option value="FAIL">FAIL</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <div class="row" id="subjectTeacher_div" style="display: none;">
+                                                <h4 class="card-title">Student Remarks</h4>
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
+                                                        <label class="control-label col-sm-4 text-right" for="punctuality">Punctuality:</label>
+                                                        <div class="col-sm-8">
+                                                            <select name="punctuality" id="punctuality" class="form-control">
+                                                                <option value="">---Select---</option>
+                                                              
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="control-label col-sm-4 text-right" for="discipline">Discipline:</label>
+                                                        <div class="col-sm-8">
+                                                            <select name="discipline" id="discipline" class="form-control">
+                                                                <option value="">---Select---</option>
+                                                                
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group row">
+                                                        <label class="control-label col-sm-4 text-right" for="socialservice">Social Service:</label>
+                                                        <div class="col-sm-8">
+                                                            <select name="socialservice" id="socialservice" class="form-control">
+                                                                <option value="">---Select---</option>
+                                                                
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label class="control-label col-sm-4 text-right" for="leadership">Leadership Quality:</label>
+                                                        <div class="col-sm-8">
+                                                            <select name="leadership" id="leadership" class="form-control">
+                                                                <option value="">---Select---</option>
+                                                                
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="button-center text-center">
+                                            <button type="submit" id="sub_sent" class="btn btn-sm btn-warning"
+                                                style="color: white; width: 101px; height: 40px; font-size: 16px;">Submit</button>
+                                        </div>
+                                    </form>
+                                </div>
+        </div>
+      </div>
+    </div>
+  </div>  
+ 
+                                <!-- table -->
+                                <div id="marks_view" class="container tab-pane fade">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="table-responsive" id="marksTable">
+                                                <h6>STATEMENT OF MARKS</h6> 
+                                                <table class="table align-items-center table-flush" id="customerList" style="width:100%;">
+                                                    <thead class="thead-light">
+                                                        <tr>
+                                                            <th scope="col" class="sort">Subject</th>
+                                                            <th scope="col" class="sort">Class Test I</th>
+                                                            <th scope="col" class="sort">Mid-term Exam</th>
+                                                            <th scope="col" class="sort ">Class Test II</th>
+                                                            <th scope="col" class="sort">Annual Exam</th>
+                                                            <th scope="col" class="sort ">CA</th>
+                                                            <th scope="col" class="sort">Total</th>
+                                                            <th scope="col">Action</th>
+                                                            
+                                                        </tr>
+                                                    </thead>                                                    
+                                                    <tbody>
+                                                        {% for usr in user %}
+                                                        <tr>
+                                                            <td>{{ usr.subject }}</td>
+                                                            <td>{{ usr.class_test_one }}</td>
+                                                            <td>{{ usr.mid_term }}</td>
+                                                            <td>{{ usr.class_test_two }}</td>
+                                                            <td>{{ usr.annual_exam }}</td>
+                                                            <td>{{ usr.cont_assessment }}</td>
+                                                            <td>{{ usr.total }}</td>
+                                                            <td>
+                                                                <div class="dropdown">
+                                                                    <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background: orange">
+                                                                        <b>Click</b>
+                                                                    </a>
+                                                                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                                                        <a class="dropdown-item" href="/view-std-rating/{{ usr.student_id }}" data-student-id="{{ usr.student_id }}" data-subject-id="{{ usr.subjectId }}">View</a>
+                                                                        <a class="dropdown-item" href="/edit-std-rating/{{ usr.student_id }}"  data-student-id="{{ usr.student_id }}" data-subject-id="{{ usr.subjectId }}">Edit</a>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>                                                    
+                                                </table>   
+                                                </div>
+                                                <div class="table-responsive" id="indiMarksTable" style="display: none;">
+                                                    <h6>STATEMENT OF MARKS</h6>
+                                                    <table class="table align-items-center table-flush" id="customList" style="width:100%;">
+                                                        <thead class="thead-light">
+                                                            <tr>
+                                                                <th scope="col" class="sort">Subject</th>
+                                                                <th scope="col" class="sort">Class Test I</th>
+                                                                <th scope="col" class="sort">Mid-term Exam</th>
+                                                                <th scope="col" class="sort">Class Test II</th>
+                                                                <th scope="col" class="sort">Annual Exam</th>
+                                                                <th scope="col" class="sort">CA</th>
+                                                                <th scope="col" class="sort">Total</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for usr in users %}
+                                                            <tr>
+                                                                <td>{{ usr.subject }}</td>
+                                                                <td>{{ usr.class_test_one }}</td>
+                                                                <td>{{ usr.mid_term }}</td>
+                                                                <td>{{ usr.class_test_two }}</td>
+                                                                <td>{{ usr.annual_exam }}</td>
+                                                                <td>{{ usr.cont_assessment }}</td>
+                                                                <td>{{ usr.total }}</td>
+                                                            </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+
+                                                <div class="table-responsive" id="remarksTable" style="display: none;">
+                                                    <h6>STATEMENT OF RATINGS</h6>
+                                                    <table class="table align-items-center table-flush" id="remarksList" style="width:100%;">
+                                                        <thead class="thead-light">
+                                                            <tr>
+                                                                <th>sl</th>
+                                                                <th>Personal Qualities</th>
+                                                                <th>Rating</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for row in data %}
+                                                            {% for personal, rating in zip(row.personal, row.rating) %}
+                                                            <tr>
+                                                                <td>{{ row.sl }}</td>
+                                                                <td>{{ personal }}</td>
+                                                                <td>{{ rating }}</td>
+                                                            </tr>
+                                                            {% endfor %}
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+                                                                                          
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- end table -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+<!-- Specific JS goes HERE -->
+{% block javascripts %}
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+    crossorigin="anonymous"></script>
+<script src="../static/vendor/formValidation/es6-shim.min.js"></script>
+<script src="../static/vendor/formValidation/formValidation.min.js"></script>
+<script src="../static/vendor/formValidation/Bootstrap.min.js"></script>
+<script src="../static/vendor/formValidation/Tachyons.min.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="../static/js/mark_submission.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<script>
+    function std_detail_validation() {
+        var form = document.getElementById("info");
+        var data = new FormData(form);
+        var id=$('#std_id').val();
+        $.ajax({
+            type: 'POST',
+            url: '/store-std-marks',
+            data: data,
+            processData: false,
+            contentType: false,
+            cache: false,
+
+            success: function (res) {
+                if (res === 'Error') {
+                    swal("Data already exist", "Infomation submission failed", "error")
+                        .then(function () {
+                            window.location = ""
+                        });
+                } else {
+                    swal("Marks successfully updated", "Click Ok to continue", "success")
+                        .then(function () {
+                            location.reload()
+                        })
+                }
+            }
+        });
+    };
+
+    $("#std_status").on("change", function () {
+        let status = $("#std_status").val();
+        if (status === "PASS" || status === "FAIL") {
+            $("#subjectTeacher_div").show();
+        } else {
+            $("#subjectTeacher_div").hide();
+        }
+    });
+
+var punctualityValue = $('#punctuality').val();
+var disciplineValue = $('#discipline').val();
+var socialserviceValue = $('#socialservice').val();
+var leadershipValue = $('#leadership').val();
+$(document).ready(function() {
+    var values = {
+        punctuality: 'punctualityValue',
+        discipline: 'disciplineValue',
+        socialservice: 'socialserviceValue',
+        leadership: 'leadershipValue'
+    };
+
+    for (var selectId in values) {
+        if (values.hasOwnProperty(selectId)) {
+            populateSelectOptions(selectId, values[selectId]);
+        }
+    }
+});
+
+function populateSelectOptions(selectId, value) {
+    var selectElement = $('#' + selectId);
+
+    $.ajax({
+        type: 'GET',
+        url: '/dropdown_values_rating',
+        success: function(response) {
+            var dropdownValues = response;
+
+            selectElement.empty();
+            selectElement.append($('<option value="">---Select---</option>'));
+
+            dropdownValues.forEach(function(option) {
+                var optionElement = $('<option></option>').val(option.id).text(option.name);
+
+                // Set the selected option
+                if (option.id === value) {
+                    optionElement.prop('selected', true);
+                }
+
+                selectElement.append(optionElement);
+            });
+
+            // Retrieve and display the selected value
+            var selectedValue = selectElement.val();
+            console.log('Selected value:', selectedValue);
+        },
+        error: function() {
+            // Handle error case
+        }
+    });
+}
+
+ $(document).ready(function () {
+  $('a[href="#marks_view"]').on('click', function () {
+    var id = $('#std_id').val();
+    loadUsers(id);
+    $('#remarksTable').hide();
+    $('#indiMarksTable').hide();
+    $('#marksTable').show();
+  });
+  var id = $('#std_id').val();
+    loadUsers(id);
+    $(document).on('click', '.view-rating', function (e) {
+    e.preventDefault();
+    //var studentId = $(this).attr('href').split('/').pop();
+    var studentId = $(this).data('student-id');
+    var subject = $(this).data('subject-id');
+    loadRatings(studentId,subject);
+    // You can perform additional actions with the studentId, such as making an AJAX request to fetch the ratings data for the specific student.
+  });
+  $(document).on('click', '.edit-rating', function (e) {
+    e.preventDefault();
+    //var studentId = $(this).attr('href').split('/').pop();
+    var studentId = $(this).data('student-id');
+    var subject = $(this).data('subject-id');
+    $('#editFormModal').modal('show');
+    editRatings(studentId,subject);
+    // You can perform additional actions with the studentId, such as making an AJAX request to fetch the ratings data for the specific student.
+  });
+  
+  
+function loadRatings(studentId, subject) {
+        $('#remarksTable').show();
+        // Load data for remarksList table
+        $.ajax({
+        url: '/view-subjectrating/' + studentId + '/' + subject,
+        type: 'GET',
+        success: function(response) {
+            console.log(response,"***RESPONSE")
+            var remarksTableBody = $('#remarksList tbody');
+            remarksTableBody.empty();
+
+            $.each(response.data, function(index, item) {
+                var row = '<tr>';
+                row += '<td>' + item.sl + '</td>';
+                row += '<td>' + item.personal + '</td>';
+                row += '<td>' + item.rating + '</td>';
+                row += '</tr>';
+                remarksTableBody.append(row);
+            });
+        }
+    });
+        
+        $.ajax({
+        url: '/subjTeachermarks/' + studentId + '/' + subject,
+        type: 'GET',
+        success: function(response) {
+            var marksTableBody = $('#customList tbody');
+            marksTableBody.empty();
+
+            $.each(response.data, function(index, item) {
+                var row = '<tr>';
+                row += '<td>' + item.subject + '</td>';
+                row += '<td>' + item.class_test_one + '</td>';
+                row += '<td>' + item.mid_term + '</td>';
+                row += '<td>' + item.class_test_two + '</td>';
+                row += '<td>' + item.annual_exam + '</td>';
+                row += '<td>' + item.cont_assessment + '</td>';
+                row += '<td>' + item.total + '</td>';
+                row += '</tr>';
+                marksTableBody.append(row);
+            });
+        }
+    });
+        $('#indiMarksTable').show();
+        $('#marksTable').hide();
+    }
+});
+
+
+function editRatings(studentId,subject){
+  var form = document.getElementById("editInfo");
+  var data = new FormData(form);
+  $.ajax({
+    type: 'POST',
+    url: '/edit-subjectmarks/' + studentId + '/' + subject,
+    data: data,
+    processData: false,
+    contentType: false,
+    cache: false,
+    success: function (data) {
+            console.log(data,'***SUCESSS')
+            if (res === 'Error') {
+                    swal("Error", "Infomation submission failed", "error")
+                        .then(function () {
+                            window.location = ""
+                        });
+                } else {
+                 swal('Success', ' Information Successfully Updated', 'success').then(function () {
+                     window.location = ""
+                 })
+             }
+
+         },
+         error: function () {
+             swal('Error', 'Update Failed', 'error').then(function () {
+                 location.reload()
+             })
+         }
+  });
+
+  }
+
+// JavaScript function to load users and populate DataTables
+
+function loadUsers(id) {
+    $('#customerList').DataTable({
+        'processing': true,
+        'serverSide': true,
+        'bDestroy': true,
+        'serverMethod': 'POST',
+        'ajax': {
+            'url': '/get-std-grade/' + id,
+        },
+        'columns': [
+            { data: 'subject' },
+            { data: 'class_test_one' },
+            { data: 'mid_term' },
+            { data: 'class_test_two' },
+            { data: 'annual_exam' },
+            { data: 'cont_assessment' },
+            { data: 'total' },
+            {
+            render: function(data, type, full, meta) {
+            return '<div class="dropdown">' +
+            '<a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background:orange">' +
+            '<b>Click</b>' +
+            '</a>' +
+            '<div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">' +
+            '<a class="dropdown-item view-rating" href="/view-std-rating/' + full.student_id + '/' + full.subjectId + '" data-student-id="' + full.student_id + '" data-subject-id="' + full.subjectId + '">View</a>' +
+            '<a class="dropdown-item edit-rating" href="/edit-std-rating/' + full.student_id + '/' + full.subjectId + '" data-student-id="' + full.student_id + '" data-subject-id="' + full.subjectId + '">Edit</a>' +
+            '</div>' +
+            '</div>';
+            }
+            },
+        ],
+        language: {
+            paginate: {
+                next: '&#8594;', // or '→'
+                previous: '&#8592;' // or '←'
+            }
+        },
+        "ordering": false
+    });
+}
+
+
+
+function editFunction(id) {
+  var form = document.getElementById("info");
+  var data = new FormData(form);
+  $.ajax({
+    type: 'POST',
+    url: '/update-std-marks/' + id,
+    data: data,
+    processData: false,
+    contentType: false,
+    cache: false,
+    success: function (res) {
+      if (res === 'Error') {
+        // Handle the error case
+      } else {
+        swal("Marks successfully updated", "Click Ok to continue", "success")
+          .then(function () {
+            location.reload();
+          });
+      }
+    },
+    error: function (error) {
+      // Handle the error case
+      console.log('Error:', error);
+    }
+  });
+
+}
+
+
+
+
+
+</script>
+{% endblock javascripts %}

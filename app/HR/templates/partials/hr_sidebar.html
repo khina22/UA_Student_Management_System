@@ -1,0 +1,94 @@
+<nav class="sidebar sidebar-offcanvas" id="sidebar">
+  <ul class="nav">
+    <li class="nav-item">
+      <a class="nav-link" href="{{url_for('admin_blueprint.dashboard')}}">
+        <i class="icon-grid menu-icon"></i>
+        <span class="menu-title">Dashboard</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+        <i class="icon-layout menu-icon"></i>
+        <span class="menu-title">Class Teacher</span>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse" id="ui-basic">
+        <ul class="nav flex-column sub-menu" style="background: white;">
+          <li class="nav-item"> <a class="nav-link" href="{{url_for('human_resource_blueprint.addClassTeacher')}}" style="color: #5c5656;">Add Class Teacher</a></li>
+          <li class="nav-item"> <a class="nav-link" href="{{url_for('human_resource_blueprint.getClassTeacher')}}" style="color: #5c5656;">Class Teacher List</a></li>
+          <!-- <li class="nav-item"> <a class="nav-link" href="{{url_for('admin_blueprint.admin_typography')}}">Typography</a></li> -->
+        </ul>
+      </div>
+    </li>
+   
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
+        <i class="icon-columns menu-icon"></i>
+        <span class="menu-title">Subject Teacher</span>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse" id="form-elements">
+        <ul class="nav flex-column sub-menu" style="background: white;">
+          <li class="nav-item"> <a class="nav-link" href="{{url_for('human_resource_blueprint.addSubTeacher')}}" style="color: #5c5656;">Add Subject Teacher</a></li>
+          <li class="nav-item"> <a class="nav-link" href="{{url_for('human_resource_blueprint.getSubjectTeacher')}}" style="color: #5c5656;">Subject Teacher List</a></li>
+        </ul>
+      </div>
+    </li>
+
+
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+        <i class="icon-layout menu-icon"></i>
+        <span class="menu-title">Payment Details</span>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse" id="ui-basic">
+        <ul class="nav flex-column sub-menu" style="background: skyblue; padding-left: 20px; padding-right: 20px;">
+          <li class="nav-item">
+            <details>
+              <summary>
+                <i class="icon-layout menu-icon"></i>
+                <span class="menu-title">Seat Confirmation Payment</span>
+                <i class="menu-arrow"></i>
+              </summary>
+              <ul class="nav flex-column sub-menu" style="background: inherit; padding-left: 20px; padding-right: 20px;">
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('human_resource_blueprint.view_payment_seatconfirm') }}?paymentmodes=Seat Confirm" style="color: #5c5656;" >
+                    <i class="icon-layout menu-icon"></i>
+                    <span class="menu-title">View</span>
+                  </a>
+                </li>
+              </ul>
+            </details>
+          </li>
+          <li class="nav-item">
+            <details>
+              <summary>
+                <i class="icon-layout menu-icon"></i>
+                <span class="menu-title">View Fees Payment</span>
+                <i class="menu-arrow"></i>
+              </summary>
+              <ul class="nav flex-column sub-menu" style="background: inherit; padding-left: 20px; padding-right: 20px;">
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('human_resource_blueprint.view_payment_installment') }}?paymentmodes=Installment" style="color: #5c5656;" >
+                    <i class="icon-layout menu-icon"></i>
+                    <span class="menu-title">Installment</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('human_resource_blueprint.view_payment_full') }}?paymentmodes=Full" style="color: #5c5656;">
+                    <i class="icon-layout menu-icon"></i> 
+                    <span class="menu-title">Full</span>
+                  </a>
+                </li>
+              </ul>
+            </details>
+          </li>
+        </ul>
+      </div>
+    </li>
+        
+  
+  </ul>
+</nav>
+

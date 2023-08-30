@@ -1,0 +1,553 @@
+{% extends 'layouts/std_Fee.html' %}
+
+{% block title %} Student Management System {% endblock title %}
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="container">
+    <ol class="breadcrumb ">
+        <li><a href="{{url_for('home_blueprint.route_default')}}"><i class="fa fa-home" style="font-size: 15px;">
+                    Home</i></a></li>
+        <li class="active" style="font-size: 13px;"> Fees Structure 2022</li>
+    </ol>
+    <hr style="position: relative; top: 3px; border: none; height: 2px; background: black;">				
+    <br><br>
+    <!-- uploading Jornal number  -->
+    <div class="row">
+        <div class="col-lg-1"></div>
+        <div class="col-lg-10">
+          <div class="card text-center">
+            <div class="card-header" style="font-size: 16px;">
+              Upload Account Information
+            </div><br /><br />
+            <div class="card-body">
+              <form action="" id="account_dtl">
+                <div class="row">
+                  <div class="col-lg-6">
+                    <div class="form-group row">
+                      <label for="std_name" class="col-lg-6 col-form-label text-right">Student CID:</label>
+                      <div class="col-lg-6">
+                        <div class="input-group">
+                          <input type="text" placeholder="Enter your CID" class="form-control" name="studentCid" onkeypress="return isNumberKey(event)" id="studentCid" />
+                          <div class="input-group-append">
+                            <button type="button" id="enterCidButton" class="btn btn-primary btn-block" style="height: 100%;">Enter CID</button>
+                          </div>
+                        </div>
+                        <span class="text-danger" id="cidNoErrorMsg"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="form-group row">
+                      <label for="std_name" class="col-lg-6 col-form-label text-right">Student Name :</label>
+                      <div class="col-lg-6">
+                        <input type="text" class="form-control" name="studentName" id="studentName" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-6">
+                    <div class="form-group row">
+                      <label for="std_class" class="col-lg-6 col-form-label text-right">Class :</label>
+                      <div class="col-lg-6">
+                        <input type="text" class="form-control" name="std_class" id="std_class" />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
+                  <div class="form-group row">
+                      <label for="paymentModes" class="col-lg-6 col-form-label text-right">Payment Modes :</label>
+                      <div class="col-lg-6">
+                        <select class="form-control form-select" name="paymentModes" id="paymentModes">
+                          <option value="">---Select One---</option>
+                          <option value="Seat Confirm">Seat confirmation payment</option>
+                          <option value="Installment">Installement Payment</option>
+                          <option value="Full">Full Payment</option>
+                        </select>
+                      </div>
+                    </div>
+                    </div>                  
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                    <div class="form-group row">
+                      <label for="jrn_number" class="col-lg-6 col-form-label text-right">Journal Number :</label>
+                      <div class="col-lg-6">
+                        <input type="text" placeholder="Enter Journal Number" class="form-control" name="jrn_number" id="jrn_number" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-lg-6">
+                    <div class="form-group row">
+                      <label for="acc_holder" class="col-lg-6 col-form-label text-right">Account Holder :</label>
+                      <div class="col-lg-6">
+                        <input type="text" placeholder="Enter Account Holder" class="form-control" name="acc_holder" id="acc_holder" />
+                      </div>
+                    </div>
+                  </div>
+                
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                    <div class="form-group row">
+                      <label for="bank_type" class="col-lg-6 col-form-label text-right">Bank Type :</label>
+                      <div class="col-lg-6">
+                        <select class="form-control form-select" name="bank_type" id="bank_type">
+                          <option value="">---Select One---</option>
+                          <option value="BOBL">Bank Of Bhutan Limited</option>
+                          <option value="BNBL">Bhutan National Bank Limited</option>
+                          <option value="BDBL">Bhutan Development Bank Limited</option>
+                          <option value="PNBL">Druk Punjab Bank Limited</option>
+                          <option value="T-BANK">Tashi Bank</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-lg-6">
+                    <div class="form-group row">
+                      <label for="amount" class="col-lg-6 col-form-label text-right">Amount :</label>
+                      <div class="col-lg-6">
+                        <input type="text" placeholder="Enter amount" class="form-control" name="amount" id="amount" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-lg-6">
+                    <div class="form-group row">
+                      <label for="screenShot" class="col-lg-6 col-form-label text-right">ScreenShot :</label>
+                      <div class="col-lg-6">
+                        <input type="file" class="form-control rounded-2" name="screenShot" id="screenShot" required />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+               <div class="container" id="pastPayments"> 
+                <button id="pastpaymentBtn" class="btn-primary center"> View Past payments</button>
+               </div>
+               <div class="col-lg-1"></div>
+
+               <div class="container" id="paymentHistory" style="display: none;">
+                <h4 class="table-name">Payment History</h4>
+                <table id="accountTable" class="table table-sm table-bordered">
+                  <thead>
+                    <tr>
+                      <th scope="col">Sl No.</th>
+                      <th scope="col">Account Holder</th>
+                      <th scope="col">Bank Type</th>
+                      <th scope="col">Journal No.</th>
+                      <th scope="col">Amount</th>
+                      <th scope="col">Payment Mode</th>
+                    </tr>
+                  </thead>
+                  <tbody id="accountTableBody"></tbody>
+                </table>
+              </div>
+
+              <div class="button-center">
+                <button type="button" id="acc_summiting" class="btn btn-sm btn-warning student_reg" style="color: white;width: 100px;height: 40px;font-size: 16px;">Pay Fee</button>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+        
+      </div>
+      
+      
+      
+      
+    <br><br>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 mx-auto bg-white rounded shadow"> <br>
+                    <h3 style="text-align:center ;">Fees Structure :</h3>
+                    <br>
+                    <!-- Fixed header table-->
+                    <div class="table-responsive">
+                        <table class="table table-fixed">
+                            <tbody><br>
+                                <th scope="col" class="col-1">Class</th>
+                                    <th scope="col" class="col-2">Stream</th>
+                                    <th scope="col" class="col-2">Day student</th>
+                                    <th scope="col" class="col-2">Boarding</th>
+                                    <th scope="col" class="col-5">Full Academic Session (Term I & Term II)</th>
+                                </th>
+                                <tr>
+                                    <td scope="row" class="col-1"> VII-VIII</td>
+                                    <td class="col-2">-</td>
+                                    <td class="col-2">Nu.32,000</td>
+                                    <td class="col-2">Nu.64,000</td>
+                                    <td class="col-md-5">Nu. 96,000 (Ninety six thousand)</td>
+
+                                </tr>
+                                <tr>
+                                    <td scope="row" class="col-1">IX</td>
+                                    <td class="col-2">-</td>
+                                    <td class="col-2">Nu. 40,000</td>
+                                    <td class="col-2">Nu. 56,000</td>
+                                    <td class="col-md-5">Nu. 96,000 (Ninety six thousand)</td>
+
+                                </tr>
+                                <tr>
+                                    <td scope="row" class="col-1">X</td>
+                                    <td class="col-2">-</td>
+                                    <td class="col-2">Nu. 44,000</td>
+                                    <td class="col-2">Nu. 54,000</td>
+                                    <td class="col-md-5">Nu. 98,000 (Ninety eight thousand)</td>
+
+                                </tr>
+                                <tr>
+                                    <td scope="row" class="col-1">XI & XII</td>
+                                    <td class="col-2">Arts/Com</td>
+                                    <td class="col-2">Nu. 48,000</td>
+                                    <td class="col-2">Nu. 50,000</td>
+                                    <td class="col-md-5">Nu. 98,000 (Ninety eight thousand)</td>
+
+                                </tr>
+                            
+                                <tr>
+                                    <td scope="row" class="col-1">XI</td>
+                                    <td class="col-2">Science</td>
+                                    <td class="col-2">Nu. 49,500</td>
+                                    <td class="col-2">Nu. 50,000</td>
+                                    <td class="col-md-5">Nu. 99,500 (Ninety nine thousand five hundred)</td>
+
+                                </tr>
+                                <tr>
+                                    <td scope="row" class="col-1">XII</td>
+                                    <td class="col-2">Science</td>
+                                    <td class="col-2">Nu. 52,000</td>
+                                    <td class="col-2">Nu. 50,000</td>
+                                    <td class="col-md-5">Nu. 102,000 (One hundred and two thousand)</td>
+                                </tr>
+                                <tr>
+                                    <td scope="row" class="col-12">
+                                        <br><br>
+                                    <h3><b>Note:</b> The government scholarship amount (if selected) is adjustable in the above mention fees 
+                                        - only the remaining will have to be paid by the parent(s)/guardian(s)<h3><br> 
+                                        <h4>*Admission Confirmation Fees  as mentioned below is applicable to all new students (both school and boarding) except
+                                            UA scholarship and “kidu” students</h4><br>
+                                        <h4> <b>School:</b>  Nu.1000/- one thousand only (to meet overtime expenses of Admission Desk Committee members on duty)</h4><br>
+                                        <h4><b> Boarding:</b>Nu.5000/- five thousand only (no separate collection for mattress and bed-cover)</h4><br>
+                                        <h3> <u>There will be no separate collection for admission forms.</u> </h3><br>
+                                        <h4>*Starting from 2022 academic session, all day students will have to pay an additional Nu.5000/- (five thousand) per Term for lunch; <u>no student will be allowed to move out during class days unless authorized by SAT.</u> </h4><br>
+                                        <h4>The school also runs two Paying Guest (PG) Hostels: <br>
+                                            <br>
+                                            *Wolokha PG (for boys) – UA Campus II is 3 Km away but has a congenial study environment <br>   <br>
+                                            A separate transport fee of Nu.2500/- (Two thousand five hundred) per Term is collected for the daily bus service</h4><br>
+                                            <br>
+                                            <h4>Gomo Delux PG (for girls) <br><br>
+                                            A separate fee of Nu.3000/- (three thousand) per Term is collected as girls are kept in rooms with better facilities. It is located adjacent to the school and enjoys an autonomous mess arrangement also.</h4><br>
+                                            <br>
+                                            <h4>*A separate <u>security deposit of Nu.3000/-</u>  (Three thousand) for boarding students and Nu.2000/- (two thousand) day students (refundable if not deducted for damages/fines) will have to be paid once at the time of admission.</h4><br> <br>
+                                            <h4>Also, Nu.3000/- (Three thousand) ICT Fees per annum is charged separately and an additional Nu1000/- for <u>tablet/smart phone </u>care for boarding students. As mentioned every student must bring his/her own <u>tablet/smart phone</u> for blended approach in NNC/eResources – a requirement as per the Learning Management System (LMS). The school is equipped with free intranet facilities – upgraded from 100 to 500 concurrent users in 2022 academic session
+                                            <br><br>
+                                                *For more details, like installments/mode of payment, please contact our <b>Finance Officer Ms Dechen Peldon on 17671602</b> </h4>
+                                            <td scope="row" class="col-12">
+                                                <h4>*There are also licensed private PG Hostels near UA (for both girls and boys) for parents/guardians  in case they are not able to get boarding or choose something different. <br><br>
+                                                    <b>Comments:</b>  Kindly note that the above fee in the table was approved in October of 2017 by PSD, DSE & MoE.</h4>
+                                            </td>
+                                        </td>
+                                </tr>
+                            </tbody>   
+                        </table>
+                    </div><!-- End -->
+                    <br><br>
+                </div>
+            </div>
+        </div>
+</div>
+<br><br>
+   
+{% endblock content %}
+
+<!-- Specific JS goes HERE -->
+{% block javascripts %}
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+    crossorigin="anonymous"></script>
+
+<script>
+  $(document).ready(function() {
+  $('#accountTable').DataTable();
+});
+
+var inputFields = document.querySelectorAll("input");
+var labels = document.querySelectorAll("label");
+var selectFields = document.querySelectorAll("select");
+
+// Loop through each input field and hide it
+for (var i = 1; i < inputFields.length; i++) {
+  inputFields[i].style.display = "none";
+}
+
+// Loop through each label and hide it
+for (var i = 1; i < labels.length; i++) {
+  labels[i].style.display = "none";
+}
+
+// Loop through each select field and hide it
+for (var i = 0; i < selectFields.length; i++) {
+  selectFields[i].style.display = "none";
+}
+document.getElementById("acc_summiting").style.display="none"; 
+document.getElementById("pastPayments").style.display="none";
+
+function onEnterStudentNumber(event) {
+  event.preventDefault(); // Prevent the default form submission
+
+  var studentCid = $('#studentCid').val();
+
+  // Remove any existing error messages and classes
+  $('#studentCid').removeClass('is-invalid');
+  $('#cidNoErrorMsg').text('').hide();
+  
+  // Check if the field is empty
+  if (studentCid.trim() === '') {
+    // Show error message for empty field
+    $('#studentCid').addClass('is-invalid');
+    $('#cidNoErrorMsg').text('CID is required').show();
+    clearFields(); // Clear names and hide fields
+    return;
+  }
+
+  // Check if the input contains exactly 11 digits
+  if (studentCid.length !== 11) {
+    // Show error message for invalid length
+    $('#studentCid').addClass('is-invalid');
+    $('#cidNoErrorMsg').text('CID should be 11 digits').show();
+    clearFields(); // Clear names and hide fields
+    return;
+  }
+
+  // If validation passes, remove error classes and continue with further logic
+  $('#studentCid').removeClass('is-invalid');
+  $('#cidNoErrorMsg').text('').hide();
+
+  // Check if the input is a number
+  $.ajax({
+    type: 'GET',
+    url: '/checkForIndexNo',
+    data: { studentCid: studentCid },
+    success: function(response) {
+      if (response.hasOwnProperty("error")) {
+        swal('Error', response.error, 'error');
+        clearFields(); // Clear names and hide fields
+        
+      } else {
+        // Show the other input fields
+        $("#std_class, #studentName, #pastpaymentBtn").show();
+
+        // Optional: Disable the code input field
+        $(" #std_class, #studentName").prop('readonly', true);
+
+        // Use the data as needed
+        $("#studentName").val(response[0].std_name);
+        $("#std_class").val(response[0].class_name);
+        for (var i = 0; i < 4; i++) {
+          labels[i].style.display = "block";
+        }
+        document.getElementById("acc_summiting").style.display = "block";
+        document.getElementById("pastPayments").style.display="block";
+        $("#std_class, #studentName, #paymentModes").show();
+        $('#paymentModes').change(function() {
+          $("#jrn_number, #bank_type, #acc_holder, #acc_summiting, #amount, #screenShot").show();
+          for (var i = 4; i < labels.length; i++) {
+            labels[i].style.display = "block";
+          }
+        });
+
+    
+      }
+    },
+    error: function() {
+      swal("An error occurred while checking the code.", "", "error");
+      clearFields(); // Clear names and hide fields
+    }
+  });
+}
+
+
+// ...
+
+// Function to clear names and hide fields and labels
+function clearFields() {
+  $("#studentName").val('');
+  $("#std_class").val('');
+  $('#paymentModes').val('');
+  $("#std_class, #studentName, #paymentModes, #jrn_number, #bank_type, #acc_holder, #amount, #screenShot, #pastPayments").hide();
+  for (var i = 1; i < labels.length; i++) {
+    labels[i].style.display = "none";
+  }
+  document.getElementById("acc_summiting").style.display = "none";
+  document.getElementById("paymentHistory").style.display="none";
+}
+
+
+function onPastPaymentButtonClick(){
+    var studentCid = $('#studentCid').val();
+        $.ajax({
+          type: 'GET',
+          url: '/getPaymentHistory',
+          data: { studentCid: studentCid },
+          success: function(response) {
+            // Clear the table body before populating it with new data
+            var table = $('#accountTable').DataTable();
+            table.clear().draw(); // Clear existing data
+
+            // Iterate over the response data and create table rows
+            for (var i = 0; i < response.data.length; i++) {
+              var history = response.data[i];
+              var row = [
+                i + 1,
+                history['Account Holder'],
+                history['Bank Type'],
+                history['Journal No.'],
+                history['Amount'],
+                history['Payment Mode']
+              ];
+
+              // Append the row to the table body
+              table.row.add(row).draw(false); // Add new data
+            }
+
+            // Show the payment history table
+            $('#paymentHistory').show();
+          },
+          error: function() {
+            swal("An error occurred while retrieving the payment history.", "", "error");
+            clearFields(); // Clear names and hide fields
+          }
+        });
+}
+
+// Bind the function to the click event of the button
+$('#enterCidButton').click(onEnterStudentNumber);
+
+// Bind the function to the keyup event of the input field
+$('#studentCid').keyup(onEnterStudentNumber);
+
+$('#pastpaymentBtn').click(onPastPaymentButtonClick);
+// Bind the function to the submit event of the form
+$('#account_dtl').submit(function(event) {
+  event.preventDefault(); // Prevent the default form submission
+});
+
+
+
+function isNumberKey(evt) {
+        var retval=true;
+        var cid = $('#studentCid').val();
+        var charCode = (evt.which) ? evt.which : event.keyCode
+        if (charCode > 31 && (charCode < 48 || charCode > 57)){
+            return false;
+            return true;
+        }
+    }
+    $("#acc_summiting").on("click", function(event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    var form = document.getElementById("account_dtl");
+    var data = new FormData(form);
+    var invalidInputs = [];
+
+    // Remove existing error messages and red marks
+    $(".form-control").removeClass("is-invalid");
+
+    // Perform validation for each input excluding the search inputs
+    $(".form-control:not(.dataTables_filter input)").each(function() {
+        var fieldValue = $(this).val().trim();
+        var fieldName = $(this).attr("name");
+        var placeholder = $(this).attr("placeholder");
+
+        if (fieldValue === '') {
+            invalidInputs.push(fieldName);
+            // Add red mark to the field
+            $(this).addClass("is-invalid");
+        }
+    });
+
+    // Perform validation for each select field excluding the search selects
+    $("select:not(.dataTables_filter select)").each(function() {
+        var fieldValue = $(this).val();
+        var fieldName = $(this).attr("name");
+
+        if (fieldValue === '' || fieldValue === undefined) {
+            invalidInputs.push(fieldName);
+            // Add red mark to the field
+            $(this).addClass("is-invalid");
+        }
+    });
+
+    if (invalidInputs.length === 0) {
+        $(this).prop("disabled", true).text("Loading...");
+        // Submit the form if all inputs are valid
+        $.ajax({
+            type: 'POST',
+            url: '/account_submitting',
+            data: data,
+            processData: false,
+            contentType: false,
+            cache: false,
+            beforeSend: function () {
+                $("#acc_summiting").text("Loading....")
+                $("#acc_summiting").prop("disabled", true)
+                $("#acc_summiting").addClass("disabled")
+            },
+            success: function(res) {
+              if (res.hasOwnProperty("error")) {
+        swal('Error', res.error, 'error');
+            $(".form-control").removeClass("is-invalid");
+            $("#acc_summiting").prop("disabled", false);
+            $("#acc_summiting").text("Submit");
+          } 
+       else{
+            swal("Information successfully saved", res, "success")
+                .then(function() {
+                    $('#account_dtl')[0].reset();
+                    window.location = "/fees-detail";
+                });
+              }
+            },
+            error: function(xhr, status, error) {
+                // Enable the submit button in case of error
+                $("#acc_summiting").prop("disabled", false);
+                swal("Error", "An error occurred while submitting the form.", "error");
+            },
+            complete: function() {
+                // Re-enable the button after the request is complete
+                $("#acc_summiting").prop("disabled", false);
+                $("#acc_summiting").removeClass("disabled");
+                $("#acc_summiting").display("none");
+            }
+        });
+    } else {
+        swal("Invalid input", "Please fill in the required fields.", "error");
+    }
+});
+
+// Remove red marks when the user starts entering values
+$(".form-control").on("input", function() {
+    $(this).removeClass("is-invalid");
+});
+
+$("select").on("change", function() {
+    $(this).removeClass("is-invalid");
+});
+
+
+</script>
+
+{% endblock javascripts %}

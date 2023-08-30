@@ -1,0 +1,137 @@
+{% extends 'layouts/enroll_main.html' %}
+
+{% block title %} Student Management System {% endblock title %}
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="container">
+<ol class="breadcrumb ">
+    <li><a href="{{url_for('home_blueprint.route_default')}}"><i class="fa fa-home" style="font-size:15px;">Home</i></a>
+    </li>
+    <li class="active" style="font-size: 13px;">Track Your Student</li>
+</ol>
+<hr style="position: relative; top: 3px; border: none; height: 2px; background: black;">				
+<br>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header" style="font-size:16px">Track your student performances :</div>
+                <div class="card-body">
+                    <form id="track_std" action='' method="POST">
+                        <div class="form-group row">
+                            <label for="email_address" class="col-md-4 col-form-label text-md-right"
+                                style=" font-size:14px">CID</label>
+                            <div class="col-md-6"> <br>
+                                <input type="text" id="std_cid" class="form-control" name="std_cid" style="font-size:14px" onkeydown="return restrictTyping(event)">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="email_address" class="col-md-4 col-form-label text-md-right"
+                                style=" font-size:14px">Student Number :</label>
+                            <div class="col-md-6"> <br>
+                                <input type="text" id="std_index" class="form-control" name="std_index" style="font-size:14px" onkeydown="return restrictTyping(event)">
+                            </div>
+                        </div>
+                        <div class="col-md-6 offset-md-5">
+                            <button type="submit" id="track_stds" class="btn btn-success" style="font-size:15px">
+                                Search <i class="fa fa-search" aria-hidden="true"></i>
+                            </button> <br>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br><br><br>
+<!-- to show student details  -->
+<div class="container">
+    <div class="main-panel">
+        <div class="content-wrapper">
+            <div class="row">
+                <div class="col-12 grid-margin stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Student </h4>
+                            <hr>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="table-responsive">
+                                        <table class="table align-items-center table-flush" id="customerList">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th scope="col" class="sort" data-sort="name">First name</th>
+                                                    <th scope="col" class="sort" data-sort="name">Last name</th>
+                                                    <th scope="col" class="sort" data-sort="name">Index Number</th>
+                                                    <th scope="col" class="sort" data-sort="budget">CID</th>
+                                                    <th scope="col" class="sort" data-sort="name">Email</th>
+                                                    <th scope="col">Result</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="list" id="list">
+
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE -->
+{% block javascripts %}
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+    crossorigin="anonymous"></script>
+<script>
+    function restrictTyping(event) {
+        const allowedKeys = ['std_cid', 'std_index'];
+        const elementId = event.target.id;
+        return allowedKeys.includes(elementId);
+    }
+    $("#track_std").on("submit", function (e) {
+        e.preventDefault(e);
+        var form_data = new FormData($('#track_std')[0])
+        $.ajax({
+            type: 'POST',
+            url: "/search",
+            data: form_data,
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function (res) {
+            if (res.hasOwnProperty("error")) {
+                swal('Error', res.error, 'error');
+            }
+            else{
+                const { aaData } = res;
+                console.log(aaData);
+                $("#list").empty(); // Clear existing results
+
+                $("#list").append('<tr><td>' + aaData[0].first_name + '</td><td>' + aaData[0].last_name + '</td><td>' + aaData[0].index_number + '</td><td>' + aaData[0].student_cid + '</td><td>' + aaData[0].student_email + '</td><td>' + '<a class="btn btn-sm btn-icon-only text-light" id="view_result" role="button" data-toggle="dropdown" aria-haspopup="true" href="" aria-expanded="false" style="background:orange">' +
+                    '<b>View</b>' +
+                    '</a>' + '</td></tr>')
+                $("#view_result").click(function(){
+                    window.location = '/student-result/'+ aaData[0].index_number;
+                })   
+            }
+            }
+        });
+    });
+</script>
+{% endblock javascripts %}
