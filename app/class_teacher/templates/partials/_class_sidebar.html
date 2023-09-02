@@ -21,6 +21,19 @@
       </div>
     </li>
     <li class="nav-item">
+      <a class="nav-link" data-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
+        <i class="icon-columns menu-icon"></i>
+        <span class="menu-title">Subject Teachers</span>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse" id="form-elements">
+        <ul class="nav flex-column sub-menu" style="background: white;">
+          <!-- <li class="nav-item"><a class="nav-link" href="{{url_for('class_teacher_blueprint.add_student')}}" style="color: #5c5656;"> Add Student</a></li> -->
+          <li class="nav-item"><a class="nav-link" href="{{url_for('class_teacher_blueprint.get_subject_teacher_list')}}" style="color: #5c5656;"> Subject Teacher's List</a></li>          
+        </ul>
+      </div>
+    </li>
+    <li class="nav-item">
       <a class="nav-link" data-toggle="collapse" href="#form-table" aria-expanded="false" aria-controls="form-table">
         <i class="icon-columns menu-icon"></i>
         <span class="menu-title">Time Table</span>

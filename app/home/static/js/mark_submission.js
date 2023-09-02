@@ -30,7 +30,7 @@ const markfv = FormValidation.formValidation(MarkSubmission, {
         }
       }
     },
-    CA: {
+    CA1: {
       validators: {
         notEmpty: {
           message: 'This field is required',
@@ -58,7 +58,8 @@ const markfv = FormValidation.formValidation(MarkSubmission, {
         }
       }
     },
-    mid_term: {
+
+    CA2: {
       validators: {
         notEmpty: {
           message: 'This field is required',
@@ -70,7 +71,7 @@ const markfv = FormValidation.formValidation(MarkSubmission, {
         },
         callback: {
           callback: function (input) {
-            const fullMarks = 100; // Change this value according to your requirements
+            const fullMarks = 10; // Change this value according to your requirements
             const enteredMarks = parseFloat(input.value);
             if (enteredMarks > fullMarks) {
                 return {
@@ -142,6 +143,36 @@ const markfv = FormValidation.formValidation(MarkSubmission, {
         }
       }
     },
+   
+    mid_term: {
+      validators: {
+        notEmpty: {
+          message: 'This field is required',
+        },
+        numeric: {
+          message: 'The value is not a number',
+          thousandsSeparator: '',
+          decimalSeparator: '.',
+        },
+        callback: {
+          callback: function (input) {
+            const fullMarks = 100; // Change this value according to your requirements
+            const enteredMarks = parseFloat(input.value);
+            if (enteredMarks > fullMarks) {
+                return {
+                  valid: false,
+                  message: 'Marks entered cannot exceed the full marks',
+                };
+              } else {
+                return {
+                  valid: true,
+                };
+              }
+          }
+        }
+      }
+    }, 
+
     std_status: {
       validators: {
         notEmpty: {
@@ -176,7 +207,30 @@ const markfv = FormValidation.formValidation(MarkSubmission, {
           message: 'This field is required',
         }
       }
+    },
+    supw_grade: {
+      validators: {
+        notEmpty: {
+          message: 'This field is required',
+        }
+      }
+    },
+
+    ratingScale2: {
+      validators: {
+        notEmpty: {
+          message: 'This field is required',
+        }
+      }
+    },
+
+  ratingScale1: {
+    validators: {
+      notEmpty: {
+        message: 'This field is required',
+      }
     }
+  },  
   },
   plugins: {
     trigger: new FormValidation.plugins.Trigger(),

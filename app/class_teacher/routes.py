@@ -3,7 +3,7 @@ from flask import render_template,jsonify,session,flash,current_app
 from flask_login import login_required
 from app.class_teacher import blueprint
 from app.class_teacher.service import  search_std, update_tbl_academic, get_std_in_class, get_std_class, get_std_marks, update_tbl_std_evaluation,students, std_time_table,get_time_table,get_subject_teacher_info,get_stds_rating,load_std_marks,view_result,marks_result,checkExist,midtermExamMarks, getRatings
-from app.admin.service import is_classTeacher
+from app.admin.service import is_classTeacher, is_subjectTeacher
 from datetime import datetime
 import pytz
 
@@ -83,6 +83,12 @@ def search_stdList():
 def get_student_list():
     return render_template('/pages/add-student/student_list_class.html')
 
+@blueprint.route('/get-subject-teacher-list')
+@login_required
+def get_subject_teacher_list():
+        return render_template('/pages/add_subject_teacher/subject_teachers.html')
+
+
 # fetch student details
 @blueprint.route('/view-std-detail/<id>', methods=['GET'])
 @login_required
@@ -131,10 +137,10 @@ def update_std_evaluation(stdId):
         else:
          return update_tbl_std_evaluation(stdId)
 
-@blueprint.route('/get_dropdown_rating', methods=['GET'])
+@blueprint.route('/get-dropdown-rating', methods=['GET'])
 @login_required
 def get_dropdown_rating():
-    if is_classTeacher():
+    if is_classTeacher() or is_subjectTeacher():
         return getRatings()
     
 

@@ -87,7 +87,8 @@
                                         <input type="hidden" name="sub_id" value="{{current_user.id}}">
                                         <input type="hidden" name="std_id" id="std_id" value="{{std.id}}">
 
-                                        <div class="row" id="displayForedit">
+                                        <div class="col-md-12">
+                                            <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group row">
                                                     <label for="class_test" class="control-label col-sm-4 text-right">Class Test 01:</label>
@@ -99,158 +100,57 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label for="class_test" class="control-label col-sm-4 text-right">CA:</label>
-                                                    <div class="col-sm-8">
-                                                        <div class="input-group">
-                                                            <input type="text" class="form-control" placeholder="Enter CA *" name="CA" value="" />
-                                                            <div class="input-group-append">
-                                                                <span class="input-group-text">/ 10</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label for="class_test" class="control-label col-sm-4 text-right">Class Test 02:</label>
-                                                    <div class="col-sm-8">
-                                                        <div class="input-group">
-                                                            <input type="text" class="form-control" placeholder="Enter Marks *" name="class_test_2" value="" />
-                                                            <div class="input-group-append">
-                                                                <span class="input-group-text">/ 20</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                </div>                                                    
                                             </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group row">
-                                                    <label for="fname" class="control-label col-sm-4 text-right">Mid-Term Marks:</label>
-                                                    <div class="col-sm-8">
-                                                        <div class="input-group">
-                                                            <input type="text" class="form-control" placeholder="Mid-term marks *" name="mid_term" value="" />
-                                                            <div class="input-group-append">
-                                                                <span class="input-group-text">/ 100</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label for="fname" class="control-label col-sm-4 text-right">Annual Exam:</label>
-                                                    <div class="col-sm-8">
-                                                        <div class="input-group">
-                                                            <input type="text" class="form-control" placeholder="Annual Exam Marks *" name="annual_exam" id="annual_exam" value="" />
-                                                            <div class="input-group-append">
-                                                                <span class="input-group-text">/ 100</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label for="std_status" class="control-label col-sm-4 text-right">Status:</label>
-                                                    <div class="col-sm-8">
-                                                        <select name="std_status" id="std_status" class="form-control">
-                                                            <option value="">---Select Status---</option>
-                                                            <option value="PASS">PASS</option>
-                                                            <option value="FAIL">FAIL</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <hr>
-                                            <div class="row" id="subjectTeacher_div" style="display: none;">
-                                                <h4 class="card-title">Student Remarks</h4>
-                                                <div class="col-md-6">
-                                                    <div class="form-group row">
-                                                        <label class="control-label col-sm-4 text-right" for="punctuality">Punctuality:</label>
-                                                        <div class="col-sm-8">
-                                                            <select name="punctuality" id="punctuality" class="form-control">
-                                                                <option value="">---Select---</option>
-                                                              
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group row">
-                                                        <label class="control-label col-sm-4 text-right" for="discipline">Discipline:</label>
-                                                        <div class="col-sm-8">
-                                                            <select name="discipline" id="discipline" class="form-control">
-                                                                <option value="">---Select---</option>
-                                                                
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group row">
-                                                        <label class="control-label col-sm-4 text-right" for="socialservice">Social Service:</label>
-                                                        <div class="col-sm-8">
-                                                            <select name="socialservice" id="socialservice" class="form-control">
-                                                                <option value="">---Select---</option>
-                                                                
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group row">
-                                                        <label class="control-label col-sm-4 text-right" for="leadership">Leadership Quality:</label>
-                                                        <div class="col-sm-8">
-                                                            <select name="leadership" id="leadership" class="form-control">
-                                                                <option value="">---Select---</option>
-                                                                
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="button-center text-center">
-                                            <button type="submit" id="sub_sent" class="btn btn-sm btn-warning"
-                                                style="color: white; width: 101px; height: 40px; font-size: 16px;">Submit</button>
-                                        </div>
-                                    </form>
-                                </div>
-  
-                                <!-- The modal div with the edit form -->
-    <div class="modal fade" id="editFormModal" tabindex="-1" role="dialog" aria-labelledby="editFormModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="editFormModalLabel">Edit Ratings</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <!-- Your form HTML code goes here -->
-          <div id="marks_std" class="container tab-pane fade">
-                                    <form action="#" method="#" id="info">
-                                        <input type="hidden" name="sub_id" value="{{current_user.id}}">
-                                        <input type="hidden" name="std_id" id="std_id" value="{{std.id}}">
 
-                                        <div class="row" id="displayForedit">
                                             <div class="col-md-6">
                                                 <div class="form-group row">
-                                                    <label for="class_test" class="control-label col-sm-4 text-right">Class Test 01:</label>
+                                                    <label for="class_test" class="control-label col-sm-4 text-right">CA1:</label>
                                                     <div class="col-sm-8">
                                                         <div class="input-group">
-                                                            <input type="text" class="form-control" placeholder="Enter Marks *" name="class_test_1" value="" />
-                                                            <div class="input-group-append">
-                                                                <span class="input-group-text">/ 20</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label for="class_test" class="control-label col-sm-4 text-right">CA:</label>
-                                                    <div class="col-sm-8">
-                                                        <div class="input-group">
-                                                            <input type="text" class="form-control" placeholder="Enter CA *" name="CA" value="" />
+                                                            <input type="text" class="form-control" placeholder="Enter CA *" name="CA1" value="" />
                                                             <div class="input-group-append">
                                                                 <span class="input-group-text">/ 10</span>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
+                                            </div>
+                                            </div>
+                                            </div>
+
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group row">
+                                                            <label for="fname" class="control-label col-sm-4 text-right">Mid-Term Marks:</label>
+                                                            <div class="col-sm-8">
+                                                                <div class="input-group">
+                                                                    <input type="text" class="form-control" placeholder="Mid-term marks *" name="mid_term" value="" />
+                                                                    <div class="input-group-append">
+                                                                        <span class="input-group-text">/ 100</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        </div>
+
+                                                        <div class="col-md-6">
+                                                            <div class="form-group row" id="ratingScales1">
+                                                                <label class="control-label col-sm-4 text-right" for="ratingScale1">Rating Scale (Midterm):</label>
+                                                                <div class="col-sm-8">
+                                                                    <select name="ratingScale1" id="ratingScale1" class="form-control">
+                                                                        <option value="">---Select---</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>    
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                            <div class="col-md-6">
                                                 <div class="form-group row">
                                                     <label for="class_test" class="control-label col-sm-4 text-right">Class Test 02:</label>
                                                     <div class="col-sm-8">
@@ -262,21 +162,29 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-6">
+                                                </div>
+
+                                                <div class="col-md-6">
                                                 <div class="form-group row">
-                                                    <label for="fname" class="control-label col-sm-4 text-right">Mid-Term Marks:</label>
+                                                    <label for="class_test" class="control-label col-sm-4 text-right">CA2:</label>
                                                     <div class="col-sm-8">
                                                         <div class="input-group">
-                                                            <input type="text" class="form-control" placeholder="Mid-term marks *" name="mid_term" value="" />
+                                                            <input type="text" class="form-control" placeholder="Enter CA *" name="CA2" value="" />
                                                             <div class="input-group-append">
-                                                                <span class="input-group-text">/ 100</span>
+                                                                <span class="input-group-text">/ 10</span>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
+                                                </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="col-md-6">
                                                 <div class="form-group row">
-                                                    <label for="fname" class="control-label col-sm-4 text-right">Annual Exam:</label>
+                                                    <label for="annual_exam" class="control-label col-sm-4 text-right">Annual Exam:</label>
                                                     <div class="col-sm-8">
                                                         <div class="input-group">
                                                             <input type="text" class="form-control" placeholder="Annual Exam Marks *" name="annual_exam" id="annual_exam" value="" />
@@ -286,6 +194,24 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <div class="form-group row" id="ratingScales2" >
+                                                        <label class="control-label col-sm-4 text-right" for="ratingScale2">Rating Scale (Annual):</label>
+                                                        <div class="col-sm-8">
+                                                            <select name="ratingScale2" id="ratingScale2" class="form-control">
+                                                                <option value="">---Select---</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>                                            
+                                            <hr>
+                                            <div class="row" id="subjectTeacher_div" >
+                                                <h4 class="card-title">Student Remarks</h4>
+                                                <div class="col-md-6">
                                                 <div class="form-group row">
                                                     <label for="std_status" class="control-label col-sm-4 text-right">Status:</label>
                                                     <div class="col-sm-8">
@@ -296,20 +222,18 @@
                                                         </select>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <hr>
-                                            <div class="row" id="subjectTeacher_div" style="display: none;">
-                                                <h4 class="card-title">Student Remarks</h4>
-                                                <div class="col-md-6">
-                                                    <div class="form-group row">
-                                                        <label class="control-label col-sm-4 text-right" for="punctuality">Punctuality:</label>
-                                                        <div class="col-sm-8">
-                                                            <select name="punctuality" id="punctuality" class="form-control">
-                                                                <option value="">---Select---</option>
-                                                              
-                                                            </select>
-                                                        </div>
+
+                                                <div class="form-group row">
+                                                    <label class="control-label col-sm-4 text-right" for="punctuality">Punctuality:</label>
+                                                    <div class="col-sm-8">
+                                                        <select name="punctuality" id="punctuality" class="form-control">
+                                                            <option value="">---Select---</option>
+                                                        </select>
                                                     </div>
+                                                </div>
+                                            </div>
+
+                                                <div class="col-md-6">
                                                     <div class="form-group row">
                                                         <label class="control-label col-sm-4 text-right" for="discipline">Discipline:</label>
                                                         <div class="col-sm-8">
@@ -319,8 +243,7 @@
                                                             </select>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-6">
+
                                                     <div class="form-group row">
                                                         <label class="control-label col-sm-4 text-right" for="socialservice">Social Service:</label>
                                                         <div class="col-sm-8">
@@ -330,6 +253,9 @@
                                                             </select>
                                                         </div>
                                                     </div>
+                                                
+                                                </div>
+                                                <div class="col-md-6">
                                                     <div class="form-group row">
                                                         <label class="control-label col-sm-4 text-right" for="leadership">Leadership Quality:</label>
                                                         <div class="col-sm-8">
@@ -340,8 +266,8 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                
                                             </div>
-                                        </div>
                                         
                                         <div class="button-center text-center">
                                             <button type="submit" id="sub_sent" class="btn btn-sm btn-warning"
@@ -349,10 +275,6 @@
                                         </div>
                                     </form>
                                 </div>
-        </div>
-      </div>
-    </div>
-  </div>  
  
                                 <!-- table -->
                                 <div id="marks_view" class="container tab-pane fade">
@@ -365,11 +287,13 @@
                                                         <tr>
                                                             <th scope="col" class="sort">Subject</th>
                                                             <th scope="col" class="sort">Class Test I</th>
+                                                            <th scope="col" class="sort">CA (Midterm)</th>
+                                                            <th scope="col" class="sort">Rating (Midterm)</th>
                                                             <th scope="col" class="sort">Mid-term Exam</th>
                                                             <th scope="col" class="sort ">Class Test II</th>
+                                                            <th scope="col" class="sort">CA (Annual)</th>
+                                                            <th scope="col" class="sort">Rating (Annual)</th>
                                                             <th scope="col" class="sort">Annual Exam</th>
-                                                            <th scope="col" class="sort ">CA</th>
-                                                            <th scope="col" class="sort">Total</th>
                                                             <th scope="col">Action</th>
                                                             
                                                         </tr>
@@ -379,11 +303,13 @@
                                                         <tr>
                                                             <td>{{ usr.subject }}</td>
                                                             <td>{{ usr.class_test_one }}</td>
+                                                            <td>{{ usr.ca1 }}</td>
+                                                            <td>{{ usr.ratingScale1 }}</td>
                                                             <td>{{ usr.mid_term }}</td>
                                                             <td>{{ usr.class_test_two }}</td>
+                                                            <td>{{ usr.ca2 }}</td>
+                                                            <td>{{ usr.ratingScale2 }}</td>
                                                             <td>{{ usr.annual_exam }}</td>
-                                                            <td>{{ usr.cont_assessment }}</td>
-                                                            <td>{{ usr.total }}</td>
                                                             <td>
                                                                 <div class="dropdown">
                                                                     <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background: orange">
@@ -407,23 +333,27 @@
                                                             <tr>
                                                                 <th scope="col" class="sort">Subject</th>
                                                                 <th scope="col" class="sort">Class Test I</th>
+                                                                <th scope="col" class="sort">CA (Midterm)</th>
+                                                                <th scope="col" class="sort">Rating (Midterm)</th>
                                                                 <th scope="col" class="sort">Mid-term Exam</th>
-                                                                <th scope="col" class="sort">Class Test II</th>
+                                                                <th scope="col" class="sort ">Class Test II</th>
+                                                                <th scope="col" class="sort">CA (Annual)</th>
+                                                                <th scope="col" class="sort">Rating (Annual)</th>
                                                                 <th scope="col" class="sort">Annual Exam</th>
-                                                                <th scope="col" class="sort">CA</th>
-                                                                <th scope="col" class="sort">Total</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
                                                             {% for usr in users %}
                                                             <tr>
-                                                                <td>{{ usr.subject }}</td>
-                                                                <td>{{ usr.class_test_one }}</td>
-                                                                <td>{{ usr.mid_term }}</td>
-                                                                <td>{{ usr.class_test_two }}</td>
-                                                                <td>{{ usr.annual_exam }}</td>
-                                                                <td>{{ usr.cont_assessment }}</td>
-                                                                <td>{{ usr.total }}</td>
+                                                            <td>{{ usr.subject }}</td>
+                                                            <td>{{ usr.class_test_one }}</td>
+                                                            <td>{{ usr.ca1 }}</td>
+                                                            <td>{{ usr.ratingScale1 }}</td>
+                                                            <td>{{ usr.mid_term }}</td>
+                                                            <td>{{ usr.class_test_two }}</td>
+                                                            <td>{{ usr.ca2 }}</td>
+                                                            <td>{{ usr.ratingScale2 }}</td>
+                                                            <td>{{ usr.annual_exam }}</td>
                                                             </tr>
                                                             {% endfor %}
                                                         </tbody>
@@ -510,50 +440,78 @@
                 }
             }
         });
-    };
+    }
 
-    $("#std_status").on("change", function () {
-        let status = $("#std_status").val();
-        if (status === "PASS" || status === "FAIL") {
-            $("#subjectTeacher_div").show();
-        } else {
-            $("#subjectTeacher_div").hide();
-        }
-    });
 
-var punctualityValue = $('#punctuality').val();
-var disciplineValue = $('#discipline').val();
-var socialserviceValue = $('#socialservice').val();
-var leadershipValue = $('#leadership').val();
+let punctualityValue = $('#punctuality').val();
+let disciplineValue = $('#discipline').val();
+let socialserviceValue = $('#socialservice').val();
+let leadershipValue = $('#leadership').val();
 $(document).ready(function() {
-    var values = {
+    let values = {
         punctuality: 'punctualityValue',
         discipline: 'disciplineValue',
         socialservice: 'socialserviceValue',
         leadership: 'leadershipValue'
     };
 
-    for (var selectId in values) {
+    for (let selectId in values) {
         if (values.hasOwnProperty(selectId)) {
             populateSelectOptions(selectId, values[selectId]);
         }
     }
+
+    $.ajax({
+        url: '/get-dropdown-rating', // Flask route to fetch data
+        method: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            var dropdown = $('#ratingScale1');
+            $.each(data, function(index, item) {
+                dropdown.append($('<option>', {
+                    value: item.value,
+                    text: item.text
+                }));
+            });
+        },
+        error: function(xhr, status, error) {
+            console.log('Error fetching data:', error);
+        }
+    });
+
+    $.ajax({
+        url: '/get-dropdown-rating', // Flask route to fetch data
+        method: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            let dropdown = $('#ratingScale2');
+            $.each(data, function(index, item) {
+                dropdown.append($('<option>', {
+                    value: item.value,
+                    text: item.text
+                }));
+            });
+        },
+        error: function(xhr, status, error) {
+            console.log('Error fetching data:', error);
+        }
+    });
 });
 
 function populateSelectOptions(selectId, value) {
-    var selectElement = $('#' + selectId);
+    let selectElement = $('#' + selectId);
 
     $.ajax({
         type: 'GET',
         url: '/dropdown_values_rating',
         success: function(response) {
-            var dropdownValues = response;
+            let dropdownValues = response;
 
             selectElement.empty();
             selectElement.append($('<option value="">---Select---</option>'));
 
             dropdownValues.forEach(function(option) {
-                var optionElement = $('<option></option>').val(option.id).text(option.name);
+                let optionElement = $('<option></option>').val(option.id).text(option.name);
 
                 // Set the selected option
                 if (option.id === value) {
@@ -564,7 +522,7 @@ function populateSelectOptions(selectId, value) {
             });
 
             // Retrieve and display the selected value
-            var selectedValue = selectElement.val();
+            let selectedValue = selectElement.val();
             console.log('Selected value:', selectedValue);
         },
         error: function() {
@@ -574,7 +532,7 @@ function populateSelectOptions(selectId, value) {
 }
 
  $(document).ready(function () {
-  $('a[href="#marks_view"]').on('click', function () {
+    $('a[data-toggle="pill"][href="#marks_view"]').click(function(e) {
     var id = $('#std_id').val();
     loadUsers(id);
     $('#remarksTable').hide();
@@ -586,8 +544,8 @@ function populateSelectOptions(selectId, value) {
     $(document).on('click', '.view-rating', function (e) {
     e.preventDefault();
     //var studentId = $(this).attr('href').split('/').pop();
-    var studentId = $(this).data('student-id');
-    var subject = $(this).data('subject-id');
+    let studentId = $(this).data('student-id');
+    let subject = $(this).data('subject-id');
     loadRatings(studentId,subject);
     // You can perform additional actions with the studentId, such as making an AJAX request to fetch the ratings data for the specific student.
   });
@@ -625,7 +583,7 @@ function loadRatings(studentId, subject) {
     });
         
         $.ajax({
-        url: '/subjTeachermarks/' + studentId + '/' + subject,
+        url: '/get-subject-marks/' + studentId + '/' + subject,
         type: 'GET',
         success: function(response) {
             var marksTableBody = $('#customList tbody');
@@ -649,7 +607,6 @@ function loadRatings(studentId, subject) {
         $('#marksTable').hide();
     }
 });
-
 
 function editRatings(studentId,subject){
   var form = document.getElementById("editInfo");
@@ -696,13 +653,15 @@ function loadUsers(id) {
             'url': '/get-std-grade/' + id,
         },
         'columns': [
-            { data: 'subject' },
-            { data: 'class_test_one' },
-            { data: 'mid_term' },
-            { data: 'class_test_two' },
-            { data: 'annual_exam' },
-            { data: 'cont_assessment' },
-            { data: 'total' },
+            {data: 'subject' },
+            {data: 'class_test_one' },
+            {data: 'ca1'},
+            {data: 'ratingScale1'},
+            {data: 'mid_term'},
+            {data: 'class_test_two' },
+            {data: 'ca2'},
+            {data: 'ratingScale2'},
+            {data: 'annual_exam' },
             {
             render: function(data, type, full, meta) {
             return '<div class="dropdown">' +

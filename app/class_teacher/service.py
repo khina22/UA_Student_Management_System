@@ -299,7 +299,7 @@ def get_std_in_class():
         data.append({'sl': index + 1,
                      'index_number': user.index_number,
                      'student_cid': user.student_cid,
-                    'first_name': user.first_name + " " + user.last_name,
+                    'first_name': user.first_name + ' ' + user.last_name,
                      'student_email': user.student_email,
                      'id': user.id})
         count = user.count_all
@@ -345,12 +345,12 @@ def get_std_marks(stdId):
     class_value = getData['grade']
     section_value = getData['section_no']
    # subject_value = getData['subject']
-    getRole='select ud.role from public."User" uu \
+    getRole='select ud.subject from public."User" uu \
 	join public.user_detail ud on uu.id=ud.user_id where uu.id=%s'
     current_role=connection.execute(getRole,getUser).scalar()
     print(current_role,"**GETCURRENT ROLE")
     search_query = ''
-    params = [stdId,class_value,section_value]
+    params = [stdId,class_value,section_value,current_role]
 
     if search_value:
         search_query += "AND (sub.subject_name ILIKE %s OR "
@@ -358,16 +358,15 @@ def get_std_marks(stdId):
         search_query += "CAST(mid_term AS TEXT) ILIKE %s OR "
         search_query += "CAST(class_test_two AS TEXT) ILIKE %s OR "
         search_query += "CAST(annual_exam AS TEXT) ILIKE %s OR "
-        search_query += "CAST(cont_assessment AS TEXT) ILIKE %s OR "
-        search_query += "(CAST(class_test_one AS FLOAT) + CAST(mid_term AS FLOAT) + CAST(class_test_two AS FLOAT) + CAST(annual_exam AS FLOAT) + CAST(cont_assessment AS FLOAT))::TEXT ILIKE %s) "
+        search_query += "CAST(ca1 AS TEXT) ::TEXT ILIKE %s) "
 
         search_value = f"%{search_value}%"
-        params.extend([search_value] * 7)
+        params.extend([search_value] * 6)
 
     str_query = '''select ev.*, sub.*,ss.*, scl."ratingName" AS ratingname_one, scl1."ratingName" AS ratingname_two, COUNT(*) OVER() AS count_all from public.tbl_student_evaluation ev 
 	join public."User" uu on ev.subject_teacher_id=uu.id 
 	join public.user_detail ud on (uu.id=ud.user_id and ev.subject_teacher_id=ud.user_id)
-	join public.tbl_students_personal_info std 
+	join public.tbl_students_personal_info std  
 	on ev.student_id=std.id 
 	join public.tbl_academic_detail ac 
 	on (std.id=ac.std_personal_info_id and ev.student_id=ac.std_personal_info_id)
@@ -378,7 +377,7 @@ def get_std_marks(stdId):
 	join public.tbl_subjects sub on ss.subject_id=sub.subject_code
 	join public.tbl_rating_scale scl on ev."ratingScale1"=scl."ratingScaleId"
 	join public.tbl_rating_scale scl1 on ev."ratingScale2"=scl1."ratingScaleId"
-    WHERE ev.student_id = %s and cl.class_id=%s and sec.section_id=%s and ud.subject=ss.section_subject_id ''' + search_query + '''
+    WHERE ev.student_id = %s and cl.class_id=%s and sec.section_id=%s and ss.section_subject_id=%s ''' + search_query + '''
     LIMIT %s::integer OFFSET %s::integer'''
 
     get_std_marks = connection.execute(str_query, *params, row_per_page, row).fetchall()
@@ -453,6 +452,7 @@ def marks_result(stdId):
     data = []
     count = 0
     for index, users in enumerate(get_std_marks):
+        print(users.class_test_one,'!!!!!!!!!!!!!SJJJSJSJS')
         data.append({
             'sl_no': index + 1,
             'subject': users.subject_name,

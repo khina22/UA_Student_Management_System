@@ -54,13 +54,13 @@ def get_student_classList():
 @blueprint.route('/store-std-marks', methods=['POST'])
 def store_student_marks():
      # try:
-    id = request.form.get('std_id')
-    print("****STORE ID****",id)
-    check = check_exist(id)
+    stdId = request.form.get('std_id')
+    print("****STORE ID****",stdId)
+    check = check_exist(stdId)
     if check==True:
         return "Error"
     else:
-       return store_student_assessment_details()
+       return store_student_assessment_details(stdId)
        #return storePersonality(getId,subject_teacher_id)
 
 @blueprint.route('/view-std-gradings')
@@ -88,7 +88,7 @@ def get_student_grade(id):
     return student_grade
 
 #@blueprint.route('/view-subjectrating')
-@blueprint.route('/subjTeachermarks/<studentId>/<subject>', methods=['GET'])
+@blueprint.route('/get-subject-marks/<studentId>/<subject>', methods=['GET'])
 def load_student_grade(studentId, subject):
     if is_subjectTeacher():
         student_grade = load_std_marks(studentId, subject)

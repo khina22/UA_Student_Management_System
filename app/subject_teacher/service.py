@@ -59,7 +59,7 @@ def get_std_subject_teacher():
         data.append({'sl': index + 1,
                      'index_number': user.index_number,
                      'student_cid': user.student_cid,
-                     'first_name': user.first_name,
+                     'first_name': user.first_name+ ' '+user.last_name,
                      'student_email': user.student_email,
                      'id': user.id})
         count = user.count_all
@@ -79,10 +79,9 @@ def get_std_subject_class(id):
     std_class = connection.execute(
         'SELECT *, P.id FROM public.tbl_students_personal_info AS P '
         'inner join public.tbl_academic_detail as A on P.id = A.std_personal_info_id '
-        'inner join public.tbl_dzongkhag_list as dzo on dzo.dzo_id = P.student_present_dzongkhag '
-        'inner join public.tbl_gewog_list as gewog on gewog.gewog_id = P.student_present_gewog '
-        'inner join public.tbl_village_list as village on village.village_id = P.student_present_village '
-        # 'inner join public.tbl_student_evaluation as SE on P.id = SE.student_id '
+        # 'inner join public.tbl_dzongkhag_list as dzo on dzo.dzo_id = P.student_present_dzongkhag '
+        # 'inner join public.tbl_gewog_list as gewog on gewog.gewog_id = P.student_present_gewog '
+        # 'inner join public.tbl_village_list as village on village.village_id = P.student_present_village '
         'WHERE P.id =%s',
         id).first()
     return render_template('/pages/view-student-table/std_detail.html', std=std_class)
@@ -106,34 +105,37 @@ def update_marks(id):
 
 
 # This is the route for storing student detials into tbl_student_personal_info
-def store_student_assessment_details():
+def store_student_assessment_details(stdId):
     id = uuid4()
-    subject_teacher_id = request.form.get("sub_id")
-    student_id = request.form.get("std_id")
     class_test_one = request.form.get("class_test_1")
     class_test_two = request.form.get("class_test_2")
     mid_term = request.form.get("mid_term")
     annual_exam = request.form.get("annual_exam")
-    cont_assessment = request.form.get('CA')
+    ca1 = request.form.get('CA1')
+    ca2 = request.form.get('CA2')
+    rate1= request.form.get('ratingScale1')
+    rate2= request.form.get('ratingScale2')
     status_remarks = request.form.get('std_status')
     punctuality = request.form.get('punctuality')
     discipline = request.form.get("discipline")
     social_service = request.form.get("socialservice")
     leadership_quality = request.form.get("leadership")
+    userId=current_user.id
+    print(class_test_one,"**test1***", class_test_two,'==test2=',mid_term,'==mid=', annual_exam,'=ann=',rate1,'=rate1=',rate2,'=rate2=')
     created_at = datetime.now()
-   
-    engine.execute("INSERT INTO public.tbl_student_evaluation (id, subject_teacher_id, student_id, class_test_one,  class_test_two, mid_term, annual_exam, cont_assessment,"
-                    "status_remarks, punctuality, discipline, social_service, leadership_quality, created_at) "
+    
+    connection.execute("INSERT INTO public.tbl_student_evaluation (id, subject_teacher_id, student_id, class_test_one,  class_test_two, mid_term, annual_exam, ca1,"
+                    "ca2, \"ratingScale1\", \"ratingScale2\", status_remarks, punctuality, discipline, social_service, leadership_quality, created_at) "
                    "VALUES ("
-                   "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s, %s)",
-                   (id, subject_teacher_id, student_id, class_test_one, class_test_two, mid_term, annual_exam, cont_assessment,status_remarks, punctuality, discipline, 
-                   social_service,leadership_quality,created_at  ))
+                   "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s, %s,%s,%s,%s)",
+                   (id, userId, stdId, class_test_one, class_test_two, mid_term, annual_exam, ca1,ca2, rate1, rate2,status_remarks, punctuality, discipline, 
+                   social_service,leadership_quality,created_at ))
 
     return "successfully"
 
 
 #checking for cid already exist in database
-def check_exist(id):
+def check_exist(stdId):
     getUser=current_user.id
     getUsersub='''select ud.subject,ud.grade,ud.section_no,ud.role 
 	from public."User" uu 
@@ -141,7 +143,7 @@ def check_exist(id):
     on uu.id=ud.user_id where uu.id=%s'''
     getuserSub=connection.execute(getUsersub,getUser).fetchall()
     print(getUser,"****GETUSER******")
-    print(id,"**STUDENTID******")
+    print(stdId,"**STUDENTID******")
     print(connection,"CONNECTION***")
     getData = getuserSub[0]
     #Retrieve the values of class and section
@@ -167,7 +169,7 @@ def check_exist(id):
 	and ev.subject_teacher_id=%s
 	and student_id=%s'''
     results = connection.execute(
-        check_exist_data,class_value,section_value,subject_value,role,getUser,id).fetchone()[0]
+        check_exist_data,class_value,section_value,subject_value,role,getUser,stdId).fetchone()[0]
     output = int(results)
     if output > 0:
         return True
@@ -282,14 +284,15 @@ def get_std_marks(id):
             'sl_no': index + 1,
             'subject': user.subject_name,
             'class_test_one': user.class_test_one,
+            'ca1': user.ca1,
+            'ratingScale1': user.ratingScale1,
             'mid_term': user.mid_term,
             'class_test_two': user.class_test_two,
+            'ca2': user.ca2,
+            'ratingScale2': user.ratingScale2,
             'annual_exam': user.annual_exam,
-            'cont_assessment': user.cont_assessment,
             'student_id': user.student_id,
             'subjectId':user.section_subject_id,
-            'total': int(user.class_test_one) + int(user.mid_term) + int(
-                user.class_test_two) + int(user.annual_exam) + int(user.cont_assessment),
             'id': user.id
         })
         count = user.count_all
@@ -331,8 +334,8 @@ def load_std_marks(studentId,subject):
 	on (std.id=ac.std_personal_info_id and ev.student_id=ac.std_personal_info_id)
 	join public.class cl on (ac.admission_for_class=cl.class_id 
 	and ud.grade=cl.class_id)
-	join public.std_section sec on (ud.section_no=sec.section_id and ac.section=sec.section_id and cl.class_id=sec.class_id)
-	join public.section_subject ss on (ud.subject=ss.section_subject_id and sec.section_id=ss.section_id)
+	join public.std_section sec on (ud.grade=sec.class_id and ac.admission_for_class=sec.class_id and cl.class_id=sec.class_id)
+	join public.section_subject ss on (ac.section=ss.section_id and sec.section_id=ss.section_id and ud.section_no=ss.section_id)
 	join public.tbl_subjects sub on ss.subject_id=sub.subject_code
     where ev.student_id = %s and ac.admission_for_class=%s and ac.section=%s and ss.section_subject_id=%s and ev.subject_teacher_id=%s
    ''' 
@@ -346,13 +349,14 @@ def load_std_marks(studentId,subject):
             'sl_no': index + 1,
             'subject': users.subject_name,
             'class_test_one': users.class_test_one,
+            'ca1': users.ca1,
+            'ratingScale1': users.ratingScale1,
             'mid_term': users.mid_term,
             'class_test_two': users.class_test_two,
+            'ca2': users.ca2,
+            'ratingScale2': users.ratingScale2,
             'annual_exam': users.annual_exam,
-            'cont_assessment': users.cont_assessment,
             'student_id': users.student_id,
-            'total': int(users.class_test_one) + int(users.mid_term) + int(
-                users.class_test_two) + int(users.annual_exam) + int(users.cont_assessment),
             'id': users.id
         })
         count = users.count_all

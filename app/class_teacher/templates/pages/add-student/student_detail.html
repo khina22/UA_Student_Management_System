@@ -24,56 +24,36 @@
         margin-bottom: 20px; /* Adjust the value as needed */
       }
 
-#resultMarksTable {
-    display: block;
+      #resultmarksList {
     width: 100%;
-    overflow-x: hidden; /* Enable horizontal scrolling when content exceeds the width */
-}
-
-#resultMarksTable table {
     border-collapse: collapse;
-    table-layout: fixed; /* Fix the table layout */
-    border: 1px solid black;
-    width: 100%;
-}
-
-#resultMarksTable th,
-#resultMarksTable td {
-    border: 1px solid black;
-    padding: 8px;
     text-align: center;
 }
 
+#resultmarksList th, #resultmarksList td {
+    border: 1px solid black;
+    padding: 8px;
+    vertical-align: middle;
+}
 .col-subject {
-    width: 5%;
+    width: 2%;
 }
-.col-term1{
-    width:15%;
+.col-term1 {
+    width: 6%;
 }
-.col-term2{
-    width:15%;
+.col-term2 {
+    width: 6%;
 }
-
-.col-grandTotal{
-    width:5%;
+.col-grandTotal {
+    width: 2%;
 }
-.col-ca1{
-    width:5%;
-}
-.col-ca2{
-    width:5%;
-}
-.col-midterm{
-    width:5%;
-}
-.col-annual{
-    width:5%;
-}
-col-total2{
-    width: 5%;
-}
-col-total1{
-    width: 5%;
+.col-ca1,
+.col-ca2,
+.col-midterm,
+.col-annual,
+.col-total2,
+.col-total1 {
+    width: 2%;
 }
 
     </style>
@@ -92,16 +72,16 @@ col-total1{
                                 <!-- Nav pills -->
                                 <ul class="nav nav-pills justify-content-center nav-justified" role="tablist">
                                     <li class="nav-item">
-                                        <hr class="horizontal" />
+                                        <!-- <hr class="horizontal" /> -->
                                         <a class="nav-link active btn btn-primary" data-toggle="pill"
                                             href="#studentDetail">Student Detail</a>
                                     </li>
-                                    <li class="nav-item">
+                                    <!-- <li class="nav-item">
                                         <hr class="horizontal" />
                                         <a class="nav-link btn btn-primary" data-toggle="pill" href="#marks_std">Student 
-                                            Marks</a>
+                                            Marks</a> --> 
                                         <li class="nav-item">
-                                                <hr class="horizontal" />
+                                                <!-- <hr class="horizontal" /> -->
                                                 <a class="nav-link btn btn-primary" data-toggle="pill"
                                                     href="#enter_std_marks">Continuous Assessment </a>
                                         </li>
@@ -259,7 +239,7 @@ col-total1{
 
                                     <div id="enter_std_marks" class="container tab-pane fade">
                                         <form action="#" method="#" id="updatestdMarks">   
-                                            <div class="col-md-12" id="displayForedit">
+                                            <div class="col-md-12">
                                                 <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group row">
@@ -381,7 +361,7 @@ col-total1{
                                                 </div>
                                             </div>                                            
                                                 <hr>
-                                                <div class="row" id="subjectTeacher_div" style="display: none;">
+                                                <!-- <div class="row" id="subjectTeacher_div" >
                                                     <h4 class="card-title">Student Remarks</h4>
                                                     <div class="col-md-6">
                                                     <div class="form-group row">
@@ -455,12 +435,12 @@ col-total1{
                                                             </div>
                                                         </div>
                                                     </div>
-                                            
-                                                    <div class="button-center text-center">
-                                                        <button type="submit" id="rating_sent" class="btn btn-sm btn-warning"
-                                                            style="color: white; width: 101px; height: 40px; font-size: 16px;">Submit </button>
-                                                    </div>  
-                                        </div>
+                                        </div> -->
+                                        
+                                        <div class="button-center text-center">
+                                            <button type="submit" id="rating_sent" class="btn btn-sm btn-warning"
+                                                style="color: white; width: 101px; height: 40px; font-size: 16px;">Submit </button>
+                                        </div>  
                                     </form>
                                     </div>
                                    
@@ -477,9 +457,9 @@ col-total1{
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div  id="resultMarksTable" style="display: none;">
+                                                        <div id="resultMarksTable" style="display: none;">
                                                         <h6>STATEMENT OF MARKS</h6>
-                                                        <table class="table align-items-center " id="resultmarksList" style="width:100%;">
+                                                        <table id="resultmarksList"  >
                                                             <thead class="thead-light">
                                                                 <!-- <tr>
                                                                     <th scope="col" class="sort">Subject</th>
@@ -505,7 +485,7 @@ col-total1{
                                                                     <th rowspan='1' colspan="1" class="col-ca1">CA</th>
                                                                     <th rowspan='1' colspan="1" class="col-midterm">Mid Term <br>Examination</th>
                                                                     <th rowspan='1' colspan="1" class="col-total1">Total I</th>
-                                                                    <th rowspan='1' colspan="1" class="ca2">CA</th>
+                                                                    <th rowspan='1' colspan="1" class="col-ca2">CA</th>
                                                                     <th rowspan='1' colspan="1" class="col-annual">Annual <br>Examination</th>
                                                                     <th rowspan='1' colspan="1" class="col-total2">Total II</th>
                                                                 </tr>
@@ -531,11 +511,96 @@ col-total1{
                                                                 </tr>
                                                             </tfoot>
                                                         </table>
+                                                          <br>   <!-- Student Remarks -->
+                                                        <div class="row" id="subjectTeacher_div" >
+                                                            <h4 class="card-title">Student Remarks</h4>
+                                                            <div class="col-md-6">
+                                                            <div class="form-group row">
+                                                                <label for="std_status" class="control-label col-sm-4 text-right">Status:</label>
+                                                                <div class="col-sm-8">
+                                                                    <select name="std_status" id="std_status" class="form-control">
+                                                                        <option value="">---Select Status---</option>
+                                                                        <option value="PASS">PASS</option>
+                                                                        <option value="FAIL">FAIL</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+        
+                                                            <div class="form-group row">
+                                                                <label class="control-label col-sm-4 text-right" for="punctuality">Punctuality:</label>
+                                                                <div class="col-sm-8">
+                                                                    <select name="punctuality" id="punctuality" class="form-control">
+                                                                        <option value="">---Select---</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+        
+                                                            <div class="col-md-6">
+                                                                <div class="form-group row">
+                                                                    <label class="control-label col-sm-4 text-right" for="discipline">Discipline:</label>
+                                                                    <div class="col-sm-8">
+                                                                        <select name="discipline" id="discipline" class="form-control">
+                                                                            <option value="">---Select---</option>
+                                                                            
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+        
+                                                                <div class="form-group row">
+                                                                    <label class="control-label col-sm-4 text-right" for="socialservice">Social Service:</label>
+                                                                    <div class="col-sm-8">
+                                                                        <select name="socialservice" id="socialservice" class="form-control">
+                                                                            <option value="">---Select---</option>
+                                                                            
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group row">
+                                                                    <label class="control-label col-sm-4 text-right" for="leadership">Leadership Quality:</label>
+                                                                    <div class="col-sm-8">
+                                                                        <select name="leadership" id="leadership" class="form-control">
+                                                                            <option value="">---Select---</option>
+                                                                            
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group row">
+                                                                    <label for="supw_grade"
+                                                                        class="control-label col-sm-4 text-right">Supw Grade
+                                                                        :</label>
+                                                                    <div class="col-sm-8">
+                                                                        <select name="supw_grade" id="supw_grade"
+                                                                            class="form-control">
+                                                                            <option value="">---Select SUPW Grade---</option>
+                                                                            <option value="A">A</option>
+                                                                            <option value="B">B</option>
+                                                                            <option value="C">C</option>
+                                                                            <option value="D">D</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group row">
+                                                                    <label for="remarks" class="control-label col-sm-4 text-right">Remarks:</label>
+                                                                    <div class="col-sm-8">
+                                                                        <textarea name="remarks" id="remarks" class="form-control"></textarea>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                </div>
                                                         <!-- {% if not data %}
                                                         <p>Marks not yet available</p>
                                                         {% endif %} -->
                                                     </div>
-                                                        <div class="table-responsive" id="resultremarksTable" style="display: none;">
+                                                        <!-- <div class="table-responsive" id="resultremarksTable" style="display: none;">
                                                         <h6>Student Individual Remarks :</h6>
                                                         <table class="table align-items-center table-flush" id="resultremarksList" style="width:100%;">
                                                             <thead class="thead-light">
@@ -558,10 +623,8 @@ col-total1{
                                                                
                                                             </tbody>
                                                         </table>
-                                                        <!-- {% if not data %}
-                                                        <p>Result not yet available</p>
-                                                        {% endif %} -->
-                                                    </div>  
+                                                      
+                                                    </div>   -->
 
                                                     </div><br>                                                
                                                 </div>
@@ -652,7 +715,7 @@ $('a[href="#view_result"]').on('click', function () {
     }
 
     $.ajax({
-        url: '/get_dropdown_rating', // Flask route to fetch data
+        url: '/get-dropdown-rating', // Flask route to fetch data
         method: 'GET',
         dataType: 'json',
         success: function(data) {
@@ -670,7 +733,7 @@ $('a[href="#view_result"]').on('click', function () {
     });
 
     $.ajax({
-        url: '/get_dropdown_rating', // Flask route to fetch data
+        url: '/get-dropdown-rating', // Flask route to fetch data
         method: 'GET',
         dataType: 'json',
         success: function(data) {
@@ -688,11 +751,7 @@ $('a[href="#view_result"]').on('click', function () {
     });
 
 });
-//$("#std_status").on("change", function () {
-        let status = $("#std_status").val();
-            $("#subjectTeacher_div").show();
-                //});
-                
+
 function updateStdMarks() {
     var stdId=$('#std_id').val();
      var form_data = new FormData($('#updatestdMarks')[0]);
@@ -916,15 +975,25 @@ function loadUsers(stdId) {
             console.log(response,"***marks")
 
             $.each(response.data, function(index, item) {
+                let subject=item.subject;
+                let class_test_one=parseInt(item.class_test_one);
+                let class_test_two=parseInt(item.class_test_two);
+                let ca1=parseInt(item.ca1);
+                let ca2=parseInt(item.ca2);
+                let mid_term=parseInt(item.mid_term);
+                let annual_exam=parseInt(item.annual_exam);
+                let total1=ca1+mid_term;
+                let total2=ca2+annual_exam;
+                let grand_total=total1+total2;
                 var row = '<tr>';
-                row += '<td>' + item.subject + '</td>';
-                row += '<td>' + item.class_test_one + '</td>';
-                row += '<td>' + item.ca1 + '</td>';
-                row += '<td>' + item.ratingScale1 + '</td>';
-                row += '<td>' + item.mid_term + '</td>';
-                row += '<td>' + item.class_test_two + '</td>';
-                row += '<td>' + item.ca2 + '</td>';
-                row += '<td>' + item.annual_exam + '</td>';
+                row += '<td style="width: 2%;">' + subject + '</td>';
+                row += '<td style="width: 2%;">' + ca1+ '</td>';
+                row += '<td style="width: 2%;">' + mid_term + '</td>';
+                row += '<td style="width: 2%;">' + total1 + '</td>';
+                row += '<td style="width: 2%;">' + ca2 + '</td>';
+                row += '<td style="width: 2%;">' + annual_exam + '</td>';
+                row += '<td style="width: 2%;">' + total2 + '</td>';
+                row += '<td style="width: 2%;">' + grand_total + '</td>';
                 row += '</tr>';
                 marksTableBody.append(row);
             });

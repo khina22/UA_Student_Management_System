@@ -616,9 +616,16 @@ mainTable.DataTable().draw();
 
     $('#sendModal').on('shown.bs.modal', function () {
       let stdCid = $('#stdCid').val();
+      $('#hostel').on('change', function(){
+        let selectedHostel = $(this).val();
+        if(selectedHostel != ''){
+          $('#hostelError').hide();
+          $('#hostel_group').removeClass('has-danger');
+        }
+      });
       $('#section').on('change', function () {
         let selectedSection = $(this).val();
-        if (selectedSection !== '') {
+        if (selectedSection != '') {
           // If a section is selected, hide the error message and remove the 'has-danger' class
           $('#sectionError').hide();
           $('#section_group').removeClass('has-danger');
@@ -1139,19 +1146,20 @@ $('#hostel_group').removeClass('has-danger');
       selectedSectionId = 3;
       $('#section_group').removeClass('has-danger');
     } else {
-      if (selectedSection === '') {
+      if (selectedSection == '') {
         $('#sectionError').show();
         $('#section_group').addClass('has-danger');
         returnVal = true;
       }
     }
 
-    if (selectedHostel === '') {
+    if (selectedHostel == '') {
       $('#hostelError').show();
       $('#hostel_group').addClass('has-danger');
       returnVal = true;
     } 
     else{
+      alert(selectedHostel);
       $('#hostelError').hide();
       $('#hostel_group').removeClass('has-danger');
     }
