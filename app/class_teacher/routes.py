@@ -221,7 +221,7 @@ def load_student_grade(studentId, subject):
 
 @blueprint.route('/subjectTeacherList/<int:class_id>/<int:section_id>', methods=['POST'])
 @login_required
-def sub_teacherList(class_id=None, section_id=None):
+def sub_teacherList(class_id, section_id):
     return subjectTeacher(class_id, section_id)
 
 # delete student list

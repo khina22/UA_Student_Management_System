@@ -111,6 +111,21 @@
                                                 </select>
                                             </div>
                                         </div>  
+                                        
+                                        <div class="row" style="display: none;"> 
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label class="form-control-label" for="class_id">Class_ID</label>
+                                                    <input type="text" name="class_id" id="classFilter" class="form-control" autocomplete="off">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label class="form-control-label" for="section_id">Section_ID</label>
+                                                    <input type="text" name="section_id" id="sectionFilter" class="form-control" autocomplete="off">
+                                                </div>
+                                            </div>
+                                        </div> 
                                 </div>
                             </div>
                         </div>
@@ -136,18 +151,16 @@
 <script>
     $(document).ready(function () {
         // Initialize the DataTable without data
-        const dataTable = $('#customerList').DataTable({
+                const dataTable = $('#customerList').DataTable({
             'processing': true,
             'serverSide': true,
             'bDestroy': true,
             'serverMethod': 'POST',
             'ajax': {
-                'url': '/subjectTeacherList', // the DataTable should fetch its data from the /subjectTeacherList
+                url: '/subjectTeacherList',
                 'data': function (data) {
-                    // Add class_id parameter to the request data
-                    data.class_id = $('#classFilter').val();
-                    data.class_id = $('#sectionFilter').val();
-
+                    data.class_id = $('#grade').val();
+                    data.section_id = $('#section').val();
                 }
             },
             'columns': [
@@ -168,7 +181,7 @@
         });
 
         // Add an event listener to the class filter select box
-        $('#classFilter','#sectionFilter').on('change', function () {
+        $('#classFilter').on('change', function () {
             // Reload the DataTable with the selected class filter
             dataTable.ajax.reload();
         });

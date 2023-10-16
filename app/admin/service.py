@@ -39,7 +39,7 @@ def save_user_detail_table(user_id,password):
     grade = request.form['grade']
     subject = request.form['subject']
     grade = request.form['grade']
-    subject = request.form['subject']
+    # subject = request.form['subject']
     if grade=='2':
         section=3
         print(section,"*****SECTIONSECTION")
@@ -50,7 +50,7 @@ def save_user_detail_table(user_id,password):
     browser = request.headers.get('User-Agent')
     connection.execute('INSERT INTO public.user_detail ("id", "user_id", "role","grade", "section_no",  "subject", "ip_address", "browser", "created_at") VALUES (%s,%s, %s, %s, %s, %s, %s, %s, %s)',
                        (id, user_id, role, grade,section,subject, ip, browser, datetime.now()))
-    getUser='select username,email,password from public."User" where id=%s'
+    getUser='select username,email,password from public."User" where id= %s'
     userName=connection.execute(getUser,user_id).fetchone()
     email = userName['email']
     user_name = userName['username']

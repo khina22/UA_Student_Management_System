@@ -865,7 +865,7 @@ def get_time_table():
         'SELECT *, t.id FROM public.tbl_time_table AS t WHERE t.id IS NOT NULL ')
     return render_template('/pages/user-management/view_time_table.html', student_timeing_table = std_time_table)
 
-def subjectTeacher(class_id=None, section_id=None):
+def subjectTeacher(class_id, section_id):
     draw = request.form.get('draw')
     row = request.form.get('start')
     row_per_page = request.form.get('length')
@@ -877,11 +877,8 @@ def subjectTeacher(class_id=None, section_id=None):
     if search_value:
         search_query = f"AND (U.username LIKE '%%{search_value}%%' OR U.email LIKE '%%{search_value}%%' OR UD.role LIKE '%%{search_value}%%')"
 
-    classFilter = f"AND cl.class_id = {class_id}" if class_id is not None else ""
-    sectionFilter = f"AND sec.section_id = {section_id}" if section_id is not None else ""
-
     str_query = f'''
-        SELECT U.username, U.email, sub.subject_name, cl.class_name, sec.section, UD.grade, UD.role, count(*) OVER() AS count_all, U.id AS user_id, cl.class_id, sec.section_id
+        SELECT U.username, U.email, sub.subject_name, cl.class_name, sec.section, UD.grade, UD.role, count(*) OVER() AS count_all, U.id AS user_id
         FROM public."User" AS U
         JOIN public.user_detail AS UD ON U.id = UD.user_id
         LEFT JOIN public.class cl ON cl.class_id = UD.grade
@@ -889,11 +886,13 @@ def subjectTeacher(class_id=None, section_id=None):
         LEFT JOIN public.section_subject ss ON UD.subject = ss.section_subject_id
         LEFT JOIN public.tbl_subjects sub ON ss.subject_id = sub.subject_code
         WHERE U.type IS NULL AND UD.role = %s
-    ''' + search_query + classFilter + sectionFilter + f'''
-        LIMIT {row_per_page} OFFSET {row}
+    '''
+    str_query += search_query + '''
+        AND cl.class_id = %s
+        AND sec.section_id = %s
     '''
 
-    subject_teacher = connection.execute(str_query, ('subject_teacher',)).fetchall()
+    subject_teacher = connection.execute(str_query, ('subject_teacher', class_id, section_id)).fetchall()
 
     data = []
     count = 0
@@ -907,9 +906,7 @@ def subjectTeacher(class_id=None, section_id=None):
             'class_name': user.class_name,
             'section': user.section,
             'role': user.role,
-            'id': user.user_id,
-            'class_id': user.class_id,
-            'section_id': user.section_id
+            'id': user.user_id
         })
         count = user.count_all
 
@@ -917,7 +914,7 @@ def subjectTeacher(class_id=None, section_id=None):
         "draw": int(draw),
         "iTotalRecords": count,
         "iTotalDisplayRecords": count,
-        "aaData": data,
+        "aaData": data
     }
 
     return jsonify(response)
