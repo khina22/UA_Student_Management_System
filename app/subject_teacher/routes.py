@@ -1,5 +1,6 @@
 from flask import render_template,request,jsonify,session,flash,current_app,redirect
 from flask_login import login_required
+from app.class_teacher.service import get_std_in_class
 from app.subject_teacher import blueprint
 from app.admin.service import is_subjectTeacher,is_classTeacher
 from app.subject_teacher.service import get_std_subject_teacher,get_std_marks,get_std_subject_class, store_student_assessment_details,check_exist,update_marks,get_std_rating,getRatingValue,load_std_marks
@@ -117,4 +118,6 @@ def getRatingValues():
         return getRatingValue()
     else:
         return redirect('login-user') 
+    
+
 

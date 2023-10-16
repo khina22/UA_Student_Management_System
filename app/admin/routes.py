@@ -1,5 +1,6 @@
 from flask import render_template,request,redirect,session,flash,current_app
 from flask_login import login_required
+from app.HR.service import class_teacher, subjectTeacher
 from app.admin import blueprint
 from app.admin.service import save_user_table, save_user_detail_table, application_update, all_users, is_admin,is_classTeacher, is_subjectTeacher, get_user_by_id, get_std_by_id, all_std, user_quries, edit_the_user, update_editfunction,getClasses,getSection
 from app.admin.service import deleteUser as __DU__
@@ -176,6 +177,12 @@ def queryList():
         users_query = []
 
     return users_query
+
+@blueprint.route('/getclassteacher')
+@login_required
+def getclassteacher():
+    return render_template('/pages/getclassteacher.html')
+
 # edit modal
 @blueprint.route('/edit-user/<id>', methods=['GET'])
 @login_required
@@ -195,7 +202,20 @@ def updating_the_user():
 @blueprint.route('/delete_list/<id>', methods=['POST'])
 def delete_user(id):return __DU__.delete_user_by_id(id)
         
-   
+@blueprint.route('/class-teacher-list', methods=['POST'])
+@login_required
+def cl_teacherList():
+    return class_teacher()   
+
+@blueprint.route('/getsubjectteacher')
+@login_required
+def getsubjectteacher():
+    return render_template('/pages/getsubteacher.html') 
+
+@blueprint.route('/getsubteacher',methods=['POST'])
+@login_required
+def getsubteacher():
+    return subjectTeacher()
 
     
 

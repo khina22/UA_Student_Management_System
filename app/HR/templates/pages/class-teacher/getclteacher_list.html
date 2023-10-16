@@ -8,13 +8,6 @@
 {% endblock stylesheets %}
 
 {% block content %}
-<!-- partial:../../partials/_navbar.html -->
-<!-- partial -->
-
-<!-- partial:../../partials/_settings-panel.html -->
-<!-- partial -->
-<!-- partial:../../partials/_sidebar.html -->
-<!-- partial -->
 <div class="main-panel">
     <div class="content-wrapper">
         <div class="row">
@@ -82,19 +75,21 @@
                                         <div class="col-lg-6">
                                             <div class="form-group">
                                                 <label class="form-control-label" for="subject">Subject</label>
-                                                <input type="text" name="subject" id="subject" class="form-control" autocomplete="off">
-                                            </div>
+                                                <select name="subject" id="subject" class="form-control">
+                                                    <option value="">Select</option>
+                                                    {% for subject in subjects %}
+                                                    <option value="{{ subject.subject_code}}">{{ subject.subject_name}}</option>
+                                                    {% endfor %}
+                                                </select>                                            </div>
                                         </div>
                                         <div class="col-lg-6">
                                             <div class="form-group">
                                                 <label class="form-control-label" for="grade"> Class</label>
                                                 <select name="grade" id="grade" class="form-control">
-                                                    <option value="XII">XII</option>
-                                                    <option value="XI">XI</option>
-                                                    <option value="X">X</option>
-                                                    <option value="IX">IX</option>
-                                                    <option value="VIII">VIII</option>
-                                                    <option value="VII">VII</option>   
+                                                    <option value="">Select</option>
+                                                    {% for grade in grades %}
+                                                    <option value="{{ grade.class_id}}">{{ grade.class_name}}</option>
+                                                    {% endfor %}
                                                 </select>
                                             </div>
                                         </div>
@@ -102,12 +97,10 @@
                                             <div class="form-group">
                                                 <label class="form-control-label" for="section"> Section</label>
                                                 <select name="section" id="section" class="form-control">
-                                                    <option value="A">A</option>
-                                                    <option value="B">B</option>
-                                                    <option value="C">C</option>
-                                                    <option value="D">D</option>
-                                                    <option value="E">E</option>
-                                                    <option value="F">F</option>   
+                                                    <option value="">Select</option>
+                                                    {% for section in sections %}
+                                                    <option value="{{ section.section_id}}">{{ section.section}}</option>
+                                                    {% endfor %}
                                                 </select>
                                             </div>
                                         </div>  
@@ -123,6 +116,8 @@
             </div>
         </div>
 </div>
+
+
 
 {% endblock content %}
 
@@ -178,26 +173,78 @@ crossorigin="anonymous"></script>
 
    // edit button
    function EditTeacher(id) {
-        $.get('/edit_teacher/' + id, function (res) {
+        $.get('/hr/edit-user/' + id, function (res) {
             const { data } = res
+            const {sections} = res
+
+            var dropdown = $('#section');
+            dropdown.empty()
+            for (const section of sections) {
+                dropdown.append(`<option value="${section.id}"'>${section.name}</option>`)
+            }
+            // console.log(data[0].subject, data)
             // if response is json load modal and show data in field
-            $("#exampleModal").modal('show');
-            $("#username").val(data[0].username);
-            $("#email").val(data[0].email);
-            $("#subject").val(data[0].subject);
-            $("#grade").val(data[0].grade);
-            $("#section").val(data[0].section);
-            $("#role").val(data[0].role);
-            $("#uu_id").val(data[0].id);
+            $("#exampleModal").modal('show');  // Populate input fields in the modal with user data from the response
+            $("#username").val(data.username);
+            $("#email").val(data.email);
+            $('#subject option[value='+data.subject_id+']').attr('selected',true);
+            $('#grade option[value='+data.grade+']').attr('selected',true);
+            $('#section option[value='+data.section+']').attr('selected',true);
+            $("#role").val(data.role);
+            $("#uu_id").val(data.id);
 
         })
     }
+
+  // Function to handle the change event for the section select element
+  $("#section").on("change", function() {
+    var sectionId = $(this).val();
+  
+    // Fetch subjects based on the selected section_id
+    fetchSubjects(sectionId);
+  });
+
+// Function to handle the change event for the section select element
+
+function fetchSubjects(sectionId) {
+    // Send an AJAX request to retrieve the subjects for the selected section
+    $.ajax({
+      url: '/get_subjects/' + sectionId,
+      type: 'GET',
+      success: function(response) {
+        if (response.length===0){
+            $('#subject_group').hide();
+        }
+        else{  
+        // Update the "Select Subject" dropdown with the retrieved subjects
+        var subjectDropdown = $('#subject');
+        subjectDropdown.empty();
+        subjectDropdown.append($('<option>', { value: '', text: '---Select Subject---' }));
+        for (var i = 0; i < response.length; i++) {
+          var subject = response[i];
+          var option = $('<option>');
+          option.val(subject.id);
+          option.text(subject.name);
+          subjectDropdown.append(option);
+        }
+        $('#subject_group').show();
+    }
+      },
+      error: function(xhr, status, error) {
+        // Handle the error if the AJAX request fails
+        console.error(error);
+      }
+    });
+  }
+
+    
+
     // updating teacher
     $("#update_teacherlist").click(function () {
         var form_data = new FormData($('#list_classteacher')[0])
         $.ajax({
             type: "POST",
-            url: "/updating_teacherlist",
+            url: "/updating_clsteacher",
             data: form_data,
             contentType: false,
             cache: false,
@@ -216,14 +263,14 @@ crossorigin="anonymous"></script>
 
             },
             error: function () {
-                swal('Error', 'Could Not Add Student', 'error').then(function () {
+                swal('Error', 'Could Not Update Class Teacher', 'error').then(function () {
                     location.reload()
                 })
             }
         });
     });
-    // teacher delete
 
+    // teacher delete
     function deleteTeacherList(id) {
         swal({
             title: "Are you sure?",

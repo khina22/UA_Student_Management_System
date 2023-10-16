@@ -1,6 +1,7 @@
 from operator import add
 from uuid import uuid4
-from flask import request, render_template,jsonify
+from flask import Response, request, render_template,jsonify
+from app.admin.routes import std_details
 from config import Config
 from sqlalchemy import create_engine,text,alias
 from flask_login import current_user
@@ -8,82 +9,91 @@ from datetime import datetime
 from random import randint
 from app.admin.models import User
 import os
+import sqlite3 
 
 
 engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
 connection = engine.connect()
 random_id = randint(000, 999)
 
-# def getSubjectDetails():
-#     user = User.query.get(current_user.id)
-#     getId = 'SELECT id FROM public."User" WHERE username=%s'
-#     getuId = engine.execute(getId, user.username).scalar()
-#     getDetails = 'SELECT cl.class_name,sec.section,cl.class_id,sec.section_id FROM public.user_detail ud \
-#         left join public.class cl \
-#         on ud.grade=cl.class_id \
-#         left join std_section sec \
-#         on ud.section=sec.section_id \
-#         WHERE user_id=%s'
-#     getuDetail = engine.execute(getDetails, getuId)
-#     print("**********",getuId)
-#     # Convert the database result into a dictionary
-#     user_details = dict(getuDetail.fetchone())
-#     print(user_details,"******USERDETAILS")
-#     # Return the user details as a JSON response
-#     return jsonify(user_details)
-# #        return jsonify({'error': 'User not authenticated'})
-  
+# for remarks
+def insert_student_remarks():
+    try:
+        percentage = request.form.get('percentage')
+        position = request.form.get('position')
+        attendance = request.form.get('attendance')
+        total_no_stds = request.form.get('total_no_stds')
+        percentage2 = request.form.get('percentage2')
+        position2 = request.form.get('position2')
+        attendance2 = request.form.get('attendance2')
+        total_no_stds2 = request.form.get('total_no_stds2')
+        std_status = request.form.get('std_status')
+        punctuality = request.form.get('punctuality')
+        discipline = request.form.get('discipline')
+        leadership = request.form.get('leadership')
+        supw_grade = request.form.get('supw_grade')
+        remarks = request.form.get('remarks')
+        student_id = request.form.get('stdId')
+        total_percentage = request.form.get('total_percentage')
+        total_position = request.form.get('total_position')
+        total_attendance = request.form.get('total_attendance')
+        grandtotoal_no_stds = request.form.get('grandtotoal_no_stds')
 
-# def subject_teacher():
-#     draw = request.form.get('draw')
-#     row = request.form.get('start')
-#     row_per_page = request.form.get('length')
-#     search_value = request.form['search[value]']
-#     search_query = ' '
-#     user_id = current_user.id
-#     getClass='select grade from public.user_detail where user_id=%s'
-#     getClassId=engine.execute(getClass,user_id).scalar()
-#     getSection='select section from public.user_detail where user_id=%s'
-#     getSectionId=engine.execute(getSection,user_id).scalar()
-#     print(user_id,"********USERID")
-#     if (search_value != ''):
-#         search_query = "AND (U.username LIKE '%%" + search_value + "%%' " \
-#             "OR U.email LIKE '%%" + search_value + \
-#             "%%' OR UD.role LIKE '%% "+search_value+"%%') "
+        # Check if std_id exists
+        check_query = "SELECT COUNT(*) FROM public.tbl_academic_summary WHERE std_id = %s"
+        count = engine.execute(check_query, (student_id,)).scalar()
 
-#     str_query = '''
-#     SELECT U.username, U.email, UD.subject, cl.class_name, sec.section, UD.grade, UD.role, count(*) OVER() AS count_all, U.id as user_id
-#     FROM public."User" AS U
-#     JOIN public.user_detail as UD ON U.id = UD.user_id
-#     LEFT JOIN public.class cl ON cl.class_id = UD.grade
-#     LEFT JOIN public.std_section sec ON UD.section = sec.section_id
-#     WHERE U.type IS NULL AND UD.role = %s AND UD.grade = %s AND UD.section = %s
-#         ''' + search_query + '''
-#     LIMIT ''' + row_per_page + ''' OFFSET ''' + row
+        if count > 0:
+            # If std_id exists, perform an update
+            update_query = """
+            UPDATE public.tbl_academic_summary SET
+                percentage = %s,
+                position = %s,
+                attendance = %s,
+                total_no_stds = %s,
+                percentage2 = %s,
+                position2 = %s,
+                attendance2 = %s,
+                total_no_stds2 = %s,
+                std_status = %s,
+                punctuality = %s,
+                discipline = %s,
+                leadership = %s,
+                supw_grade = %s,
+                remarks = %s,
+                total_percentage = %s,
+                total_position = %s,
+                total_attendance = %s,
+                grandtotoal_no_stds = %s
+            WHERE std_id = %s
+            """
+            engine.execute(update_query, (
+                percentage, position, attendance, total_no_stds, percentage2, position2,
+                attendance2, total_no_stds2, std_status, punctuality, discipline, leadership,
+                supw_grade, remarks, total_percentage, total_position, total_attendance, grandtotoal_no_stds, student_id
+            ))
+            return 'updated'
+        else:
+            # If std_id does not exist, perform an insert
+            insert_query = """
+            INSERT INTO public.tbl_academic_summary (
+                percentage, position, attendance, total_no_stds, percentage2, position2,
+                attendance2, total_no_stds2, std_status, punctuality, discipline, leadership,
+                supw_grade, remarks, std_id, total_percentage, total_position, total_attendance, grandtotoal_no_stds
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """
+            engine.execute(insert_query, (
+                percentage, position, attendance, total_no_stds, percentage2, position2,
+                attendance2, total_no_stds2, std_status, punctuality, discipline, leadership,
+                supw_grade, remarks, student_id, total_percentage, total_position, total_attendance, grandtotoal_no_stds
+            ))
 
-#     subject_teacher = connection.execute(str_query, 'subject_teacher', getClassId, getSectionId).fetchall()
-
-#     data = []
-#     count = 0
-#     for index, user in enumerate(subject_teacher):
-#         data.append({'sl': index + 1,
-#                      'username': user.username,
-#                      'email': user.email,
-#                      'subject': user.subject,
-#                      'class_name': user.class_name,
-#                      'section': user.section,
-#                      'role': user.role,
-#                      'id': user.user_id})
-#         count = user.count_all
-
-#     respose = {
-#         "draw": int(draw),
-#         "iTotalRecords": count,
-#         "iTotalDisplayRecords": count,
-#         "aaData": data
-#     }
-#     return respose
-
+        # Commit the transaction to persist the data
+        return 'insert'  # Success
+    except Exception as e:
+        # Handle exceptions and return False on error
+        print('Error:', e)
+        return False
 
 def search_std():
     student_cid = request.form.get('cid')
@@ -326,6 +336,43 @@ def get_std_class(id):
     print(std_class,"**DB")
     return render_template('/pages/add-student/student_detail.html', std=std_class)
 
+
+def get_std_result(id):
+    std_result = connection.execute(
+        'SELECT * FROM public.tbl_academic_summary AS std_result '
+        'WHERE std_id = %s',
+        id).first()
+    # Check if std_result is not None (i.e., a student record was found)
+    if std_result:
+        # Convert the std_result data to a dictionary (or customize as needed)
+        result_dict = {
+            'id': std_result.std_id,
+            'percentage': std_result.percentage,
+            'position': std_result.position,
+            'attendance': std_result.attendance,
+            'total_no_stds': std_result.total_no_stds,
+            'percentage2': std_result.percentage2,
+            'position2': std_result.position2,
+            'total_no_stds2': std_result.total_no_stds2,
+            'attendance2': std_result.attendance2,
+            'std_status': std_result.std_status,
+            'punctuality': std_result.punctuality,
+            'discipline': std_result.discipline,
+            'leadership': std_result.leadership,
+            'supw_grade': std_result.supw_grade,
+            'remarks': std_result.remarks,
+            'total_percentage': std_result.total_percentage,
+            'total_position': std_result.total_position,
+            'total_attendance': std_result.total_attendance,
+            'grandtotoal_no_stds': std_result.grandtotoal_no_stds,
+
+        }
+        print(result_dict)
+        # Return the data as JSON response
+        return jsonify(result_dict)
+    else:
+        # Return a response indicating that no data was found
+        return jsonify({'error': 'No data found for the specified ID'})
 
 # fetching student marks given by subject teacher
 def get_std_marks(stdId):
@@ -817,4 +864,66 @@ def get_time_table():
     std_time_table = connection.execute(
         'SELECT *, t.id FROM public.tbl_time_table AS t WHERE t.id IS NOT NULL ')
     return render_template('/pages/user-management/view_time_table.html', student_timeing_table = std_time_table)
+
+def subjectTeacher(class_id=None, section_id=None):
+    draw = request.form.get('draw')
+    row = request.form.get('start')
+    row_per_page = request.form.get('length')
+    search_value = request.form['search[value]']
+    search_query = ' '
+
+    user_id = current_user.id
+
+    if search_value:
+        search_query = f"AND (U.username LIKE '%%{search_value}%%' OR U.email LIKE '%%{search_value}%%' OR UD.role LIKE '%%{search_value}%%')"
+
+    classFilter = f"AND cl.class_id = {class_id}" if class_id is not None else ""
+    sectionFilter = f"AND sec.section_id = {section_id}" if section_id is not None else ""
+
+    str_query = f'''
+        SELECT U.username, U.email, sub.subject_name, cl.class_name, sec.section, UD.grade, UD.role, count(*) OVER() AS count_all, U.id AS user_id, cl.class_id, sec.section_id
+        FROM public."User" AS U
+        JOIN public.user_detail AS UD ON U.id = UD.user_id
+        LEFT JOIN public.class cl ON cl.class_id = UD.grade
+        LEFT JOIN public.std_section sec ON UD.section_no = sec.section_id
+        LEFT JOIN public.section_subject ss ON UD.subject = ss.section_subject_id
+        LEFT JOIN public.tbl_subjects sub ON ss.subject_id = sub.subject_code
+        WHERE U.type IS NULL AND UD.role = %s
+    ''' + search_query + classFilter + sectionFilter + f'''
+        LIMIT {row_per_page} OFFSET {row}
+    '''
+
+    subject_teacher = connection.execute(str_query, ('subject_teacher',)).fetchall()
+
+    data = []
+    count = 0
+
+    for index, user in enumerate(subject_teacher):
+        data.append({
+            'sl': index + 1,
+            'username': user.username,
+            'email': user.email,
+            'subject': user.subject_name,
+            'class_name': user.class_name,
+            'section': user.section,
+            'role': user.role,
+            'id': user.user_id,
+            'class_id': user.class_id,
+            'section_id': user.section_id
+        })
+        count = user.count_all
+
+    response = {
+        "draw": int(draw),
+        "iTotalRecords": count,
+        "iTotalDisplayRecords": count,
+        "aaData": data,
+    }
+
+    return jsonify(response)
+
+
+
+
+
 

@@ -8,15 +8,6 @@
 {% endblock stylesheets %}
 
 {% block content %}
-<!-- partial:../../partials/_navbar.html -->
-
-<!-- partial -->
-
-<!-- partial:../../partials/_settings-panel.html -->
-<!-- partial -->
-<!-- partial:../../partials/_sidebar.html -->
-
-<!-- partial -->
 <div class="main-panel">
     <div class="content-wrapper">
         <div class="row">
@@ -75,9 +66,7 @@
                                                             <label class="form-control-label" for="grade">Select Class</label>
                                                                 <select class="form-control form-select" name="grade" id="grade">
                                                                     <option value="">---Select One---</option>
-                                                                  
-                                                               
-                                                            </select>
+                                                                </select>
                                                         </div>
                                                     </div>
 
@@ -90,29 +79,11 @@
                                                         </div>
                                                     </div>
 
-                                                    <!-- <div class="col-lg-6" id="chooseStream">
-                                                        <div class="form-group"> 
-                                                            <label class="form-control-label" for="section">Select Stream</label>
-                                                            <select name="stream" id="stream" class="form-control">
-                                                                <option value="">---Select Stream---</option>
-                                                                <option value="Arts">Arts</option>
-                                                                <option value="Commerce">Commerce</option>
-                                                                <option value="Science">Science</option>
-                                                                
-                                                            </select>
-                                                        </div>
-                                                    </div> -->
-
                                                     <div class="col-lg-4" id="subject_group" style='display:none'>
                                                         <div class="form-group">
                                                             <label class="form-control-label" for="section">Select Subject</label>
                                                             <select name="subject" id="subject" class="form-control">
                                                                 <option value="">---Select Subject---</option>
-                                                                <!-- <option value="English">English</option>
-                                                                <option value="Dzongkha">Dzongkha</option>
-                                                                <option value="Mathematics">Mathematics</option>
-                                                                <option value="Economics">Economics</option> -->
-                                                                
                                                             </select>
                                                         </div>
                                                     </div>
@@ -134,161 +105,10 @@
 
         </div>
     </div>
-    <!-- content-wrapper ends -->
-    <!-- partial:../../partials/_footer.html -->
-
-    <!-- partial -->
 </div>
-<!-- main-panel ends -->
-
-<!-- page-body-wrapper ends -->
-
-<!-- container-scroller -->
-<!-- plugins:js -->
 {% endblock content %}
 
 <!-- Specific JS goes HERE -->
 {% block javascripts %}
-
-<!-- <script>
-    $("#save").on("click", function () {
-        var form = document.getElementById("user-form");
-        var data = new FormData(form);
-        $.ajax({
-            type: 'POST',
-            url: '/saveTeacher',
-            data: data,
-            contentType: false,
-            cache: false,
-            processData: false,
-            success: function (res) {
-                swal("Information successfully saved", "Click Ok to continue", "success")
-                    .then(function () {
-                        $('#user-form').trigger('reset')
-                        window.location = "/getClassTeacher"
-                    })
-
-            },
-        });
-    });
-    //grade stream
-
-    $("#role").on("change", function(){
-        let role =  $("#role").val();
-        if(role === "class_teacher"){
-            $("#classTeacher_div").show();
-        }else{
-            $("#classTeacher_div").hide();
-        }
-    });
-    // $("#grade").on("change",function(){
-    //     let grade= $("#grade").val();
-    //         //if (grade=='x')
-    //     if (grade=="XII" || grade=="XI"){
-    //       $('#chooseStream').show()
-    //     }
-    //     else{
-    //         $('#chooseStream').hide()
-    //     }
-    // })
-
-    $("#grade").on("change", function() {
-    var gradeId = $(this).val();
-
-    // Send an AJAX request to retrieve the dropdown values for the "section" select element
-    $.ajax({
-        type: 'GET',
-        url: '/dropDownSection/' + gradeId,
-        success: function(response) {
-            var dropdownValues = response;
-
-            // Get the select element for "section" and "class"
-            var sectionSelect = $('select[name="section"]');
-            var classSelect = $('select[name="class"]');
-
-            // Clear the existing options
-            sectionSelect.empty();
-            classSelect.empty();
-
-            // Check if there are sections available for the selected grade
-            if (dropdownValues.length === 0) {
-                // If no sections are available, disable the select element and display "No Section" as an option
-                sectionSelect.prop("disabled", true);
-                classSelect.prop("disabled", true);
-
-                // Create and append the "No Section" option
-                var noSectionOption = $('<option>');
-                noSectionOption.val("no_section");
-                noSectionOption.text("No Section");
-                sectionSelect.append(noSectionOption);
-
-                // Create and append the "No Class" option
-                var noClassOption = $('<option>');
-                noClassOption.val("no_class");
-                noClassOption.text("No Class");
-                classSelect.append(noClassOption);
-            } else {
-                // If sections are available, enable the select elements and populate them with the options
-                sectionSelect.prop("disabled", false);
-                classSelect.prop("disabled", false);
-
-                // Add the default "Select Section" and "Select Class" options at the top
-                var selectSectionOption = $('<option>');
-                selectSectionOption.val("");
-                selectSectionOption.text("---Select Section---");
-                sectionSelect.append(selectSectionOption);
-
-                var selectClassOption = $('<option>');
-                selectClassOption.val("");
-                selectClassOption.text("---Select Class---");
-                classSelect.append(selectClassOption);
-
-                // Create and append the new section options
-                for (var i = 0; i < dropdownValues.length; i++) {
-                    var option = $('<option>');
-                    option.val(dropdownValues[i].id);
-                    option.text(dropdownValues[i].name);
-                    sectionSelect.append(option);
-                }
-            }
-        },
-        error: function() {
-            // Handle error case
-        }
-    });
-});
-
-
-
-
-
-    
-$(document).ready(() => {
-    $.ajax({
-        type: 'GET',
-        url: '/dropDownClass',
-        success: function(response) {
-            // Assuming response is the JSON array containing dropdown values
-            var dropdownValues = response;
-    
-            // Get the select element in your HTML
-            var selectElement = document.getElementById('grade');
-    
-            // Loop through the dropdown values and create option elements
-            for (var i = 0; i < dropdownValues.length; i++) {
-                var option = document.createElement('option');
-                option.value = dropdownValues[i].id;
-                option.textContent = dropdownValues[i].name;
-                selectElement.appendChild(option);
-            }
-        },
-        error: function() {
-            // Handle error case
-        }
-    });
-});
-
-</script> -->
-
 
 {% endblock javascripts %}

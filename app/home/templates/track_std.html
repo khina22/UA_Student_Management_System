@@ -105,33 +105,45 @@
         return allowedKeys.includes(elementId);
     }
     $("#track_std").on("submit", function (e) {
-        e.preventDefault(e);
-        var form_data = new FormData($('#track_std')[0])
-        $.ajax({
-            type: 'POST',
-            url: "/search",
-            data: form_data,
-            contentType: false,
-            cache: false,
-            processData: false,
-            success: function (res) {
-            if (res.hasOwnProperty("error")) {
-                swal('Error', res.error, 'error');
-            }
-            else{
-                const { aaData } = res;
-                console.log(aaData);
-                $("#list").empty(); // Clear existing results
+    e.preventDefault(e); // Prevent the default form submission behavior. cause the page to refresh.
 
-                $("#list").append('<tr><td>' + aaData[0].first_name + '</td><td>' + aaData[0].last_name + '</td><td>' + aaData[0].index_number + '</td><td>' + aaData[0].student_cid + '</td><td>' + aaData[0].student_email + '</td><td>' + '<a class="btn btn-sm btn-icon-only text-light" id="view_result" role="button" data-toggle="dropdown" aria-haspopup="true" href="" aria-expanded="false" style="background:orange">' +
-                    '<b>View</b>' +
-                    '</a>' + '</td></tr>')
-                $("#view_result").click(function(){
-                    window.location = '/student-result/'+ aaData[0].index_number;
-                })   
+    // Create a FormData object from the form with the id "track_std"
+    var form_data = new FormData($('#track_std')[0])
+
+    $.ajax({
+        type: 'POST', // HTTP method for the request
+        url: "/search", // URL where the data will be sent
+        data: form_data, // Data to be sent (form data)
+        contentType: false, // Set content type to false (to send FormData)
+        cache: false, // Disable caching
+        processData: false, // Disable processing of data (FormData)
+        success: function (res) {
+            // Handle the response from the server
+            if (res.hasOwnProperty("error")) {
+                // If the response has an "error" property, show an error message
+                swal('Error', res.error, 'error');
+            } else {
+                // If there is no error, process the response data
+                const { aaData } = res;
+
+                // Clear the existing results
+                $("#list").empty();
+
+                // Append a table row with data from the response
+                $("#list").append('<tr><td>' + aaData[0].first_name + '</td><td>' + aaData[0].last_name + '</td><td>' + aaData[0].index_number + '</td><td>' + aaData[0].student_cid + '</td><td>' + aaData[0].student_email + '</td><td>' + '<a class="btn btn-sm btn-icon-only text-light" id="view_result" role="button" data-toggle="dropdown" aria-haspopup="true" href="#" aria-expanded="false" style="background:orange">' + '<b>View</b>' + '</a>' + '</td></tr>');
+
+                $("#view_result").click(function () {
+                // Retrieve the student ID from the data attribute
+                var studentId = aaData[0].id;
+
+                // Redirect to the Flask route with the student ID
+                window.location.href = '/view-std-details/' + studentId;   
+            });
+
             }
-            }
-        });
+        }
     });
+});
+
 </script>
 {% endblock javascripts %}

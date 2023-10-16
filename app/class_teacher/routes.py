@@ -1,10 +1,12 @@
-import re
+from multiprocessing.connection import _ConnectionBase
+from flask import Flask, app, request, jsonify
 from flask import render_template,jsonify,session,flash,current_app
 from flask_login import login_required
 from app.class_teacher import blueprint
-from app.class_teacher.service import  search_std, update_tbl_academic, get_std_in_class, get_std_class, get_std_marks, update_tbl_std_evaluation,students, std_time_table,get_time_table,get_subject_teacher_info,get_stds_rating,load_std_marks,view_result,marks_result,checkExist,midtermExamMarks, getRatings
+from app.class_teacher.service import  insert_student_remarks, search_std, subjectTeacher, update_tbl_academic, get_std_in_class, get_std_class, get_std_marks, update_tbl_std_evaluation,students, std_time_table,get_time_table,get_subject_teacher_info,get_stds_rating,load_std_marks,view_result,marks_result,checkExist,midtermExamMarks, getRatings, get_std_result
 from app.admin.service import is_classTeacher, is_subjectTeacher
 from datetime import datetime
+from sqlalchemy import create_engine
 import pytz
 
 
@@ -26,21 +28,8 @@ def check_session_timeout():
 
         # Update the last activity time to the current time
         session['last_activity'] = current_time
-
-
-# @blueprint.route('/add-subject-teacher')
-# @login_required
-# def add_teacher():
-#     return render_template('/pages/user-management/add-subject-teacher.html')
-
-
-# @blueprint.route('/teacher-list')
-# @login_required
-# def list_teacher():
-#     return render_template('/pages/user-management/teacher-list.html')
-
+        
 # for time table upload
-
 @blueprint.route('/timetable')
 @login_required
 def get_student_timetable():
@@ -51,20 +40,6 @@ def get_student_timetable():
 @login_required
 def upload_studenttimetable():
     return render_template('/pages/user-management/view_time_table.html')
-
-
-# @blueprint.route('/subject-teacher-list', methods=['POST'])
-# def subject_teacherList():
-#     if(is_classTeacher()):
-#         subject_t = subject_teacher()
-#     else:
-#         subject_t = []
-#     return subject_t
-
-# @blueprint.route('getUserDetails',methods=['GET','POST'])
-# def getUserDetails():
-#     if(is_classTeacher()):
-#         return getSubjectDetails()
 
 @blueprint.route('/add-std-class')
 @login_required
@@ -89,6 +64,11 @@ def get_subject_teacher_list():
         return render_template('/pages/add_subject_teacher/subject_teachers.html')
 
 
+@blueprint.route('/view-std-result')
+@login_required
+def view_std_result():
+        return render_template('/pages/add-student/view_std_result.html')
+
 # fetch student details
 @blueprint.route('/view-std-detail/<id>', methods=['GET'])
 @login_required
@@ -102,16 +82,10 @@ def view_student_detail(id):
 def view_student_marks(id):
     return get_subject_teacher_info(id)
 
-# @blueprint.route('/delete-std-marks/<id>')
-# @login_required
-# def delete_student_marks(id):
-#     return getdeletedMarks(id)
-
 @blueprint.route('/view-std-class-marks')
 @login_required
 def view_student_class_marks():
     return render_template('/pages/add-student/class_teacher_assessment.html')
-
 
 @blueprint.route('/update-std-details', methods=['POST'])
 @login_required
@@ -128,13 +102,20 @@ def midterm_exam_marks(stdId):
         return midtermExamMarks()
 
 @blueprint.route('/update-std-evaluation/<stdId>', methods=['POST'])
-@login_required
+@login_required   
 def update_std_evaluation(stdId):
+     # This is a Flask route decorator that maps the URL '/update-std-evaluation/<stdId>' to this function.
+    # <stdId> is a dynamic part of the URL, which will be passed as an argument to the function.
     if is_classTeacher():
+        # Check if the current user is a class teacher using the is_classTeacher() function.
+        # This is a custom authorization function that you likely have defined elsewhere.
         check=checkExist(stdId)
+        # Call the checkExist() function, which likely checks if the student with the given stdId exists in the database.
         if check==True:
+        # If checkExist() returns True, it means the student already exists, so return an "Error" message.
          return "Error"
         else:
+        # If checkExist() returns False, it means the student does not exist, so proceed with updating the student's evaluation.
          return update_tbl_std_evaluation(stdId)
 
 @blueprint.route('/get-dropdown-rating', methods=['GET'])
@@ -153,17 +134,32 @@ def student_classList():
         student_in_class = []
     return student_in_class
 
-
+# to fetch student result in view button
+@blueprint.route('/view_resultlist/<id>', methods=['GET'])
+@login_required
+def view_student_result(id):
+    print(id,'====cponsioleId')
+    return get_std_result(id)
 
 @blueprint.route('/get-subject-marks/<stdId>', methods=['POST'])
 @login_required
 def subject_marks(stdId):
-    print("*****IDDDD",stdId)
+    # This is a Flask route definition using the @blueprint.route decorator.
+    # It defines a route accessible at '/get-subject-marks/<stdId>' that accepts POST requests.
+    # The '<stdId>' part is a dynamic parameter in the URL, representing the student's ID.
+    print("*****IDDDD",stdId)    # Print the student ID for debugging purposes.
     if is_classTeacher():
+        # Check if the current user is a class teacher. The is_classTeacher() function
+        # likely contains logic to determine the user's role or permissions.
         subject_marks = get_std_marks(stdId)
+        # If the user is a class teacher, call the get_std_marks function to retrieve
+        # student marks data based on the provided 'stdId'.
     else:
         subject_marks=[]
-    return subject_marks
+        # If the user is not a class teacher (or does not have the required permissions),
+        # set 'subject_marks' to an empty list.
+    return subject_marks 
+        # Return the 'subject_marks' data, which can be an empty list if the user is not a class teacher.
 
 @blueprint.route('/view-std-rating/<studentId>/<subject>', methods=['GET'])
 def get_student_rating(studentId,subject):
@@ -188,15 +184,17 @@ def viewResult():
     result=5
     return result
 
-
-
-# @blueprint.route('/get-std-result', methods=['POST'])
-# def std_results():
-#     if(is_classTeacher()):
-#         subject_marks = get_std_marks()
-#     else:
-#         subject_marks = []
-#     return subject_marks
+   # for remarks
+@blueprint.route('/stdremarks', methods=['POST'])
+def stdremarks():
+    try:
+        print(insert_student_remarks(), "======================")
+        if (insert_student_remarks() == 'insert' or insert_student_remarks() == 'updated'):
+            return jsonify({'message': 'Data inserted successfully', 'type': str(insert_student_remarks())}), 200
+        else:
+            return jsonify({'message': 'Data insertion failed'}), 500
+    except Exception as e:
+        return jsonify({'message': 'Error: ' + str(e)}), 500
 
 @blueprint.route('/load-marksResult/<stdId>', methods=['POST'])
 def result_marks(stdId):
@@ -221,28 +219,10 @@ def load_student_grade(studentId, subject):
         }
         return jsonify(response)
 
-# edit teachers
-# @blueprint.route('/edit_teacher/<id>', methods=['GET'])
-# @login_required
-# def edit_user(id):
-#     return editTheTeacher(id)
-  
-
-# # updating modal
-# @blueprint.route('/updating_teacherlist', methods=['POST'])
-# @login_required
-# def updating_the_user():
-#     if(is_classTeacher()):
-#         return update_editteacher()
-#     else:
-#         return "errorFound"
-
-
-# # delete teacher
-# @blueprint.route('/deleteTeacher/<id>', methods=['POST'])
-# def delete_user(id):
-#     return delete_Teacher(id)
-        
+@blueprint.route('/subjectTeacherList/<int:class_id>/<int:section_id>', methods=['POST'])
+@login_required
+def sub_teacherList(class_id=None, section_id=None):
+    return subjectTeacher(class_id, section_id)
 
 # delete student list
 @blueprint.route('/deleteStudentList/<id>', methods=['POST'])

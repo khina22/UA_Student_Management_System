@@ -31,9 +31,6 @@ def assignSection(indexNumber,selectedSection,selectedHostel):
     elif section_exists is not None and current_no_ofstds==0:
         print("****BOTH SECTION assigned and Section FULL****") 
         return {"error": "There is already a section assigned for this student and also the section is full"}
-    # elif section_exists is not None:
-    #     print("**** SECTION assigned ****") 
-    #     return {"error": "There is already a section assigned for this student. Please check with another Index No."}
     elif current_no_ofstds==0:
         print("***Section FULL***")
         return {"error": "This section is full. Please select Other sections" }
@@ -177,27 +174,6 @@ def get_student_fee(paymentmodes):
     # Return the JSON response instead of printing it
     return jsonify({"data": data})
 
-    # results = connection.execute(getHistory, paymentmodes).fetchall()
-    # print(results,"*****RESult")
-    # data = []
-    # for i, row in enumerate(results):
-    #     history = {
-    #         "Sl No.": i + 1,
-    #         "Student CID": row[0],
-    #         "Student Name": row[1], 
-    #         "Journal No.": row[2],
-    #         "Bank Type": row[3],
-    #         "Account Holder": row[4],
-    #         "Amount": float(row[5]),
-    #         "Payment Mode": row[6],
-    #         "Index Number": row[8],
-    #          "Class": row[7]
-    #     }
-    #     data.append(history)
-    # print(data,"**DATA")
-    # return jsonify({"data": data})
-
-
 def save_user_table():
     id = uuid4()
     username = request.form['username']
@@ -336,55 +312,93 @@ def subjectTeacher():
     row_per_page = request.form.get('length')
     search_value = request.form['search[value]']
     search_query = ' '
+
     user_id = current_user.id
-    getClass='select grade from public.user_detail where user_id=%s'
-    getClassId=engine.execute(getClass,user_id).scalar()
-    getSection='select section_no from public.user_detail where user_id=%s'
-    getSectionId=engine.execute(getSection,user_id).scalar()
-    print(user_id,"********USERID")
-    if (search_value != ''):
-        search_query = "AND (U.username LIKE '%%" + search_value + "%%' " \
-            "OR U.email LIKE '%%" + search_value + \
-            "%%' OR UD.role LIKE '%% "+search_value+"%%') "
 
-    str_query = '''
-    SELECT U.username, U.email, sub.subject_name, cl.class_name, sec.section, UD.grade, UD.role, count(*) OVER() AS count_all, U.id as user_id
-    FROM public."User" AS U
-    JOIN public.user_detail as UD ON U.id = UD.user_id
-    LEFT JOIN public.class cl ON cl.class_id = UD.grade
-    LEFT JOIN public.std_section sec ON UD.section_no = sec.section_id
-	LEFT JOIN public.section_subject ss ON UD.subject=ss.section_subject_id
-	LEFT JOIN public.tbl_subjects sub ON ss.subject_id=sub.subject_code
-    WHERE U.type IS NULL AND UD.role = %s  
-        ''' + search_query + '''
-    LIMIT ''' + row_per_page + ''' OFFSET ''' + row
+    if search_value:
+        search_query = f"AND (U.username LIKE '%%{search_value}%%' OR U.email LIKE '%%{search_value}%%' OR UD.role LIKE '%%{search_value}%%')"
 
-    subject_teacher = connection.execute(str_query,'subject_teacher').fetchall()
+    str_query = f'''
+        SELECT U.username, U.email, sub.subject_name, cl.class_name, sec.section, UD.grade, UD.role, count(*) OVER() AS count_all, U.id AS user_id
+        FROM public."User" AS U
+        JOIN public.user_detail AS UD ON U.id = UD.user_id
+        LEFT JOIN public.class cl ON cl.class_id = UD.grade
+        LEFT JOIN public.std_section sec ON UD.section_no = sec.section_id
+        LEFT JOIN public.section_subject ss ON UD.subject = ss.section_subject_id
+        LEFT JOIN public.tbl_subjects sub ON ss.subject_id = sub.subject_code
+        WHERE U.type IS NULL AND UD.role = %s
+    ''' + search_query + f'''
+        LIMIT {row_per_page} OFFSET {row}
+    '''
+
+    subject_teacher = connection.execute(str_query, 'subject_teacher').fetchall()
 
     data = []
     count = 0
+
     for index, user in enumerate(subject_teacher):
-        data.append({'sl': index + 1,
-                     'username': user.username,
-                     'email': user.email,
-                     'subject': user.subject_name,
-                     'class_name': user.class_name,
-                     'section': user.section,
-                     'role': user.role,
-                     'id': user.user_id})
+        data.append({
+            'sl': index + 1,
+            'username': user.username,
+            'email': user.email,
+            'subject': user.subject_name,
+            'class_name': user.class_name,
+            'section': user.section,
+            'role': user.role,
+            'id': user.user_id
+        })
         count = user.count_all
 
-    respose = {
+    response = {
         "draw": int(draw),
         "iTotalRecords": count,
         "iTotalDisplayRecords": count,
         "aaData": data
     }
-    return jsonify(respose)    
 
+    return jsonify(response)
 
+ 
+#  editing the userlist
+def edit_the_user(id):
+    user_id = id  # pass the user_id as a parameter
+
+    # SQL query to retrieve user data with subject, class, and section details
+    str_query = '''
+    SELECT U.username, U.email, sub.subject_name, cl.class_name, cl.class_id, sec.section_id, ss.subject_id, UD.section_no, UD.grade, UD.role, U.id as user_id
+    FROM public."User" AS U
+    JOIN public.user_detail as UD ON U.id = UD.user_id
+    LEFT JOIN public.class cl ON cl.class_id = UD.grade
+    LEFT JOIN public.std_section sec ON UD.section_no = sec.section_id
+    LEFT JOIN public.section_subject ss ON UD.subject = ss.section_subject_id
+    LEFT JOIN public.tbl_subjects sub ON ss.subject_id = sub.subject_code
+    WHERE U.id = %s
+    '''
+
+    # Execute the SQL query to fetch user data
+    user_data = engine.execute(str_query, user_id).fetchone()
+    sections_query = '''SELECT * FROM public.std_section WHERE class_id = %s'''
+    sections = engine.execute(sections_query, user_data.class_id).fetchall()
+    sections = [{'id': row.section_id, 'name': row.section} for row in sections]
+    if user_data:
+        user_info = {
+            'username': user_data.username,
+            'email': user_data.email,
+            'subject': user_data.subject_name,
+            'class_name': user_data.class_name,
+            'section': user_data.section_id,
+            # 'section_id' : user_data.class_id,
+            'subject_id' : user_data.subject_id,
+            'grade': user_data.grade,
+            'role': user_data.role,
+            'id': user_data.user_id,
+
+        }
+        return jsonify({"data": user_info, "sections": sections})
+    else:
+        return jsonify({"error": "User not found"})
+    
 # fetch user details
-
 def get_user_by_id(id):
     user = connection.execute(
         'SELECT *, U.id as user_id FROM public."User" AS U, public.user_detail as UD WHERE U.id = UD.user_id AND user_id = %s',
@@ -447,31 +461,27 @@ def is_human_resource():
     else:
         return False
 
- 
-#  editing the userlist
-def edit_the_user(id):
-    data = connection.execute('SELECT *, U.id FROM public."User" as U '\
-        'inner join public.user_detail as ud on U.id = ud.user_id WHERE U.id=%s', id).fetchone()
-   
-    final = []
-    final.append({'username': data.username,
-                    'email': data.email,
-                    'role':data.role,
-                    'id': data.id})
-    return jsonify({"data": final})
-
 # update the modal
 def update_editfunction():
     username = request.form.get('username')
     email = request.form.get('email')
     role = request.form.get('role')
-    id = request.form.get('u_id')
-    connection.execute('UPDATE  public."User" SET username=%s, email=%s WHERE id=%s',
-                        username, email, id )
-    connection.execute('UPDATE  public.user_detail SET role=%s WHERE user_id=%s',
-                        role,id )
-    return "success"
+    subject = request.form.get('subject')
+    grade = request.form.get('grade')
+    section = request.form.get('section')
 
+    id = request.form.get('uu_id')
+    print(id, username, email, role, subject, grade, section)
+
+    # Update the "User" table
+    connection.execute('UPDATE public."User" SET username=%s, email=%s WHERE id=%s',
+                       (username, email, id))
+
+    # Update the user_detail table
+    connection.execute('UPDATE public.user_detail set subject=%s, grade=%s, section_no=%s WHERE user_id=%s',
+                       (subject, grade, section, id))
+
+    return "success"
 
 class deleteUser:
     def delete_user_by_id(id):

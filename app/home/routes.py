@@ -1,4 +1,6 @@
-from flask import render_template, request, jsonify, session, redirect, url_for,flash,current_app
+from flask import Flask, app, render_template, request, jsonify, session, redirect, url_for,flash,current_app
+from numpy import std
+from app.home.service import get_std_class, get_std_results, marks_results, view_std_result
 from app.home import blueprint
 from sqlalchemy import create_engine
 from app import db, login_manager
@@ -6,7 +8,7 @@ from flask_login import (current_user, login_user, logout_user)
 from config import Config
 from app.admin.models import User
 from app.admin.forms import LoginForm
-from app.home.service import store_student_details, check_exist, store_academic_details, get_dzo_list, get_gewog, get_village,track_std, store_contact_details, printing_result,pay_std_fee,getStartDate,getEndDate,checkIndexorCid,getstudentDetail,getClassId,getClassIdx,getClassIdGeneral,getClassIdxi,checkIndexExists,getpaymentHistory
+from app.home.service import get_std_class, store_student_details, check_exist, store_academic_details, get_dzo_list, get_gewog, get_village,track_std, store_contact_details, printing_result,pay_std_fee,getStartDate,getEndDate,checkIndexorCid,getstudentDetail,getClassId,getClassIdx,getClassIdGeneral,getClassIdxi,checkIndexExists,getpaymentHistory
 from flask_login import current_user, login_required
 from app.admin.util import get_user_by_id, verify_pass, check_user_login_info, update_login_info, hash_pass
 from uuid import uuid4
@@ -56,12 +58,6 @@ connection = engine.connect()
 def route_default():
     return render_template('index.html')
 
-# def example_function():
-#     enrollment_start_date = getStartDate()
-#     # You can now use the enrollment_start_date variable as needed.
-#     # ...
-#     return enrollment_start_date
-
 # Route for enroll_student.html and dzongkhang list
 @blueprint.route('/enroll-student-detail')
 def enroll_page():
@@ -70,13 +66,8 @@ def enroll_page():
     enrollment_end_date=getEndDate()
     enrolStart=datetime.strptime(enrollment_start_date,'%Y-%m-%d').date()
     enrollEnd=datetime.strptime(enrollment_end_date,'%Y-%m-%d').date()
-    # datetime.strptime('2023-01-01', '%Y-%m-%d').date()
-    # enrollment_end_date = datetime.strptime('2023-08-31', '%Y-%m-%d').date()
     
-    if enrolStart <= current_date <= enrollEnd:
-        # Perform the enrollment process
-        # ...
-        
+    if enrolStart <= current_date <= enrollEnd:        
         return get_dzo_list()
     else:
         return render_template('enroll.html')
@@ -402,10 +393,11 @@ def add_admin():
     connection.execute(create_user, (uuid4(), 'administrator', 'test@gmail.com', hash_pass('admin@123'), '', True, '1234345', '17277768'))
 
     return "Success"
+
 # track student
 @blueprint.route('/track-student')
 def trackapplication():
-    return render_template("track_std.html")
+    return render_template('track_std.html', std=std)
 
 # track students
 @blueprint.route('/search', methods=['POST','GET'])
@@ -436,7 +428,6 @@ def result(id):
 def contact():
     return render_template("contact_us.html")
 
-
 # contact form
 @blueprint.route('/store-contact-form', methods=['POST'])
 def contact_us():
@@ -459,8 +450,31 @@ def student_result():
          return printing_result()
 
 # account submitting
-
 @blueprint.route('/account_submitting', methods=['POST'])
 def fee_submmition():
     studentCid = request.form.get('studentCid')
     return pay_std_fee(studentCid)
+
+@blueprint.route('/view-std-details/<id>', methods=['GET'])
+def view_student_detail(id):
+    return get_std_class(id)
+
+# #today
+# @blueprint.route('/view-std-ratingResults/<stdId>', methods=['POST'])
+# def view_std_rating(stdId):
+#     student_rate = view_std_result(stdId)
+#     return student_rate
+
+# @blueprint.route('/load-marksResults/<stdId>', methods=['POST'])
+# def result_marks(stdId):
+#     student_grade = marks_results(stdId)
+#     return jsonify(student_grade)
+
+# # to fetch student result in view button
+# @blueprint.route('/view_resultlists/<id>', methods=['GET'])
+# def view_student_result(id):
+#     return get_std_results(id)
+
+
+
+

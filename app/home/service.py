@@ -1,6 +1,7 @@
 import os
 import base64
 from flask import jsonify, request, render_template, url_for, redirect, session
+from flask_login import current_user
 from sqlalchemy import create_engine,text
 from config import Config
 from datetime import datetime
@@ -169,7 +170,7 @@ def track_std():
     if indexorCid ==[]:
         return {"error": "Either CID or Index number is incorrect."}    
     else:
-     str_query = "SELECT * FROM public.tbl_students_personal_info AS spp " \
+     str_query = "SELECT *, spp.id as std_id FROM public.tbl_students_personal_info AS spp " \
             "INNER JOIN public.tbl_academic_detail AS ac " \
             "ON ac.std_personal_info_id = spp.id " \
             "WHERE spp.student_cid = %s AND ac.index_number = %s"
@@ -187,7 +188,7 @@ def track_std():
         'first_name': user['first_name'],
         'last_name': user['last_name'],
         'student_email': user['student_email'],
-        'id': user['id']
+        'id': user['std_id']
         })
         count += 1
 
@@ -197,10 +198,6 @@ def track_std():
         "aaData": data
     }
     return respose_std_list
-
-
-
-
 
 def getClassId():
     query = text("SELECT class_id,class_name FROM public.class WHERE class_name LIKE '%XII%'")
@@ -421,5 +418,193 @@ def pay_std_fee(studentCid):
                (id, fname,lname, jrn_number, bank_type, acc_holder, std_class, studentCid,amount,paymentModes,screenshot_url))
 
     return "success"
+
+# fetch student details from database
+def get_std_class(id):
+    student_details = connection.execute(
+        'SELECT *, P.id FROM public.tbl_students_personal_info AS P '
+        'inner join public.tbl_academic_detail as A on P.id = A.std_personal_info_id '
+        'inner join public.tbl_dzongkhag_list as dzo on dzo.dzo_id = P.student_present_dzongkhag '
+        'inner join public.tbl_gewog_list as gewog on gewog.gewog_id = P.student_present_gewog '
+        'inner join public.tbl_village_list as village on village.village_id = P.student_present_village '
+        'WHERE P.id =%s',
+        id).first()
+    
+    #fetch student marks
+    std_marks_query = '''select ev.*, sub.*, ss.* from public.tbl_student_evaluation ev 
+                    join public."User" uu on ev.subject_teacher_id=uu.id 
+                    join public.user_detail ud on (uu.id=ud.user_id and ev.subject_teacher_id=ud.user_id)
+                    join public.tbl_students_personal_info std on ev.student_id=std.id 
+                    join public.tbl_academic_detail ac on (std.id=ac.std_personal_info_id and ev.student_id=ac.std_personal_info_id)
+                    join public.class cl on (ac.admission_for_class=cl.class_id and ud.grade=cl.class_id)
+                    join public.std_section sec on (ac.section=sec.section_id and ud.section_no=sec.section_id and cl.class_id=sec.class_id)
+                    join public.section_subject ss on (ud.subject=ss.section_subject_id and ss.section_id=sec.section_id)
+                    join public.tbl_subjects sub on ss.subject_id=sub.subject_code
+                    WHERE ev.student_id = %s '''
+
+    std_marks = connection.execute(std_marks_query, id).fetchall()
+
+    #fetch student's academic details
+    std_academic = connection.execute(
+        'SELECT * FROM public.tbl_academic_summary AS std_result '
+        'WHERE std_id = %s',
+        id).first()
+    return render_template('student_result.html', std=student_details, std_marks=std_marks, std_academic=std_academic)
+
+#today
+def view_std_result(stdId):
+    str_query = '''select ev.*, sub.*, ss.* from public.tbl_student_evaluation ev 
+                    join public."User" uu on ev.subject_teacher_id=uu.id 
+                    join public.user_detail ud on (uu.id=ud.user_id and ev.subject_teacher_id=ud.user_id)
+                    join public.tbl_students_personal_info std on ev.student_id=std.id 
+                    join public.tbl_academic_detail ac on (std.id=ac.std_personal_info_id and ev.student_id=ac.std_personal_info_id)
+                    join public.class cl on (ac.admission_for_class=cl.class_id and ud.grade=cl.class_id)
+                    join public.std_section sec on (ac.section=sec.section_id and ud.section_no=sec.section_id and cl.class_id=sec.class_id)
+                    join public.section_subject ss on (ud.subject=ss.section_subject_id and ss.section_id=sec.section_id)
+                    join public.tbl_subjects sub on ss.subject_id=sub.subject_code
+                    WHERE ev.student_id = %s '''
+
+    get_std_marks = connection.execute(str_query, stdId).fetchall()
+
+    data = []
+    for index, users in enumerate(get_std_marks):
+        data.append({
+            'sl_no': index + 1,
+            'subject': users.subject_name,
+            'class_test_one': users.class_test_one,
+            'ca1': users.ca1,
+            'ratingScale1': users.ratingScale1,
+            'mid_term': users.mid_term,
+            'class_test_two': users.class_test_two,
+            'ca2': users.ca2,
+            'ratingScale2': users.ratingScale2,
+            'annual_exam': users.annual_exam,
+            'student_id': users.student_id,
+            'id': users.id
+        })
+    if len(data) == 0:
+        response = {
+            "recordsTotal": 0,
+            "recordsFiltered": 0,
+        }
+    else:
+        response = {
+            "data": data,
+        }
+
+    return response
+    
+
+def marks_results(stdId):
+    draw = request.args.get('draw')
+    row = request.args.get('start')
+    row_per_page = request.args.get('length')
+
+    getUsersub = '''select ud.subject, ud.grade, ud.section_no, ud.role 
+                    from public."User" uu 
+                    join public.user_detail ud on uu.id=ud.user_id where uu.id=%s'''
+
+    getuserSub = connection.execute(getUsersub, None).fetchall()
+
+    if getuserSub:
+        getData = getuserSub[0]
+        class_value = getData['grade']
+        section_value = getData['section_no']
+        subject_value = getData['subject']
+
+        params = [stdId, class_value, section_value]
+        str_query = '''select ev.*, sub.*, ss.*, COUNT(*) OVER() AS count_all from public.tbl_student_evaluation ev 
+                        join public."User" uu on ev.subject_teacher_id=uu.id 
+                        join public.user_detail ud on (uu.id=ud.user_id and ev.subject_teacher_id=ud.user_id)
+                        join public.tbl_students_personal_info std on ev.student_id=std.id 
+                        join public.tbl_academic_detail ac on (std.id=ac.std_personal_info_id and ev.student_id=ac.std_personal_info_id)
+                        join public.class cl on (ac.admission_for_class=cl.class_id and ud.grade=cl.class_id)
+                        join public.std_section sec on (ac.section=sec.section_id and ud.section_no=sec.section_id and cl.class_id=sec.class_id)
+                        join public.section_subject ss on (ud.subject=ss.section_subject_id and ss.section_id=sec.section_id)
+                        join public.tbl_subjects sub on ss.subject_id=sub.subject_code
+                        WHERE ev.student_id = %s and cl.class_id=%s and sec.section_id=%s 
+                        LIMIT %s::integer OFFSET %s::integer '''
+
+        get_std_marks = connection.execute(str_query, *params, row_per_page, row).fetchall()
+
+        data = []
+        count = 0
+        for index, users in enumerate(get_std_marks):
+            data.append({
+                'sl_no': index + 1,
+                'subject': users.subject_name,
+                'class_test_one': users.class_test_one,
+                'ca1': users.ca1,
+                'ratingScale1': users.ratingScale1,
+                'mid_term': users.mid_term,
+                'class_test_two': users.class_test_two,
+                'ca2': users.ca2,
+                'ratingScale2': users.ratingScale2,
+                'annual_exam': users.annual_exam,
+                'student_id': users.student_id,
+                'id': users.id
+            })
+            count = users.count_all
+
+        if count == 0:
+            response = {
+                "draw": draw,
+                "recordsTotal": 0,
+                "recordsFiltered": 0,
+            }
+        else:
+            response = {
+                "draw": draw,
+                "recordsTotal": count,
+                "recordsFiltered": count,
+                "data": data,
+            }
+
+        return response
+    else:
+        # Handle the case where getuserSub is empty
+        # You might want to return an error response or handle it in some way
+        return {"error": "No data found for the specified user"}
+
+
+
+def get_std_results(id):
+    std_result = connection.execute(
+        'SELECT * FROM public.tbl_academic_summary AS std_result '
+        'WHERE std_id = %s',
+        id).first()
+    # Check if std_result is not None (i.e., a student record was found)
+    if std_result:
+        # Convert the std_result data to a dictionary (or customize as needed)
+        result_dict = {
+            'id': std_result.std_id,
+            'percentage': std_result.percentage,
+            'position': std_result.position,
+            'attendance': std_result.attendance,
+            'total_no_stds': std_result.total_no_stds,
+            'percentage2': std_result.percentage2,
+            'position2': std_result.position2,
+            'total_no_stds2': std_result.total_no_stds2,
+            'attendance2': std_result.attendance2,
+            'std_status': std_result.std_status,
+            'punctuality': std_result.punctuality,
+            'discipline': std_result.discipline,
+            'leadership': std_result.leadership,
+            'supw_grade': std_result.supw_grade,
+            'remarks': std_result.remarks,
+            'total_percentage': std_result.total_percentage,
+            'total_position': std_result.total_position,
+            'total_attendance': std_result.total_attendance,
+            'grandtotoal_no_stds': std_result.grandtotoal_no_stds,
+
+        }
+        print(result_dict)
+        # Return the data as JSON response
+        return jsonify(result_dict)
+    else:
+        # Return a response indicating that no data was found
+        return jsonify({'error': 'No data found for the specified ID'})
+
+
 
 

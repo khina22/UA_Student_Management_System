@@ -1,31 +1,21 @@
-{% extends 'layouts/class_teacher_main.html' %}
+{% extends 'layouts/admin_mains.html' %}
 
-{% block title %} Dashboard {% endblock title %}
+{% block title %} Dashboard For Bank Users {% endblock title %}
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 {% endblock stylesheets %}
 
 {% block content %}
-<!-- partial:../../partials/_navbar.html -->
 
-<!-- partial -->
-
-<!-- partial:../../partials/_settings-panel.html -->
-
-
-<!-- partial -->
-<!-- partial:../../partials/_sidebar.html -->
-
-<!-- partial -->
 <div class="main-panel">
     <div class="content-wrapper">
         <div class="row">
             <div class="col-lg-12 grid-margin">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Subject Teachers</h4>
+                        <h4 class="card-title">Subject Teacher Detail</h4>
                         <hr>
                         <div class="card-body">
                             <div class="row">
@@ -40,6 +30,7 @@
                                                 <th scope="col" >Subject</th>
                                                 <th scope="col" >Class</th>
                                                 <th scope="col" >section</th>
+                                                <th scope="col" >roles</th>
                                             </tr>
                                         </thead>
                                     </table>
@@ -90,98 +81,69 @@
                                         <div class="col-lg-6">
                                             <div class="form-group">
                                                 <label class="form-control-label" for="grade"> Class</label>
-                                                <select name="grade" id="grade" class="form-control">
-                                                    <option value="XII">XII</option>
-                                                    <option value="XI">XI</option>
-                                                    <option value="X">X</option>
-                                                    <option value="IX">IX</option>
-                                                    <option value="VIII">VIII</option>
-                                                    <option value="VII">VII</option>   
-                                                </select>
+                                                <Input type="text" name="grade" id="grade" class="form-control">
                                             </div>
                                         </div>
                                         <div class="col-lg-6">
                                             <div class="form-group">
                                                 <label class="form-control-label" for="section"> Section</label>
-                                                <select name="section" id="section" class="form-control">
-                                                    <option value="A">A</option>
-                                                    <option value="B">B</option>
-                                                    <option value="C">C</option>
-                                                    <option value="D">D</option>   
-                                                </select>
+                                                <input type="text" name="section" id="section" class="form-control">
                                             </div>
                                         </div>  
                                 </div>
                             </div>
                         </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="update_teacherlist">Update</button>
-                    </div>
                 </form>
             </div>
             </div>
         </div>
 </div>
 
-{% endblock content %}
 
-<!-- Your HTML code remains the same -->
+{% endblock content %}
 
 <!-- Specific JS goes HERE -->
 {% block javascripts %}
-<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 
 <script>
-    $(document).ready(function () {
-        // Initialize the DataTable without data
-        const dataTable = $('#customerList').DataTable({
-            'processing': true,
-            'serverSide': true,
-            'bDestroy': true,
-            'serverMethod': 'POST',
-            'ajax': {
-                'url': '/subjectTeacherList', // the DataTable should fetch its data from the /subjectTeacherList
-                'data': function (data) {
-                    // Add class_id parameter to the request data
-                    data.class_id = $('#classFilter').val();
-                    data.class_id = $('#sectionFilter').val();
 
-                }
-            },
-            'columns': [
-                { data: 'sl' },
-                { data: 'username' },
-                { data: 'email' },
-                { data: 'subject' },
-                { data: 'class_name' },
-                { data: 'section' },
-            ],
-            language: {
-                paginate: {
-                    next: '&#8594;', // or '→'
-                    previous: '&#8592;' // or '←' 
-                }
-            },
-            "ordering": false
-        });
+$(document).ready(function () {
+    loadUsers();
+});
 
-        // Add an event listener to the class filter select box
-        $('#classFilter','#sectionFilter').on('change', function () {
-            // Reload the DataTable with the selected class filter
-            dataTable.ajax.reload();
-        });
+function loadUsers() {
+    $('#customerList').DataTable({
+        'processing': true,
+        'serverSide': true,
+        'bDestroy': true,
+        'serverMethod': 'POST',
+        'ajax': {
+            'url': '/subjectTeacherList'
+        },
+        'columns': [
+            { data: 'sl' },
+            { data: 'username' },
+            { data: 'email' },
+            { data: 'subject' },
+            { data: 'class_name' },
+            { data: 'section' },
+            { data: 'role' },
+        ],
+        language: {
+            paginate: {
+                next: '&#8594;', // or '→'
+                previous: '&#8592;' // or '←' 
+            }
+        },
+        "ordering": false
+    });
+}
 
-        // Load initial data
-        loadUsers();
-    });                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
-    function loadUsers() {
-        // This function can be used to load the initial data
-        // You can call it when the page loads or whenever needed
-    }
 </script>
 
-{% endblock javascripts %}
-
+  {% endblock javascripts %}

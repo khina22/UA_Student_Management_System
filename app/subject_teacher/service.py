@@ -176,55 +176,6 @@ def check_exist(stdId):
     else:
         return False
 
-
-# fetching student marks given by class teacher
-# def get_std_marks(id):
-#     row = request.form.get('start')
-#     row_per_page = request.form.get('length')
-#     search_value = request.form['search[value]']
-#     search_query = ' '
-#     if search_value != '':
-#         search_query = "AND (A.subject LIKE '%%" + search_value + "%%') "
-#     str_query = '''
-#      SELECT *, count(*) OVER() AS count_all, se.id
-#      FROM public.tbl_student_evaluation AS se
-#      JOIN public.tbl_students_personal_info AS sp ON sp.id = se.student_id
-#      JOIN public."User" AS U ON U.id = se.subject_teacher_id
-#      JOIN public.tbl_academic_detail AS ad ON sp.id = ad.std_personal_info_id
-#      JOIN public.user_detail AS ud ON U.id = ud.user_id
-#      WHERE se.id IS NOT NULL
-#      AND sp.id = %s
-#      ''' + search_query + '''
-#      LIMIT %s OFFSET %s
-#     '''
-#     get_std_marks = connection.execute(str_query, id, row_per_page, row).fetchall()
-#     print(get_std_marks, "******GETSTDMARKS**********")
-#     getRatings=connection.execute(str_query,id, row_per_page, row).fetchall()
-
-#     data = []
-#     count = 0
-#     for index, user in enumerate(get_std_marks):
-#         data.append({
-#             'sl': index + 1,
-#             'subject': user.subject,
-#             'class_test_one': user.class_test_one,
-#             'mid_term': user.mid_term,
-#             'class_test_two': user.class_test_two,
-#             'annual_exam': user.annual_exam,
-#             'cont_assessment': user.cont_assessment,
-#             'total': int(user.class_test_one) + int(user.mid_term) + int(user.class_test_two) + int(user.annual_exam) + int(user.cont_assessment),
-#             'id': user.id
-#         })
-#         count = user.count_all
-
-#     response = {
-#         "recordsTotal": count,
-#         "recordsFiltered": count,
-#         "data": data
-#     }
-
-#     return jsonify(response)
-
 def get_std_marks(id):
     draw = request.form.get('draw')
     row = request.form.get('start')

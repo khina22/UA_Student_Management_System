@@ -159,7 +159,6 @@ function getSections(gradeId) {
     return sections;
   }
 
-
   $("#grade").on("change", function() {
     var gradeId = $(this).val();
     $('#subject_group').hide();
@@ -255,7 +254,6 @@ function getSections(gradeId) {
     // Fetch subjects based on the selected section_id
     fetchSubjects(sectionId);
   });
-
 
 // Function to handle the change event for the section select element
 

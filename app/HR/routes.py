@@ -1,12 +1,18 @@
+from cgitb import text
 import re
 from flask import render_template,request,redirect,session,flash,current_app,jsonify
-from flask_login import login_required
+from flask_login import current_user, login_required
 from app.HR import blueprint
-from app.admin.service import is_human_resource,save_user_table, save_user_detail_table, all_users, is_admin,is_classTeacher, is_subjectTeacher, get_user_by_id,edit_the_user, update_editfunction,getClasses,getSection,getSubjects
-from app.HR.service import get_student_fee,class_teacher,subjectTeacher,getModaldetails,assignSection,dropdownHostels
+from app.admin.service import is_human_resource,save_user_table, save_user_detail_table, all_users, is_admin,is_classTeacher, is_subjectTeacher, get_user_by_id,getClasses,getSection,getSubjects
+from app.HR.service import edit_the_user, get_student_fee,class_teacher,subjectTeacher,getModaldetails,assignSection,dropdownHostels, update_editfunction
 from app.HR.service import deleteUser as __DU__
 import pytz
 from datetime import datetime
+from sqlalchemy import create_engine
+from config import Config
+
+engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
+connection = engine.connect()
 
 
 @blueprint.before_request
@@ -29,9 +35,6 @@ def check_session_timeout():
         session['last_activity'] = current_time
 
 
-# @blueprint.route('/transaction_list/<paymentmodes>')
-# def view_payment_list(paymentmodes):
-#     return render_template('/pages/payment.html',paymentmodes=paymentmodes)
 
 @blueprint.route('/transaction_list')
 @login_required
@@ -75,7 +78,7 @@ def submit_fee():
 @blueprint.route('/getModalDetails', methods=['GET'])
 @login_required
 def getModals():
-    if is_human_resource():
+    if is_human_resource():   
         stdCid=request.args.get('stdCid')
         print(stdCid,"**cid")
         getdetail=getModaldetails(stdCid)
@@ -106,13 +109,23 @@ def addClassTeacher():
 @blueprint.route('/getClassTeacher')
 @login_required
 def getClassTeacher():
-    return render_template('/pages/class-teacher/getclteacher_list.html')
+    
+     # Example using SQLAlchemy's text() for executing raw SQL
+    grade_query = '''SELECT class_id, class_name FROM public.class'''
+    grades = engine.execute(grade_query).fetchall()
+    print(grades, "==================")
+
+    # If you need user_id for getSection, you can use current_user.id again
+    subject_query = '''SELECT subject_code, subject_name FROM public.tbl_subjects'''
+    subjects = engine.execute(subject_query).fetchall()
+    print(subjects, "==================")
+
+    return render_template('/pages/class-teacher/getclteacher_list.html', grades=grades, subjects=subjects)
 
 @blueprint.route('/class-teacher-list', methods=['POST'])
 @login_required
 def cl_teacherList():
     return class_teacher() 
-
 
 @blueprint.route('/addSubjectTeacher')
 @login_required
@@ -122,7 +135,17 @@ def addSubTeacher():
 @blueprint.route('/getSubjectTeacher')
 @login_required
 def getSubjectTeacher():
-    return render_template('/pages/subject-teacher/subject-teacher-list.html')
+        # Example using SQLAlchemy's text() for executing raw SQL
+    grade_query = '''SELECT class_id, class_name FROM public.class'''
+    grades = engine.execute(grade_query).fetchall()
+    print(grades, "==================")
+
+    # If you need user_id for getSection, you can use current_user.id again
+    subject_query = '''SELECT subject_code, subject_name FROM public.tbl_subjects'''
+    subjects = engine.execute(subject_query).fetchall()
+    print(subjects, "==================")
+
+    return render_template('/pages/subject-teacher/subject-teacher-list.html', grades=grades, subjects=subjects)
 
 @blueprint.route('/subjectTeacherList',methods=['POST'])
 @login_required
@@ -149,7 +172,6 @@ def getSubjectId(sectionId):
     print("getSUB***GETSUB**")
     return getSubjects(sectionId)
 
-
 # fetch user details
 @blueprint.route('/user/<id>', methods=['GET'])
 @login_required
@@ -162,21 +184,29 @@ def dropDownSection(gradeId):
     return getSection(gradeId)
 
 
-@blueprint.route('/edit-user/<id>', methods=['GET'])
+@blueprint.route('/hr/edit-user/<id>', methods=['GET'])
 @login_required
 def edit_user(id):
     return edit_the_user(id)
-  
+
+@blueprint.route('/hr/edit-sub-user/<id>', methods=['GET'])
+@login_required
+def edit_sub_user(id):
+    return edit_the_user(id)
 
 # updating modal
-@blueprint.route('/updating_users', methods=['POST'])
+@blueprint.route('/updating_clsteacher', methods=['POST'])
 @login_required
 def updating_the_user():
-    if(is_admin()):
         return update_editfunction()
-    else:
-        return "errorFound"
+
+# update subject teacher
+@blueprint.route('/updating_teacherlist', methods=['POST'])
+@login_required
+def updating_sub_user():
+        return update_editfunction()
 
 # delete 
-@blueprint.route('/delete_list/<id>', methods=['POST'])
+@blueprint.route('/deleteTeacher/<id>', methods=['POST'])
 def delete_user(id):return __DU__.delete_user_by_id(id)
+

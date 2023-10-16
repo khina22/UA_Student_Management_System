@@ -117,43 +117,7 @@ function loadUsers() {
         },
         "ordering": false
     });
-}
-
-    // function loadUsers() {
-    //     var userId=$('#user_id').val();
-    //     $('#customerList').DataTable({
-    //         'processing': true,
-    //         'serverSide': true,
-    //         'bDestroy': true,
-    //         'serverMethod': 'POST',
-    //         'ajax': {
-    //             'url': '/student-class-list'
-    //         },
-    //         'columns': [
-    //             { data: 'sl' },
-    //             { data: 'index_number' },
-    //             { data: 'student_cid' },
-    //             { data: 'first_name' },
-    //             { data: 'student_email' },
-
-    //             {
-    //                 "render": function (data, type, full, meta) {
-    //                     return '<div class="dropdown">' +
-    //                                 '<a class="btn btn-success btn-icon-only text-light" href="/view-std-detail/' + full.id + '">View</a>' +
-    //                                 '  <a class="btn btn-danger btn-icon-only text-light" href="javascript:void(0)"  onclick="deleteStudent(\'' + full.id + '\')">Delete</a>' +
-    //                         '</div>'
-    //                 }
-    //             },
-    //         ],
-    //         language: {
-    //             paginate: {                                                                                                  
-    //                 next: '&#8594;', // or '→'
-    //                 previous: '&#8592;' // or '←' 
-    //             }
-    //         },
-    //         "ordering": false
-    //     });
-    // }
+}     
 
 //   delete student list  
     function deleteStudent(id) {

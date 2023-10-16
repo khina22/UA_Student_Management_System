@@ -1,4 +1,4 @@
-import json
+import json 
 import os
 from flask import request, render_template,jsonify, redirect
 from flask_login import current_user
@@ -12,7 +12,6 @@ from uuid import uuid4
 from random import randint
 from cryptography.fernet import Fernet,InvalidToken
 from urllib.parse import quote
-
 
 engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
 connection = engine.connect()
@@ -146,7 +145,16 @@ def getSubjects(sectionId):
 
     # Return the dropdown values as JSON
     return jsonify(subject)
-    
+
+def edit_the_user(id):
+    data = connection.execute('SELECT *, U.id FROM public."User" as U '\
+        'inner join public.user_detail as ud on U.id = ud.user_id WHERE U.id=%s', id).fetchone()
+    final = []
+    final.append({'username': data.username,
+                    'email': data.email,
+                    'role':data.role,
+                    'id': data.id})
+    return jsonify({"data": final})
 
 def getClasses():
   query = text("SELECT class_id,class_name FROM public.class")
@@ -201,44 +209,6 @@ def is_human_resource():
     else:
         return False
 
-# def all_std():
-#     draw = request.form.get('draw')
-#     row = request.form.get('start')
-#     row_per_page = request.form.get('length')
-#     search_value = request.form['search[value]']
-#     search_query = ' '
-#     if (search_value != ''):
-#         search_query = "AND (A.index_number LIKE '%%" + search_value + "%%' " \
-#             "OR P.student_cid LIKE '%%" + search_value + "%%' "\
-#             "OR P.first_name LIKE '%% " + search_value+"%%') "\
-#             "OR P.status LIKE '%%" + search_value + "%%' "
-
-#     str_query = 'SELECT *, count(*) OVER() AS count_all, P.id FROM public.tbl_students_personal_info AS P, public.tbl_academic_detail as A WHERE P.id IS NOT NULL  '\
-#                 '' + search_query + '' \
-#                 "AND P.id = A.std_personal_info_id LIMIT " + \
-#         row_per_page + " OFFSET " + row + ""
-
-#     users_std = connection.execute(str_query).fetchall()
-
-#     data = []
-#     count = 0
-#     for index, user in enumerate(users_std):
-#         data.append({'sl': index + 1,
-#                      'index_number': user.index_number,
-#                      'student_cid': user.student_cid,
-#                      'first_name': user.first_name + " " + user.last_name,
-#                      'student_email': user.student_email,
-#                      'status' : user.status,
-#                      'id': user.id})
-#         count = user.count_all
-
-#     respose_std = {
-#         "draw": int(draw),
-#         "iTotalRecords": count,
-#         "iTotalDisplayRecords": count,
-#         "aaData": data
-#     }
-#     return respose_std
 def all_std():
     draw = request.form.get('draw')
     row = request.form.get('start')
@@ -404,7 +374,6 @@ def user_quries():
 def edit_the_user(id):
     data = connection.execute('SELECT *, U.id FROM public."User" as U '\
         'inner join public.user_detail as ud on U.id = ud.user_id WHERE U.id=%s', id).fetchone()
-   
     final = []
     final.append({'username': data.username,
                     'email': data.email,
@@ -412,47 +381,23 @@ def edit_the_user(id):
                     'id': data.id})
     return jsonify({"data": final})
 
-
-
-
-# @blueprint.route('/resetuserPassword', methods=["GET"])
-# def passwordresetPage():
-#     userUrl = request.args.get('userUrl')
-#     key = request.args.get('pwd')
-#     print(userUrl,"*****User",key,"********pwd")
-
-#     decryptedUsers = Fernet(key).decrypt(userUrl.encode('utf-8')).decode('utf-8')
-#         # Perform additional processing using the decrypted userUrl
-#     strQuery = 'select username,email from public."User" where username=%s'
-#     check_User = connection.execute(strQuery, decryptedUsers).fetchone()
-#     print(is_valid_key_format(key),"*****is Valid Key",decryptedUsers,"******USERURL")
-
-#     if (not is_valid_key_format(key)) :
-#         return {"error":"Invalid key format. Unable to decrypt userUrl."}
-#     elif decrypt_userUrl(userUrl, key) is None:
-#         return {"error":"Invalid userUrl. Unable to decrypt userUrl."}
-#     elif (not is_valid_key_format(key)) and decrypt_userUrl(userUrl, key) is None:
-#         return {"error":"Both are incorrect."}
-#     elif decrypt_userUrl(userUrl, key) is not None and ( is_valid_key_format(key)) :
-#         if check_User is None:
-#             return {"error":"You don't have a user account."}
-#         else:
-#             emailId = check_User['email']
-#             userName = check_User['username']
-#             print(userName, emailId, "****email")
-#             return render_template('resetPass.html')
-
-
 # update the modal
 def update_editfunction():
+    # Get data from the form
     username = request.form.get('username')
     email = request.form.get('email')
     role = request.form.get('role')
     id = request.form.get('u_id')
+
+    # Update the User table
     connection.execute('UPDATE  public."User" SET username=%s, email=%s WHERE id=%s',
                         username, email, id )
+
+    # Update the user_detail table
     connection.execute('UPDATE  public.user_detail SET role=%s WHERE user_id=%s',
-                        role,id )
+                        role, id )
+
+    # Return a success message
     return "success"
 
 
@@ -460,3 +405,56 @@ class deleteUser:
     def delete_user_by_id(id):
         delete=connection.execute('DELETE FROM public."User" WHERE id=%s', id)
         return "done"
+
+
+def subjectTeacher():
+    draw = request.form.get('draw')
+    row = request.form.get('start')
+    row_per_page = request.form.get('length')
+    search_value = request.form['search[value]']
+    search_query = ' '
+ 
+    user_id = current_user.id
+
+    if search_value:
+        search_query = f"AND (U.username LIKE '%%{search_value}%%' OR U.email LIKE '%%{search_value}%%' OR UD.role LIKE '%%{search_value}%%')"
+
+    str_query = f'''
+        SELECT U.username, U.email, sub.subject_name, cl.class_name, sec.section, UD.grade, UD.role, count(*) OVER() AS count_all, U.id AS user_id
+        FROM public."User" AS U
+        JOIN public.user_detail AS UD ON U.id = UD.user_id
+        LEFT JOIN public.class cl ON cl.class_id = UD.grade
+        LEFT JOIN public.std_section sec ON UD.section_no = sec.section_id
+        LEFT JOIN public.section_subject ss ON UD.subject = ss.section_subject_id
+        LEFT JOIN public.tbl_subjects sub ON ss.subject_id = sub.subject_code
+        WHERE U.type IS NULL AND UD.role = %s
+    ''' + search_query + f'''
+        LIMIT {row_per_page} OFFSET {row}
+    '''
+
+    subject_teacher = connection.execute(str_query, 'subject_teacher').fetchall()
+
+    data = []
+    count = 0
+
+    for index, user in enumerate(subject_teacher):
+        data.append({
+            'sl': index + 1,
+            'username': user.username,
+            'email': user.email,
+            'subject': user.subject_name,
+            'class_name': user.class_name,
+            'section': user.section,
+            'role': user.role,
+            'id': user.user_id
+        })
+        count = user.count_all
+
+    response = {
+        "draw": int(draw),
+        "iTotalRecords": count,
+        "iTotalDisplayRecords": count,
+        "aaData": data,
+    }
+
+    return jsonify(response)
