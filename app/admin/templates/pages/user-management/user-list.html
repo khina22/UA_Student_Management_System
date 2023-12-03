@@ -204,7 +204,7 @@
             showCancelButton: true,
             showConfirmButton: true
         }).then(function (isConfirm) {
-            if (isConfirm == true) {
+            if (isConfirm) {
                 $.ajax({
                     url: '/delete_list/' + id,
                     type: 'POST',
@@ -214,9 +214,8 @@
                             swal({
                             title: 'Success!',
                             text: 'User delete successful!',
-                            type: 'success'
+                            type: 'success',
                         }).then(function () {
-                            location.reload()
                         });
                         }
                         else{

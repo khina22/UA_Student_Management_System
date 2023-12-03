@@ -223,12 +223,7 @@ def send_reset_mail(emailId, userNames):
     except Exception as e:
         print("** not send mail:", str(e))
         return False
-    
-#   if checkStatusCid is None:
-#         return {"error": "No student found with the provided CID."}
-#     elif checkStatusCid != 'approved':
-#         return {"error": "Your application is not yet approved. Please wait for the admin to approve it."}
-   
+       
 @blueprint.route('/edit-users', methods=['GET'])
 def editUsers():
     userUrl = request.args.get('userUrl')
@@ -459,21 +454,17 @@ def fee_submmition():
 def view_student_detail(id):
     return get_std_class(id)
 
-# #today
-# @blueprint.route('/view-std-ratingResults/<stdId>', methods=['POST'])
-# def view_std_rating(stdId):
-#     student_rate = view_std_result(stdId)
-#     return student_rate
+# @blueprint.route('/home/getslots', methods=['POST'])
+# @login_required
+# def get_slots():
 
-# @blueprint.route('/load-marksResults/<stdId>', methods=['POST'])
-# def result_marks(stdId):
-#     student_grade = marks_results(stdId)
-#     return jsonify(student_grade)
+#     slot_query = '''SELECT id, class7, class8, class9, class10, class11_arts, class11_com, class11_sci, class12_art, class12_com, class12_sci FROM public.tbl_std_slots'''
+#     slot = engine.execute(slot_query).fetchall()
 
-# # to fetch student result in view button
-# @blueprint.route('/view_resultlists/<id>', methods=['GET'])
-# def view_student_result(id):
-#     return get_std_results(id)
+#     return jsonify(slot)
+
+
+
 
 
 

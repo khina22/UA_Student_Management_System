@@ -3,7 +3,7 @@ from flask_login import login_required
 from app.class_teacher.service import get_std_in_class
 from app.subject_teacher import blueprint
 from app.admin.service import is_subjectTeacher,is_classTeacher
-from app.subject_teacher.service import get_std_subject_teacher,get_std_marks,get_std_subject_class, store_student_assessment_details,check_exist,update_marks,get_std_rating,getRatingValue,load_std_marks
+from app.subject_teacher.service import get_std_subject_teacher,get_std_marks,get_std_subject_class, getRatings, store_student_assessment_details,check_exist,update_marks,get_std_rating,getRatingValue,load_std_marks
 import pytz
 from datetime import datetime
 
@@ -31,12 +31,11 @@ def check_session_timeout():
 def view_std_table():
     return render_template('/pages/view-student-table/view-std.html')
 
-
 @blueprint.route('/view-std-info/<id>')
 def view_std_info(id):
     return get_std_subject_class(id)
 
-@blueprint.route('/update-std-marks/<id>')
+@blueprint.route('/update-std-marks/<id>', methods=['POST'])
 def update_std_marks(id):
     return update_marks(id)
 
@@ -49,7 +48,10 @@ def get_student_classList():
         get_student_in_class = []
     return get_student_in_class
 
-
+ # for edit
+@blueprint.route('/edit-subjectmarks/<student_id>/<subject>')
+def edit_subjectmarks(student_id, subject):
+    return get_std_marks(student_id)
 
 # Route to store student detail
 @blueprint.route('/store-std-marks', methods=['POST'])
@@ -68,18 +70,6 @@ def store_student_marks():
 def view_std_gradings():
     return render_template('/pages/view-student-table/view_std_marks.html')
 
-
-# @blueprint.route('/get-std-grade/<id>', methods=['POST'])
-# def get_student_grade(id):
-#     if is_subjectTeacher():
-#         student_grade = get_std_marks(id)
-#         student_grading=getStdGrade(id)
-#     else:
-#         student_grade = []
-#         student_grading = []
-#     return student_grade  
-#     #return jsonify({'student_grade': student_grade, 'student_grading': student_grading})
-
 @blueprint.route('/get-std-grade/<id>', methods=['POST'])
 def get_student_grade(id):
     if is_subjectTeacher():
@@ -87,6 +77,15 @@ def get_student_grade(id):
     else:
         student_grade = []
     return student_grade
+
+@blueprint.route('/edit-std-grade/<id>', methods=['POST'])
+def get_student(id):
+    if is_subjectTeacher():
+        student_grade = get_std_marks(id)
+    else:
+        student_grade = []
+    return student_grade
+
 
 #@blueprint.route('/view-subjectrating')
 @blueprint.route('/get-subject-marks/<studentId>/<subject>', methods=['GET'])
@@ -118,6 +117,14 @@ def getRatingValues():
         return getRatingValue()
     else:
         return redirect('login-user') 
+    
+@blueprint.route('/eget-dropdown-rating', methods=['GET'])
+@login_required
+def get_dropdown_rating():
+    if is_classTeacher() or is_subjectTeacher():
+        return getRatings()
+    
+
     
 
 

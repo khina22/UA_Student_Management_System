@@ -11,7 +11,7 @@
     <ol class="breadcrumb ">
         <li><a href="{{url_for('home_blueprint.route_default')}}"><i class="fa fa-home" style="font-size: 15px;">
                     Home</i></a></li>
-        <li class="active" style="font-size: 13px;"> Fees Structure 2022</li>
+        <li class="active" style="font-size: 13px;"> Fees Structure</li>
     </ol>
     <hr style="position: relative; top: 3px; border: none; height: 2px; background: black;">				
     <br><br>
@@ -77,7 +77,9 @@
                     <div class="form-group row">
                       <label for="jrn_number" class="col-lg-6 col-form-label text-right">Journal Number :</label>
                       <div class="col-lg-6">
-                        <input type="text" placeholder="Enter Journal Number" class="form-control" name="jrn_number" id="jrn_number" />
+                           <!-- Add a <span> element to display the error message -->
+                            <span class="text-danger" id="jrn_number_error"></span>
+                        <input type="text" placeholder="Enter Journal Number" class="form-control" name="jrn_number" id="jrn_number" required />
                       </div>
                     </div>
                   </div>
@@ -86,7 +88,7 @@
                     <div class="form-group row">
                       <label for="acc_holder" class="col-lg-6 col-form-label text-right">Account Holder :</label>
                       <div class="col-lg-6">
-                        <input type="text" placeholder="Enter Account Holder" class="form-control" name="acc_holder" id="acc_holder" />
+                        <input type="text" placeholder="Enter Account Holder" class="form-control" name="acc_holder" id="acc_holder" required/>
                       </div>
                     </div>
                   </div>
@@ -97,7 +99,7 @@
                     <div class="form-group row">
                       <label for="bank_type" class="col-lg-6 col-form-label text-right">Bank Type :</label>
                       <div class="col-lg-6">
-                        <select class="form-control form-select" name="bank_type" id="bank_type">
+                        <select class="form-control form-select" name="bank_type" id="bank_type" required>
                           <option value="">---Select One---</option>
                           <option value="BOBL">Bank Of Bhutan Limited</option>
                           <option value="BNBL">Bhutan National Bank Limited</option>
@@ -113,28 +115,29 @@
                     <div class="form-group row">
                       <label for="amount" class="col-lg-6 col-form-label text-right">Amount :</label>
                       <div class="col-lg-6">
-                        <input type="text" placeholder="Enter amount" class="form-control" name="amount" id="amount" />
+                        <input type="text" placeholder="Enter amount" class="form-control" name="amount" id="amount" required/>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 <div>
-                <div class="row">
-                  <div class="col-lg-6">
-                    <div class="form-group row">
-                      <label for="screenShot" class="col-lg-6 col-form-label text-right">ScreenShot :</label>
-                      <div class="col-lg-6">
-                        <input type="file" class="form-control rounded-2" name="screenShot" id="screenShot" required />
+                  <div class="row">
+                    <div class="col-lg-6">
+                      <div class="form-group row">
+                        <label for="screenShot" class="col-lg-6 col-form-label text-right">ScreenShot :</label>
+                        <div class="col-lg-6">
+                          <input type="file" class="form-control rounded-2" name="screenShot" id="screenShot" required onchange="validateFile(this)" accept="image/*" />
+                          <!-- <small class="text-muted">Accepted file types: .jpg, .jpeg, .png, .gif</small> -->
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
                 <div class="container ">
                   <div class="row">
                       <div class="col-lg-6">
                           <div class="form-group row text-lg-right">
-                              <label for="acc_holder" class="col-lg-12 col-form-label text-right">Please Deposit School fees in this Account Number</label>
+                              <label for="acc_holder" class="col-lg-12 col-form-label text-right"><h5><b>Please Deposit School fees in this Account Number 203640837</b></h5></label>
                           </div>
                       </div>
                   </div>
@@ -473,6 +476,39 @@ function isNumberKey(evt) {
     $("#acc_summiting").on("click", function(event) {
     event.preventDefault(); // Prevent the default form submission
 
+        // Validate the "Journal Number" field
+        var jrnNumber = $("#jrn_number").val().trim();
+    if (jrnNumber.length !== 6 || !/^\d+$/.test(jrnNumber)) {
+      $("#jrn_number").addClass("is-invalid");
+      $("#jrn_number_error").text("Journal Number must be 6 digits").show();
+      return;
+    } else {
+      $("#jrn_number").removeClass("is-invalid");
+      $("#jrn_number_error").text("").hide();
+    }
+
+      // Validate the screenshot file
+  var screenshotFile = $("#screenShot")[0].files[0];
+  if (!screenshotFile) {
+    // No file selected
+    $("#screenShot").addClass("is-invalid");
+    $("#screenshot_error").text("Please select a screenshot").show();
+    return;
+  } else {
+    // Check the file type (for example, only allow image types)
+    var allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+    if (allowedTypes.indexOf(screenshotFile.type) === -1) {
+      $("#screenShot").addClass("is-invalid");
+      $("#screenshot_error").text("Invalid file type. Please select an image file").show();
+      return;
+    } else {
+      $("#screenShot").removeClass("is-invalid");
+      $("#screenshot_error").text("").hide();
+    }
+  }
+
+
+
     var form = document.getElementById("account_dtl");
     var data = new FormData(form);
     var invalidInputs = [];
@@ -561,6 +597,12 @@ $("select").on("change", function() {
     $(this).removeClass("is-invalid");
 });
 
+
+// Remove red marks when the user starts entering values in the "Journal Number" field
+$("#jrn_number").on("input", function() {
+    $(this).removeClass("is-invalid");
+    $("#jrn_number_error").text("").hide();
+});
 
 </script>
 

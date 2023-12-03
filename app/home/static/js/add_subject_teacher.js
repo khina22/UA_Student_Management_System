@@ -118,12 +118,22 @@ function save_user() {
         contentType: false,
         cache: false,
         processData: false,
-        beforeSend: function () {
-            $("#save").text("Loading....")
-            $("#save").attr("disabled", true)
-            $("#save").addClass("disabled")
+        // beforeSend: function () {
+        //     $("#save").text("Loading....")
+        //     $("#save").attr("disabled", true)
+        //     $("#save").addClass("disabled")
+        // },
 
-        },
+        beforeSend: function () {
+          $("#save").text("Loading....");
+  
+          // Set a timeout to clear the loading message after 3 seconds (3000 milliseconds)
+          setTimeout(function () {
+              $("#save").text("Save");
+              $("#save").removeAttr("disabled");
+              $("#save").removeClass("disabled");
+          }, 1500); // 3000 milliseconds = 1 seconds
+      },
         success: function (res) {
             swal("Information successfully saved", "Click Ok to continue", "success")
                 .then(function () {

@@ -1,9 +1,10 @@
 from cgitb import text
 import re
-from flask import render_template,request,redirect,session,flash,current_app,jsonify
+from uuid import uuid4
+from flask import app, render_template,request,redirect,session,flash,current_app,jsonify
 from flask_login import current_user, login_required
 from app.HR import blueprint
-from app.admin.service import is_human_resource,save_user_table, save_user_detail_table, all_users, is_admin,is_classTeacher, is_subjectTeacher, get_user_by_id,getClasses,getSection,getSubjects
+from app.admin.service import get_std_slot, is_human_resource, save_subuser_detail_table,save_user_table, save_user_detail_table, all_users, is_admin,is_classTeacher, is_subjectTeacher, get_user_by_id,getClasses,getSection,getSubjects, send_application_mailUser
 from app.HR.service import edit_the_user, get_student_fee,class_teacher,subjectTeacher,getModaldetails,assignSection,dropdownHostels, update_editfunction
 from app.HR.service import deleteUser as __DU__
 import pytz
@@ -91,20 +92,21 @@ def dropdownHostel():
     if is_human_resource():
         return dropdownHostels()
 
-@blueprint.route('/assignSectionUrl',methods=['POST'])
+@blueprint.route('/assignSection',methods=['POST'])
 @login_required
 def giveSection():
     if is_human_resource():
         indexNumber = request.form.get('indexNumber')
         selectedSection = request.form.get('selectedSectionId')
         selectedHostel=request.form.get('selectedHostel')
+        accomodation=request.form.get('accomodation')
         print(indexNumber,"**Index**",selectedSection,"***section**", selectedHostel)
-        return assignSection(indexNumber,selectedSection,selectedHostel)
+        return assignSection(indexNumber,selectedSection,selectedHostel,accomodation)
 
 @blueprint.route('/addClassTeacher')
 @login_required
 def addClassTeacher():
-    return render_template('/pages/class-teacher/add_class_teacher.html')
+    return render_template('/pages/class-teacher/add_class_teacher.html',)
 
 @blueprint.route('/getClassTeacher')
 @login_required
@@ -135,31 +137,85 @@ def addSubTeacher():
 @blueprint.route('/getSubjectTeacher')
 @login_required
 def getSubjectTeacher():
-        # Example using SQLAlchemy's text() for executing raw SQL
+
     grade_query = '''SELECT class_id, class_name FROM public.class'''
     grades = engine.execute(grade_query).fetchall()
-    print(grades, "==================")
 
     # If you need user_id for getSection, you can use current_user.id again
     subject_query = '''SELECT subject_code, subject_name FROM public.tbl_subjects'''
     subjects = engine.execute(subject_query).fetchall()
-    print(subjects, "==================")
 
     return render_template('/pages/subject-teacher/subject-teacher-list.html', grades=grades, subjects=subjects)
 
-@blueprint.route('/subjectTeacherList',methods=['POST'])
+@blueprint.route('hr/subjectTeacherList',methods=['POST'])
 @login_required
 def sub_teacherList():
     return subjectTeacher()
 
-# For storing admin details
 @blueprint.route("/saveTeacher", methods=['POST'])
 @login_required
+def savesub_user():
+    # Retrieve form data
+    password = request.form['password']
+    role = request.form['role']
+    section = request.form['section']
+    grade = request.form['grade']
+    subject = request.form['subject']
+
+    # Check for duplicate assignment
+    existing_assignment = get_subexisting_assignment(grade, role, section, subject)
+
+    if existing_assignment:
+        return "The class Teacher already exists."
+
+    # If not a duplicate, proceed with saving the user details
+    user_id = save_user_table(password)
+    save_subuser_detail_table(user_id, password, role, section, grade, subject)
+
+    return "Class Teacher saved successfully."
+
+def get_subexisting_assignment(grade, role, section, subject):
+    # Check if there is an existing assignment for the same class, section, and subject
+    query = 'SELECT user_id FROM public.user_detail WHERE grade = %s AND role = %s AND section_no = %s AND subject = %s'
+    result = connection.execute(query, (grade, role, section, subject)).fetchone()
+    
+    if result:
+        return result[0]  # Return the existing user_id if assignment exists
+    else:
+        return None
+
+        
+@blueprint.route("/saveclassTeacher", methods=['POST'])
+@login_required
 def save_user():
-        password = request.form['password']
-        user_id = save_user_table(password)    
-        print(user_id,"######USERID#####")
-        return save_user_detail_table(user_id,password)
+    # Retrieve form data
+    password = request.form['password']
+    role = request.form['role']
+    section = request.form['section']
+    grade = request.form['grade']
+    subject = request.form['subject']
+
+    # Check for duplicate assignment
+    existing_assignment = get_existing_assignment(grade, role, section)
+
+    if existing_assignment:
+        return "The class Teacher already exists."
+
+    # If not a duplicate, proceed with saving the user details
+    user_id = save_user_table(password)
+    save_user_detail_table(user_id, password, role, section, grade, subject)
+
+    return "Class Teacher saved successfully."
+
+def get_existing_assignment(grade, role, section):
+    # Check if there is an existing assignment for the same class, section, and subject
+    query = 'SELECT user_id FROM public.user_detail WHERE grade = %s AND role = %s AND section_no = %s'
+    result = connection.execute(query, (grade, role, section)).fetchone()
+    
+    if result:
+        return result[0]  # Return the existing user_id if assignment exists
+    else:
+        return None
 
 @blueprint.route('/dropDownClass', methods=['GET','POST'])
 @login_required
@@ -209,4 +265,19 @@ def updating_sub_user():
 # delete 
 @blueprint.route('/deleteTeacher/<id>', methods=['POST'])
 def delete_user(id):return __DU__.delete_user_by_id(id)
+
+@blueprint.route('/studentslot_list')
+@login_required
+def std_slot():
+
+    slot_query = '''SELECT id, class7, class8, class9, class10, class11_arts, class11_com, class11_sci, class12_arts, class12_com, class12_sci FROM public.tbl_std_slots'''
+    slot = engine.execute(slot_query).fetchall()
+
+    return render_template('/pages/slotlist.html', slot=slot) 
+
+
+# @blueprint.route('/hr/getslots', methods=['POST'])
+# @login_required
+# def get_slots():
+#     return get_std_slot()
 

@@ -87,24 +87,22 @@ def get_std_subject_class(id):
     return render_template('/pages/view-student-table/std_detail.html', std=std_class)
 
 def update_marks(id):
-    update_std_marks='UPDATE  '
-    engine.execute('')
+    class_test_one = request.form.get('editclass_test_1')
+    CA1 = request.form.get('editCA1')
+    mid_term = request.form.get('editmid_term')
+    ratingScale1 = request.form.get('ratingScale1')
+    class_test_two = request.form.get('editclass_test_2')
+    CA2 = request.form.get('editCA2')
+    annual_exam = request.form.get('editannual_exam')
+    ratingScale2 = request.form.get('ratingScale2') 
 
-# def storePersonality(getId, subject_teacher_id):
-#     id=uuid4()
-#     punctuality = request.form.get('punctuality')
-#     discipline = request.form.get("discipline")
-#     social_service = request.form.get("socialservice")
-#     leadership_quality = request.form.get("leadership")
-#     created_at = datetime.now()
-#     query = "INSERT INTO public.personality (id, user_id, student_id, punctuality_rating_id, discipline_rating_id, social_service_rating_id, leadership_quality_rating_id, created_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-#     data = (id, getId, subject_teacher_id, punctuality, discipline, social_service, leadership_quality, created_at)
-#     connection.execute(query, data)
-#     # Close the connection
-#     return "successfully"
+    # Removed extra comma in the SET clause
+    connection.execute('UPDATE public."tbl_student_evaluation" SET class_test_one=%s, ca1=%s, mid_term=%s, "ratingScale1"=%s, class_test_two=%s, ca2=%s, annual_exam=%s, "ratingScale2"=%s WHERE id=%s',
+                        (class_test_one, CA1, mid_term, ratingScale1, class_test_two, CA2, annual_exam, ratingScale2, id ))
 
-
-# This is the route for storing student detials into tbl_student_personal_info
+    return "successfully"
+ 
+# This is the route for storing student into tbl_student_personal_info
 def store_student_assessment_details(stdId):
     id = uuid4()
     class_test_one = request.form.get("class_test_1")
@@ -180,8 +178,8 @@ def get_std_marks(id):
     draw = request.form.get('draw')
     row = request.form.get('start')
     row_per_page = request.form.get('length')
-    search_value = request.form['search[value]']
-    print(search_value, "**SEARCHVALUE**")
+    # search_value = request.form['search[value]']
+    # print(search_value, "**SEARCHVALUE**")
     getUser = current_user.id
     getUsersub='''select ud.subject,ud.grade,ud.section_no,ud.role 
 	from public."User" uu 
@@ -197,17 +195,17 @@ def get_std_marks(id):
     search_query = ''
     params = [class_value,section_value, subject_value,getUser,id]
 
-    if search_value:
-        search_query += "AND (sub.subject_name ILIKE %s OR "
-        search_query += "CAST(class_test_one AS TEXT) ILIKE %s OR "
-        search_query += "CAST(mid_term AS TEXT) ILIKE %s OR "
-        search_query += "CAST(class_test_two AS TEXT) ILIKE %s OR "
-        search_query += "CAST(annual_exam AS TEXT) ILIKE %s OR "
-        search_query += "CAST(cont_assessment AS TEXT) ILIKE %s OR "
-        search_query += "(CAST(class_test_one AS FLOAT) + CAST(mid_term AS FLOAT) + CAST(class_test_two AS FLOAT) + CAST(annual_exam AS FLOAT) + CAST(cont_assessment AS FLOAT))::TEXT ILIKE %s) "
+    # if search_value:
+    #     search_query += "AND (sub.subject_name ILIKE %s OR "
+    #     search_query += "CAST(class_test_one AS TEXT) ILIKE %s OR "
+    #     search_query += "CAST(mid_term AS TEXT) ILIKE %s OR "
+    #     search_query += "CAST(class_test_two AS TEXT) ILIKE %s OR "
+    #     search_query += "CAST(annual_exam AS TEXT) ILIKE %s OR "
+    #     search_query += "CAST(cont_assessment AS TEXT) ILIKE %s OR "
+    #     search_query += "(CAST(class_test_one AS FLOAT) + CAST(mid_term AS FLOAT) + CAST(class_test_two AS FLOAT) + CAST(annual_exam AS FLOAT) + CAST(cont_assessment AS FLOAT))::TEXT ILIKE %s) "
 
-        search_value = f"%{search_value}%"
-        params.extend([search_value] * 7)
+    #     search_value = f"%{search_value}%"
+    #     params.extend([search_value] * 7)
     str_query = '''select ev.*, sub.*,ss.*, COUNT(*) OVER() AS count_all from public.tbl_student_evaluation ev 
 	join public."User" uu on ev.subject_teacher_id=uu.id 
 	join public.user_detail ud on (uu.id=ud.user_id and ev.subject_teacher_id=ud.user_id)
@@ -445,3 +443,10 @@ def getStdGrade(id):
     }
 
     return response
+
+def getRatings():
+    selectQuery='select "ratingScaleId", "ratingName" from public.tbl_rating_scale'
+    runQuery=connection.execute(selectQuery).fetchall()
+    data = [{'value': row[0], 'text': row[1]} for row in runQuery]
+    print(data,'**UAUUUAUHA')
+    return jsonify(data)

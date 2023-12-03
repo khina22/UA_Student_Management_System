@@ -53,17 +53,6 @@
         </div>
     </div>
 </div>
-<!-- content-wrapper ends -->
-<!-- partial:../../partials/_footer.html -->
-
-<!-- partial -->
-<!-- main-panel ends -->
-
-<!-- page-body-wrapper ends -->
-
-<!-- container-scroller -->
-<!-- plugins:js -->
-
 
 {% endblock content %}
 
@@ -74,53 +63,8 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
     crossorigin="anonymous"></script>
-<!-- <script>
-    $('#customerList').DataTable({
-        'processing': true,
-        'serverSide': true,
-        'bDestroy': true,
-        'serverMethod': 'POST',
-        
-        'columns': [
-            { data: 'sl' },
-            { data: 'index_number' },
-            { data: 'student_cid' },
-            { data: 'first_name' },
-            { data: 'student_email' },
-            { data: 'status' },
 
-            {
-                "render": function (data, type, full, meta) {
-                    return '<div class="dropdown">' +
-                            '<a class="btn btn-primary btn-icon-only text-light" role="button" href="/std-detials/' + full.id + '">'+
-                            '<b> View </b>' +'</a>'+
-                        '</div>'
-                }
-            },
-        ],
-        language: {
-            paginate: {
-                next: '&#8594;', // or '→'
-                previous: '&#8592;' // or '←' 
-            }
-        },
-        "ordering": false
-    });
-
-$("#add_std").click( function () {
-$.ajax({
-url: "/search-for-std",
-type: "POST",
-data: { searchText: searchText }
-}).done(function (result) {
-Table.clear().draw();
-Table.rows.add(result).draw();
-}).fail(function (jqXHR, textStatus, errorThrown) {
-// needs to implement if it fails
-});
-});  
-</script> -->
-    <script>
+<script>
         $(document).ready(function () {
             loadUsers()
         });

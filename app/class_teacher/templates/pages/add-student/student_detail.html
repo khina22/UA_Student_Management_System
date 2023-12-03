@@ -248,7 +248,7 @@
                                                         <thead class="thead-light">
                                                             <tr>
                                                                 <th>sl</th>
-                                                                <th>Personal Qualities</th>
+                                                                <th>Personal Qualstities</th>
                                                                 <th>Rating</th>
                                                             </tr>
                                                         </thead>
@@ -371,7 +371,7 @@
                                                                 class="control-label col-sm-4 text-right">CA2:</label>
                                                             <div class="col-sm-8">
                                                                 <div class="input-group">
-                                                                    <input type="text" class="form-control"
+                                                                    <input type="teFxt" class="form-control"
                                                                         placeholder="Enter CA *" name="CA2" value="" />
                                                                     <div class="input-group-append">
                                                                         <span class="input-group-text">/ 10</span>
@@ -498,7 +498,7 @@
                                                     <br>
                                                     <!-- Student Remarks -->
                                                     <div class="row" id="std_remarks">
-                                                        <h4 class="card-title">Student Remarks</h4>
+                                                        <h5 class="card-title">Student Remarks</h5>
                                                         <div class="col-md-6">
                                                             <div class="form-group row">
                                                                 <label for="std_status"
@@ -607,14 +607,19 @@
                                                 <div id="division">
                                                     <div class="table-wrapper">
                                                         <div class="table-title">
-                                                            <div class="row">
-                                                                <div class=" col-sm-8">
+                                                            
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <div class="p-3">
                                                                     <h6 >STATEMENT OF MARKS</h6> <br>
                                                                     <div style="display: inline-block; margin-right: 10px;">
                                                                         <p style="display: inline-block; margin-right: 10px;"><b>Student Name :</b> {{std.first_name}} {{std.last_name}}</p> <br>
                                                                         <p style="display: inline-block; margin-right: 10px;"><b>Index Number :</b> {{std.index_number}}</p>
                                                                     </div>
-                                                                    
+                                                                </div>
+
+                                                                <div class="align-items-center">
+                                                                    <!-- Add your image tag here -->
+                                                                    <img src="../../static/images/logo.png" class="float-right float-right" alt="UA logo" style=" width:35%; align-items: end;" >
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -752,16 +757,21 @@
                                                             </div>
                                                         </div>
 
-                                                        <div style="text-align: center; ">
-                                                            <button class="btn btn-primary" type="button"><a
-                                                                    id="downloadpages"
-                                                                    style="color:white ; text-decoration: none;"><i
-                                                                        class="fa fa-download"></i>
-                                                                    Download</a></button>
-                                                            <button onclick="printContent('view_std_result')"
-                                                                class="btn btn-primary"><i class="fa fa-print"></i>
-                                                                Print Result</button>
-                                                        </div>
+                                                        <div style="text-align: center;">
+                                                            <button class="btn btn-primary" type="button" id="downloadButton">
+                                                                <a id="downloadpages" style="color:white ; text-decoration: none;">
+                                                                    <i class="fa fa-download"></i> Download
+                                                                </a>
+                                                            </button>
+                                                            <a href="#" class="btn btn-primary" id="printButton" onclick="printResult()">
+                                                                <i class="fa fa-print"></i> Print Result
+                                                            </a>                                                           
+                                                            <iframe id="printFrame" style="display: none;"></iframe>
+
+                                                            <button class="btn btn-primary" type="button" id="promotebutton" onclick="promoteStudents()">
+                                                               Promote
+                                                            </button>
+                                                        </div>                                       
                                                     </div>
                                                 </div>
                                             </div>
@@ -796,6 +806,7 @@
 <script src="../static/js/teacher_remarks.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
 <script>
+    
     $(document).ready(function () {
         var form = $('.generateHtmlToPdf'),
             a4 = [595.28, 841.89]; // for a4 size paper width and height  
@@ -828,8 +839,36 @@
             });
         }
     });
-</script>
-<script>
+
+
+    //     $(document).ready(function () {
+    //     loadUsers();
+        
+    //     // Attach a click event to the "Promote" button
+    //     $('#promotebutton').on('click', function () {
+    //         promoteStudents();
+    //     });
+    // });
+
+
+    // function promoteStudents() {
+    //     var currentClassLevel = 1;  // You should get this dynamically from your application
+
+    //     $.ajax({
+    //         url: '/promote-student',
+    //         type: 'POST',
+    //         contentType: 'application/json',
+    //         data: JSON.stringify({ current_class_level: currentClassLevel }),
+    //         success: function (response) {
+    //             console.log(response.message);
+    //             // Handle success (e.g., show a success message, refresh the student list)
+    //         },
+    //         error: function () {
+    //             console.error('Error promoting students');
+    //             // Handle error (e.g., show an error message)
+    //         }
+    //     });
+    // }
 
     let punctualityValue = $('#punctuality').val();      // fetching values from input fields with the IDs punctuality, 
     let disciplineValue = $('#discipline').val();        //discipline,
@@ -1384,25 +1423,14 @@
     });
 
 
-    // script for print
-    function printContent(el) {
-    // Save the current content of the document
-    var restorepage = document.body.innerHTML;
-    // Get the content of the specified HTML element
-    var printcontent = document.getElementById(el).innerHTML;
-    // Set the document body content to the content of the specified element
-    document.body.innerHTML = printcontent;
-    // Trigger the browser's print functionality
-    window.print();
-    // Restore the original content of the document
-    document.body.innerHTML = restorepage;
+    function redirectToPrintPage() {
+    // Redirect to the target print page
+    window.location.href = '/print-page'; // Adjust the URL based on your project structure
 }
-
-
 </script>
 
 
-//Function to handle the "Save" button click
+ <!-- Function to handle the "Save" button click -->
 <script>
     document.getElementById('saveButton').addEventListener('click', function () {
         var studentRemarks = new FormData();
@@ -1512,20 +1540,23 @@
 
     }
 
-    // JavaScript code to retrieve and display data (to populate the form fields in HTML with data retrieved)
+    function printResult() {
+        // Get the student ID from the link's href attribute
+        var studentId = '{{ std.id }}';
+        
+        // Open the print page in a new window or tab
+        var printWindow = window.open('/print-page/' + studentId, '_blank');
+        
+        // Wait for the new window to load, then trigger the print dialog
+        printWindow.onload = function() {
+            printWindow.print();
+        };
+    }
+
 
 </script>
-
-
-
-</script>
-
 
 
 {% endblock javascripts %}
 
 </body>
-
-<!-- HTML + css ->PNG(html2canvas) -->
-<!-- PNG ->add to pdf (jspdf) -->
-<!-- Download PDF (jsPDF) -->

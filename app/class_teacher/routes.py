@@ -1,14 +1,17 @@
 from multiprocessing.connection import _ConnectionBase
-from flask import Flask, app, request, jsonify
+from flask import Blueprint, Flask, app, redirect, request, jsonify
 from flask import render_template,jsonify,session,flash,current_app
-from flask_login import login_required
+from flask_login import current_user, login_required
 from app.class_teacher import blueprint
-from app.class_teacher.service import  insert_student_remarks, search_std, subjectTeacher, update_tbl_academic, get_std_in_class, get_std_class, get_std_marks, update_tbl_std_evaluation,students, std_time_table,get_time_table,get_subject_teacher_info,get_stds_rating,load_std_marks,view_result,marks_result,checkExist,midtermExamMarks, getRatings, get_std_result
+from app.class_teacher.service import  insert_student_remarks, search_std, std_class, subjectTeacher, update_tbl_academic, get_std_in_class, get_std_class, get_std_marks, update_tbl_std_evaluation,students, std_time_table,get_time_table,get_subject_teacher_info,get_stds_rating,load_std_marks,view_result,marks_result,checkExist,midtermExamMarks, getRatings, get_std_result
 from app.admin.service import is_classTeacher, is_subjectTeacher
 from datetime import datetime
 from sqlalchemy import create_engine
 import pytz
+from config import Config
 
+engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
+connection = engine.connect()
 
 @blueprint.before_request
 def check_session_timeout():
@@ -61,7 +64,22 @@ def get_student_list():
 @blueprint.route('/get-subject-teacher-list')
 @login_required
 def get_subject_teacher_list():
-        return render_template('/pages/add_subject_teacher/subject_teachers.html')
+        
+    return render_template('/pages/add_subject_teacher/subject_teachers.html')
+
+# @blueprint.route('/get-subject-teacher-list')
+# @login_required
+# def get_subject_teacher_list():
+#     if current_user.is_authenticated:
+#         # Assuming you have a User model with 'class_name' and 'section' attributes
+#         class_name = current_user.class_name
+#         section = current_user.section
+
+#         return render_template('/pages/add_subject_teacher/subject_teachers.html', class_name=class_name, section=section)
+#     else:
+#         # Handle the case where the user is not authenticated
+#         flash('User is not authenticated', 'error')
+#         return redirect('/')  # Redirect to the login page or another appropriate action
 
 
 @blueprint.route('/view-std-result')
@@ -219,10 +237,10 @@ def load_student_grade(studentId, subject):
         }
         return jsonify(response)
 
-@blueprint.route('/subjectTeacherList/<int:class_id>/<int:section_id>', methods=['POST'])
+@blueprint.route('class_teacher/subjectTeacherList', methods=['GET', 'POST'])
 @login_required
-def sub_teacherList(class_id, section_id):
-    return subjectTeacher(class_id, section_id)
+def sub_teacherList():
+    return subjectTeacher()
 
 # delete student list
 @blueprint.route('/deleteStudentList/<id>', methods=['POST'])
@@ -238,4 +256,17 @@ def student_timetable():
 @blueprint.route('/view-time-table<id>', methods=['POST'])
 def std_timetable():
         return get_time_table()
-   
+
+
+@blueprint.route('/print-page/<id>')
+def print_page(id):
+    return std_class(id)
+
+
+
+
+
+
+
+
+ 

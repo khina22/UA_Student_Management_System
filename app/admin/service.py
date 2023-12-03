@@ -3,6 +3,7 @@ import os
 from flask import request, render_template,jsonify, redirect
 from flask_login import current_user
 from datetime import datetime
+import app
 from config import Config
 from flask_mail import Message
 from app import mail
@@ -17,8 +18,6 @@ engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
 connection = engine.connect()
 random_id = randint(000, 999)
 
-
-
 def save_user_table(password):
     id = uuid4()
     username = request.form['username']
@@ -30,8 +29,38 @@ def save_user_table(password):
     print(user_id, "returning************")
     return user_id['id']
 
+def save_user_table_list(user_id, password):
+    id = uuid4()
+    role = request.form['role']
+    # Remove section, grade, and subject
+    # section = request.form['section']
+    # grade = request.form['grade']
+    # subject = request.form['subject']
 
-def save_user_detail_table(user_id,password):
+    ip = request.remote_addr
+    browser = request.headers.get('User-Agent')
+
+    connection.execute(
+        'INSERT INTO public.user_detail ("id", "user_id", "role", "ip_address", "browser", "created_at") VALUES (%s, %s, %s, %s, %s, %s)',
+        (id, user_id, role, ip, browser, datetime.now())
+    )
+
+    getUser = 'SELECT username, email, password FROM public."User" WHERE id = %s'
+    userName = connection.execute(getUser, user_id).fetchone()
+    email = userName['email']
+    user_name = userName['username']
+    passwords = userName['password'].tobytes()
+    
+    getHash = passwords.decode('utf-8')
+
+    status = 'User Created'
+    send_application_mailUser(user_name, email, password, status, role)
+
+    return "saved"
+
+
+#belong to HR page
+def save_user_detail_table(user_id, password, role, section, grade, subject):
     id = uuid4()
     role = request.form['role']
     section = request.form['section']
@@ -63,6 +92,40 @@ def save_user_detail_table(user_id,password):
     status='User Created'
     send_application_mailUser(user_name,email,password,status,role)
     return "saved"
+
+def save_subuser_detail_table(user_id, password, role, section, grade, subject):
+    id = uuid4()
+    role = request.form['role']
+    section = request.form['section']
+    print(section,"######SECTION#####")
+    grade = request.form['grade']
+    subject = request.form['subject']
+    grade = request.form['grade']
+    # subject = request.form['subject']
+    if grade=='2':
+        section=3
+        print(section,"*****SECTIONSECTION")
+    else:
+        section = request.form['section']       
+    print(role,'**ROLE',grade,'**Grade',section,'*SECTION',subject,'***subject')
+    ip = request.remote_addr
+    browser = request.headers.get('User-Agent')
+    connection.execute('INSERT INTO public.user_detail ("id", "user_id", "role","grade", "section_no",  "subject", "ip_address", "browser", "created_at") VALUES (%s,%s, %s, %s, %s, %s, %s, %s, %s)',
+                       (id, user_id, role, grade,section,subject, ip, browser, datetime.now()))
+    getUser='select username,email,password from public."User" where id= %s'
+    userName=connection.execute(getUser,user_id).fetchone()
+    email = userName['email']
+    user_name = userName['username']
+    passwords=userName['password'].tobytes()
+    print(passwords,"**original")
+    getHash=passwords.decode('utf-8')
+    print(getHash,'**getHash')
+    # bytes_password =bytes.fromhex(getHash)
+    # decoded_password = bytes_password.decode('utf-8')
+    status='User Created'
+    send_application_mailUser(user_name,email,password,status,role)
+    return "saved"
+
 
 def send_application_mailUser(user_name, email, getHash,status, role):
     key = Fernet.generate_key()
@@ -122,6 +185,7 @@ def get_user_by_id(id):
         'SELECT *, U.id as user_id FROM public."User" AS U, public.user_detail as UD WHERE U.id = UD.user_id AND user_id = %s',
         id).first()
     return user
+
 def getSection(gradeId):
     query = text("SELECT section_id, section FROM public.std_section WHERE class_id=:gradeId")
     result = connection.execute(query, gradeId=gradeId)
@@ -247,10 +311,6 @@ def all_std():
         "aaData": data
     }
     return jsonify(response_std)
-
-
-
-
 
 # fetch student details from database
 def get_std_by_id(id):
@@ -400,12 +460,41 @@ def update_editfunction():
     # Return a success message
     return "success"
 
-
 class deleteUser:
+    @staticmethod
     def delete_user_by_id(id):
-        delete=connection.execute('DELETE FROM public."User" WHERE id=%s', id)
-        return "done"
+        try:
 
+            # Delete from tbl_academic_detail
+            delete_academic_detail = connection.execute('DELETE FROM public."tbl_academic_detail" WHERE  std_personal_info_id=%s', id)
+            
+            # Delete from tbl_students_personal_info
+            delete_personal_info = connection.execute('DELETE FROM public."tbl_students_personal_info" WHERE id=%s', id)
+            
+            
+            # Commit the changes to the database
+            connection.commit()
+            
+            return "done"
+        except Exception as e:
+            # Handle any exceptions, e.g., log the error or return an error message
+            return str(e)
+
+class deleteadminuser:
+    @staticmethod
+    def delete_admin_user(id):
+        try:
+            # Delete from tbl_students_personal_info
+            delete_User = connection.execute('DELETE FROM public."User" WHERE id=%s', id)
+                        
+            # Commit the changes to the database
+            connection.commit()
+            
+            return "done"
+        except Exception as e:
+            # Handle any exceptions, e.g., log the error or return an error message
+            return str(e)
+        
 
 def subjectTeacher():
     draw = request.form.get('draw')
@@ -458,3 +547,128 @@ def subjectTeacher():
     }
 
     return jsonify(response)
+
+def get_std_id(id):
+    std_details = connection.execute(
+        'SELECT *, P.id FROM public.tbl_students_personal_info AS P '
+        'inner join public.tbl_academic_detail as A on P.id = A.std_personal_info_id '
+        'left join public.class as cc on A.admission_for_class=cc.class_id '
+        'inner join public.tbl_dzongkhag_list as dzo on dzo.dzo_id = P.student_present_dzongkhag '
+        'inner join public.tbl_gewog_list as gewog on gewog.gewog_id = P.student_present_gewog '
+        'inner join public.tbl_village_list as village on village.village_id = P.student_present_village '
+        'WHERE P.id =%s',
+        id).first()
+
+    std_info = connection.execute(
+        'SELECT *, P.id FROM public.tbl_students_personal_info AS P '
+        'inner join public.tbl_academic_detail as A on P.id = A.std_personal_info_id '
+        'inner join public.tbl_dzongkhag_list as dzo on dzo.dzo_id = P.student_dzongkhag '
+        'inner join public.tbl_gewog_list as gewog on gewog.gewog_id = P.student_gewog '
+        'inner join public.tbl_village_list as village on village.village_id = P.student_village '
+        'WHERE P.id =%s',
+        id).first()
+    return render_template('/pages/student-applications/print.html', std=std_details, std_info=std_info)
+
+
+def save_std_slot():
+    try:
+        # Access form data from the request
+        class7 = request.form['class7']
+        class8 = request.form['class8']
+        class9 = request.form['class9']
+        class10 = request.form['class10']
+        class11_Arts = request.form['class11Arts']
+        class11_Com = request.form['class11Commerce']
+        class11_Sci = request.form['class11Science']
+        class12_Arts = request.form['class12Arts']
+        class12_Com = request.form['class12Commerce']
+        class12_Sci = request.form['class12Science']
+
+        # Insert a new record
+        id = str(uuid4())
+        saved = engine.execute(
+            text('INSERT INTO public."tbl_std_slots" (id, class7, class8, class9, class10, class11_Arts, class11_Com, class11_Sci, class12_Arts, class12_Com, class12_Sci) VALUES (:id, :class7, :class8, :class9, :class10, :class11_Arts, :class11_Com, :class11_Sci, :class12_Arts, :class12_Com, :class12_Sci) RETURNING id'),
+            {'id': id, 'class7': class7, 'class8': class8, 'class9': class9, 'class10': class10, 'class11_Arts': class11_Arts, 'class11_Com': class11_Com, 'class11_Sci': class11_Sci, 'class12_Arts': class12_Arts, 'class12_Com': class12_Com, 'class12_Sci': class12_Sci}
+        )
+
+        
+        std_slot_id = saved.fetchone()
+        return f"Data submitted successfully with ID: {std_slot_id['id']}"
+
+    except Exception as e:  
+        return f"Error: {str(e)}"
+
+def get_std_slot():
+    try:
+        # Execute the SQL query to retrieve data from the std_slots table
+        result = engine.execute('SELECT id, class7, class8, class9, class10, class11_arts, class11_com, class11_sci, class12_arts, class12_com, class12_sci FROM public."tbl_std_slots"')
+
+        # Fetch all rows from the result
+        rows = result.fetchall()
+
+        # Process the retrieved data and format it as a list of dictionaries
+        data = []
+        for row in rows:
+            slot_data = {
+                'id': (row['id']),  # Convert UUID to string
+                'class7': row['class7'],
+                'class8': row['class8'],
+                'class9': row['class9'],
+                'class10': row['class10'],
+                'class11_arts': row['class11_arts'],
+                'class11_com': row['class11_com'],
+                'class11_sci': row['class11_sci'],
+                'class12_arts': row['class12_arts'],
+                'class12_com': row['class12_com'],
+                'class12_sci': row['class12_sci'],
+            }
+            data.append(slot_data)
+
+        return jsonify(data)
+
+    except Exception as e:
+        response = {
+            'error': f"Error: {str(e)}"
+        }
+        return jsonify(response)
+
+def update_std_slot():
+    try:
+        # Access form data from the request
+        class7 = request.form['class7']
+
+        class8 = request.form['class8']
+        class9 = request.form['class9']
+        class10 = request.form['class10']
+        class11_Arts = request.form['class11Arts']
+        class11_Com = request.form['class11Commerce']
+        class11_Sci = request.form['class11Science']
+        class12_Arts = request.form['class12Arts']
+        class12_Com = request.form['class12Commerce']
+        class12_Sci = request.form['class12Science']
+
+        # Get the ID from the form
+        id = request.form.get('id')
+
+        # Update the existing record
+        updated = engine.execute(
+            text('UPDATE public."tbl_std_slots" SET class7=:class7, class8=:class8, class9=:class9, class10=:class10, class11_Arts=:class11_Arts, class11_Com=:class11_Com, class11_Sci=:class11_Sci, class12_Arts=:class12_Arts, class12_Com=:class12_Com, class12_Sci=:class12_Sci WHERE id=:id'),
+            {'id': id, 'class7': class7, 'class8': class8, 'class9': class9, 'class10': class10, 'class11_Arts': class11_Arts, 'class11_Com': class11_Com, 'class11_Sci': class11_Sci, 'class12_Arts': class12_Arts, 'class12_Com': class12_Com, 'class12_Sci': class12_Sci}
+        )
+
+        return jsonify({"success": True, "message": f"Data updated successfully for ID: {id}"})
+
+    except Exception as e:  
+        return jsonify({"success": False, "message": f"Error: {str(e)}"})
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+class delete_slot:
+    def delete_slot(id):
+        delete = connection.execute('DELETE FROM public."tbl_std_slots" WHERE id=%s', id)
+        return "done"
+
+
+
+   

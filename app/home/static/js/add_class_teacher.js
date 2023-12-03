@@ -112,33 +112,36 @@ function save_user() {
     //   data.set('section', '3'); // Set the value of section as 3
     // }
     $.ajax({
-        type: 'POST',
-        url: '/saveTeacher',
-        data: data,
-        contentType: false,
-        cache: false,
-        processData: false,
-        beforeSend: function () {
-            $("#save").text("Loading....")
-            $("#save").attr("disabled", true)
-            $("#save").addClass("disabled")
-
-        },
-        success: function (res) {
-            swal("Information successfully saved", "Click Ok to continue", "success")
-                .then(function () {
-                    $('#user-form').trigger('reset')
-                    window.location = "/getClassTeacher"
-                })
-
-        },
-    });
-}
+      type: 'POST',
+      url: '/saveclassTeacher',
+      data: data,
+      contentType: false,
+      cache: false,
+      processData: false,
+      beforeSend: function () {
+          $("#save").text("Loading....");
+  
+          // Set a timeout to clear the loading message after 3 seconds (3000 milliseconds)
+          setTimeout(function () {
+              $("#save").text("Save");
+              $("#save").removeAttr("disabled");
+              $("#save").removeClass("disabled");
+          }, 1500); // 3000 milliseconds = 1 seconds
+      },
+      success: function (res) {
+          swal("Information successfully saved", "Click Ok to continue", "success")
+              .then(function () {
+                  $('#user-form').trigger('reset');
+                  window.location = "/getClassTeacher";
+              });
+      },
+  });
+  }
 
 $(document).ready(function() {
     // Set the default value of the role field to "class_teacher"
     $('#user-form [name="role"]').val('class_teacher');
-  });
+  }); 
   
 function getSections(gradeId) {
     var sections = [];

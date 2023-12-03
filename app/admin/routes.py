@@ -1,12 +1,14 @@
-from flask import render_template,request,redirect,session,flash,current_app
+from flask import jsonify, render_template,request,redirect,session,flash,current_app
 from flask_login import login_required
 from app.HR.service import class_teacher, subjectTeacher
 from app.admin import blueprint
-from app.admin.service import save_user_table, save_user_detail_table, application_update, all_users, is_admin,is_classTeacher, is_subjectTeacher, get_user_by_id, get_std_by_id, all_std, user_quries, edit_the_user, update_editfunction,getClasses,getSection
+from app.admin.service import delete_slot, deleteadminuser, get_std_id, get_std_slot, save_std_slot, save_user_table, save_user_detail_table,  application_update, all_users, is_admin,is_classTeacher, is_subjectTeacher, get_user_by_id, get_std_by_id, all_std, save_user_table_list, update_std_slot, user_quries, edit_the_user, update_editfunction,getClasses,getSection
 from app.admin.service import deleteUser as __DU__
 from flask_login import current_user
 from datetime import datetime
 import pytz
+from flask import make_response
+import pdfkit
 
 @blueprint.before_request
 def check_session_timeout():
@@ -67,19 +69,15 @@ def admin_typography():
 def admin_std_app_list():
     return render_template('/pages/student-applications/student_application_list.html')
 
-
-
 @blueprint.route('/admin-basic-tables')
 @login_required
 def admin_basic_tables():
     return render_template('/pages/tables/basic-table.html')
 
-
 @blueprint.route('/feedback')
 @login_required
 def usrfeedback():
     return render_template('/pages/user-feedback/feedback.html')
-
 
 @blueprint.route('/admin-icons')
 @login_required
@@ -129,7 +127,7 @@ def save_user():
         password = request.form['password']
         user_id = save_user_table(password)
         print(user_id,"***USERID")
-        return save_user_detail_table(user_id,password)
+        return save_user_table_list(user_id,password)
 
 @blueprint.route('/dropDownClass', methods=['GET','POST'])
 def getClassId():
@@ -198,9 +196,26 @@ def updating_the_user():
     else:
         return "errorFound"
 
-# delete 
+@blueprint.route('/deleteUser/<id>', methods=['POST'])
+def delete_user(id):
+    success = __DU__.delete_user_by_id(id)
+    print(success)
+
+    if success=="done":
+        return jsonify({"message": "User deleted successfully"})
+    else:
+        return jsonify({"error": "Failed to delete user"})
+    
+    
 @blueprint.route('/delete_list/<id>', methods=['POST'])
-def delete_user(id):return __DU__.delete_user_by_id(id)
+def delete_user_list(id):
+    success = deleteadminuser.delete_admin_user(id)
+
+    if success == "done":
+        return jsonify({"message": "User deleted successfully"})
+    else:
+        return jsonify({"error": "Failed to delete user: {success}"})
+
         
 @blueprint.route('/class-teacher-list', methods=['POST'])
 @login_required
@@ -212,10 +227,63 @@ def cl_teacherList():
 def getsubjectteacher():
     return render_template('/pages/getsubteacher.html') 
 
-@blueprint.route('/getsubteacher',methods=['POST'])
+@blueprint.route('/admin/getsubteacher',methods=['POST'])
 @login_required
 def getsubteacher():
     return subjectTeacher()
 
-    
+# @blueprint.route('/print', methods=['GET'])
+# @login_required
+# def print_page():
+#     return render_template('/pages/student-applications/print.html')
+
+@blueprint.route('/print/<id>', methods=['GET'])
+@login_required
+def print_page(id):
+   return get_std_id(id)
+
+@blueprint.route('student-slot')
+@login_required
+def student_slot():
+   return render_template("/pages/studentslot.html")
+
+@blueprint.route('/std_slot', methods=['POST'])
+def slot():
+    # You can return a JSON response if needed
+    return save_std_slot()
+
+@blueprint.route('slot-list')
+@login_required
+def student_slot_list():
+   return render_template("/pages/studentslotlist.html")
+
+@blueprint.route('/admin/getslots', methods=['POST'])
+@login_required
+def get_slots():
+    return get_std_slot()
+
+@blueprint.route('admin/updateslot', methods=['POST'])
+@login_required
+def update_slot():
+    return update_std_slot()
+
+# # delete 
+# @blueprint.route('/admin/deleteslot/<id>', methods=['POST'])
+# def delete_slot(id):return __DU__.delete_slot(id)
+
+# @blueprint.route('/admin/deleteslot/<slotId>', methods=['POST'])
+# def deleteslot(slotId):
+
+#     # Return a JSON response to the client
+#     return delete_slot(slotId)
+
+@blueprint.route('/admin/deleteslot/<slotId>', methods=['POST'])
+def deleteslot(slotId):
+    # Your existing code to delete the slot using the provided id (slotId)
+    # ...
+
+    # Return a JSON response to the client
+    return delete_slot.delete_slot(slotId)
+
+
 

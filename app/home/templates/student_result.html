@@ -85,12 +85,17 @@
                                                 <div class="table-wrapper">
                                                     <div class="table-title">
                                                         <div class="row">
-                                                            <div class="col-sm-12">
+                                                            <div class="col-sm-6 col-md-6 col-lg-6">
                                                                 <h6 class="text-center">STATEMENT OF MARKS</h6>
                                                                 <hr>
                                                                 <p><b>Student Name :</b> {{std.first_name}} {{std.last_name}}</p>
                                                                 <p><b>Index Number :</b> {{std.index_number}}</p>
                                                             </div>
+                                                            <div class="col-sm-6 col-md-6 col-lg-6 text-right">
+                                                                <!-- Add your image tag here -->
+                                                                <img src="../../static/images/logo.png" alt="UA logo" style=" width:15%; align-items: end;" >
+                                                            </div>
+                                            
                                                         </div>
                                                     </div>
                                                         <table id="stdmarks">
@@ -138,8 +143,9 @@
                                                                     <td style="width: 2%;">{{ mark.annual_exam + mark.ca2 + mark.mid_term + mark.ca1 }}</td>
                                                                 </tr>
                                                                 {% endfor %}
+                                                                
                                                                 <tr>
-                                                                    <td style="border: none;"></td>
+                                                                    <td rowspan="4"></td>
                                                                     <td colspan="2"><b>Percentage</b></td>
                                                                     <td><b>{{ std_academic.percentage }}</b></td>
                                                                     <td colspan="2"><b>Percentage</b></td>
@@ -147,7 +153,6 @@
                                                                     <td><b>{{ (std_academic.percentage|default(0) + std_academic.percentage2|default(0)) / 2 }}</b></td>
                                                                 </tr>
                                                                 <tr>
-                                                                    <td style="border: none;"></td>
                                                                     <td colspan="2"><b>Position</b></td>
                                                                     <td><b>{{ std_academic.position }}</b></td>
                                                                     <td colspan="2"><b>Position</b></td>
@@ -155,7 +160,6 @@
                                                                     <td><b>{{ std_academic.total_position}}</b></td>
                                                                 </tr>
                                                                 <tr>
-                                                                    <td style="border: none;"></td>
                                                                     <td colspan="2"><b>Attendance</b></td>
                                                                     <td><b>{{ std_academic.attendance }}</b></td>
                                                                     <td colspan="2"><b>Attendance</b></td>
@@ -163,7 +167,6 @@
                                                                     <td><b>{{ std_academic.total_attendance}}</b></td>
                                                                 </tr>
                                                                 <tr>
-                                                                    <td style="border: none;"></td>
                                                                     <td colspan="2"><b>Total no. of Students</b></td>
                                                                     <td><b>{{ std_academic.total_no_stds }}</b></td>
                                                                     <td colspan="2"><b>Total no. of Students</b></td>
@@ -189,7 +192,7 @@
 
                                                     <br>
                                                     <!-- Student Remarks -->
-                                                    <div class="row">
+                                                    <div class="row" id="std_remarks">
                                                         <h4 class="card-title">Student Remarks</h4>
                                                         <div class="col-md-6">
                                                             <div class="form-group row">
@@ -253,7 +256,7 @@
                                                                     class="control-label col-sm-4 text-right">Remarks:</label>
                                                                 <div class="col-sm-8">
                                                                     <textarea name="remarks" id="remarks"
-                                                                        class="form-control" value="{{ std_academic.remarks }}" readonly></textarea>
+                                                                        class="form-control" value="{{ std_academic.remarks }}" readonly>{{ std_academic.remarks }}</textarea>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -264,16 +267,17 @@
                                         </form>
                                     </div>
                                 </div>
-                                <div style="text-align: center; ">
-                                    <button class="btn btn-primary" type="button"><a
-                                            id="downloadpages"
-                                            style="color:white ; text-decoration: none;"><i
-                                                class="fa fa-download"></i>
-                                            Download</a></button>
-                                    <button onclick="printContent ('division')"
-                                        class="btn btn-primary"><i class="fa fa-print"></i>
-                                        Print Result</button>
+                                <div style="text-align: center;">
+                                    <button class="btn btn-primary" type="button" id="downloadButton">
+                                        <a id="downloadpages" style="color: white; text-decoration: none;">
+                                            <i class="fa fa-download"></i> Download
+                                        </a>
+                                    </button>
+                                    <button onclick="printContent()" class="btn btn-primary" id="printButton">
+                                        <i class="fa fa-print"></i> Print Result
+                                    </button>
                                 </div>
+                                
                             </div>
                         </div>
                     </div>
@@ -329,18 +333,38 @@
             }
         });
 
-            // script for print
-    function printContent(el) {
-    // Save the current content of the document
-    var restorepage = document.body.innerHTML;
-    // Get the content of the specified HTML element
-    var printcontent = document.getElementById(el).innerHTML;
-    // Set the document body content to the content of the specified element
-    document.body.innerHTML = printcontent;
-    // Trigger the browser's print functionality
+        // script for print
+        function printContent() {
+
+    // Hide the buttons
+    var downloadButton = document.getElementById('downloadButton');
+    var printButton = document.getElementById('printButton');
+
+    if (downloadButton && printButton) {
+        downloadButton.style.display = 'none';
+        printButton.style.display = 'none';
+    } else {
+        console.error("Download button or Print button not found");
+    }
+
+    // Remove the border from input fields
+    var inputFields = document.querySelectorAll('#std_remarks input, #std_remarks textarea');
+    inputFields.forEach(function (input) {
+        input.style.border = 'none';
+    });
+
+    // Trigger the print action
     window.print();
-    // Restore the original content of the document
-    document.body.innerHTML = restorepage;
+
+    // Restore the buttons after a short delay (adjust as needed)
+    setTimeout(function () {
+        if (downloadButton && printButton) {
+            downloadButton.style.display = 'inline-block';
+            printButton.style.display = 'inline-block';
+        } else {
+            console.error("Download button or Print button not found");
+        }
+    }, 0); // Adjust the delay as needed
 }
 
     </script>

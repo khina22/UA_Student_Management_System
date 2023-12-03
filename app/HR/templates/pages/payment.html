@@ -138,7 +138,7 @@
                 <select name="section" id="section" class="form-control">
                   <option value="">---Select Section---</option>
                 </select>
-                <span class="text-danger" id="sectionError" style="display: none;">Please select a section.</span>
+                <span class="text-danger" id="sectionError" style="display: none;">Please select a section</span>
               </div>
             </div>
 
@@ -183,10 +183,7 @@
                 <img class="thumb-img-mark" width="auto" height="auto" id="zoomImage" alt="Screenshot Image">
             </div>
           </div>
-          
         </div>
-        
-        
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary"
                 data-dismiss="modal">Close</button>
@@ -195,7 +192,6 @@
 </div>
 </div>
 <!-- end modal -->
-
 
 
 {% endblock content %}
@@ -218,7 +214,6 @@ zoomImage.addEventListener('click', (event) => {
     event.stopPropagation();
     zoomImage.classList.toggle('zoomed');
 });
-
 
   $(document).ready(function () {
     $.ajax({
@@ -576,46 +571,31 @@ $(document).on('click', '.payment-for-Installment', function() {
   }
 });
 
-
-  // // Initialize DataTable with dynamic columns
-  // var columnDefs = [
-  //   // Define columns that should always be visible
-  //   { targets: [0,1,2,3,4, 5, 6, 7], visible: true }
-  // ];
-
-  // // Define columns for Installment headers and their sub-headers
-  // for (let i = 0; i < installmentKeys.length; i++) {
-  //   const headerIndex = 6 + i * 6;
-
-  //   // Set the Installment header column to be visible
-  //   columnDefs.push({ targets: headerIndex, visible: true });
-
-  //   // Set the sub-header columns to be visible
-  //   for (let j = 0; j <6; j++) {
-  //     const subHeaderIndex = headerIndex + j + 1;
-  //     columnDefs.push({ targets: subHeaderIndex, visible: true });
-  //   }
-  // }
- 
-   // Initialize DataTable with dynamic columns and rendering options
-  // mainTable.DataTable({
-  //   responsive: true,
-  //   scrollX: true,
-  //   deferRender: true,
-
-  //     columnDefs: [
-  //           { targets: [0, 1, 2, 3, 4, 5, 6, 7], visible: true }
-  //       ]
-  // });
-
   // Populate main headers data
   // Draw the DataTable without recalculating the layout
 mainTable.DataTable().draw();
 
 }
 
-    $('#sendModal').on('shown.bs.modal', function () {
-      let stdCid = $('#stdCid').val();
+$('#sendModal').on('shown.bs.modal', function () {
+        let stdCid = $('#stdCid').val();
+        // let studentType = "day_scholar"; // Replace this with the actual value from your data
+
+        // if (studentType === "boarder") {
+        //     // Code for boarders
+        //     $('#hostel_group').show();
+        // } else if (studentType === "day_scholar") {
+        //     // Code for day scholars
+        //     // Add your specific code for day scholars here
+        //     $('#hostel_group').hide(); // Hide the hostel field for day scholars
+        // } else if (studentType === "paying_guest") {
+        //     // Code for paying guests
+        //     // Add your specific code for paying guests here
+        //     $('#hostel_group').hide(); // Hide the hostel field for paying guests
+        // } else {
+        //       return("success")
+        // }
+
       $('#hostel').on('change', function(){
         let selectedHostel = $(this).val();
         if(selectedHostel != ''){
@@ -704,424 +684,7 @@ mainTable.DataTable().draw();
     $('#sendModal').modal('show');
   });
 
-  // $('#accountTable').on('click', '.payment-for-SeatConfirm', function () {  
-  //   var rowData = $(this).closest('tr').find('td').map(function () {
-  //     return $(this).text();
-  //   }).get();
-    
-  // });
-
   });
-
-
-  // Function to dynamically populate headers
- 
-//   function populateDynamicHeaders(otherDataArray, installmentDataArray, installmentKeys, dataTable) {
-//   const mainTable = $('#accountTable');
-//   const keyOrder = ["Sl No.", "Student CID", "Index Number", "Student Name"];
-//   const otherDataKeys = [];
-//   console.log(otherDataArray,'**ABBCS');
-//   // Switch 2nd index with 1st index
-//   [otherDataArray[1], otherDataArray[0]] = [otherDataArray[0], otherDataArray[1]];
-
-// // Switch 3rd index with 2nd index
-// [otherDataArray[2], otherDataArray[1]] = [otherDataArray[1], otherDataArray[2]];
-
-//   // Extract keys from otherDataArray
-//   for (let i = 0; i < otherDataArray.length; i++) {
-//     let dataObject = otherDataArray[i];
-//     for (let key in dataObject) {
-//       otherDataKeys.push(key);
-//     }
-//   }
-
-//   // Clear the existing content of the mainTable
-//   mainTable.html('');
-
-//   // Create the main header row
-//   let headerRow = $('<tr></tr>');
-
-//   // Append headers for keys present in otherDataArray
-//   for (let i = 0; i < keyOrder.length; i++) {
-//     let key = keyOrder[i];
-//     if (otherDataKeys.includes(key)) {
-//       let th = $('<th>' + key + '</th>');
-//       console.log(key,'**ZZZ');
-//       headerRow.append(th);
-//     }
-//   }
-
-//   // Append the main header row to the mainTable
-//   mainTable.append($('<thead></thead>').append(headerRow));
-
-//   // Create a new row for the sub-headers
-//   const subHeaderRow = $('<tr></tr>');
-
-//   // Add empty cells for "Sl No.", "Student CID", "Index Number", and "Student Name"
-//   for (let i = 0; i < keyOrder.length; i++) {
-//     let emptyTh = $('<th></th>');
-//     subHeaderRow.append(emptyTh);
-//   }
-//   let installmentVariables=[];
-
-//   var installmentArray = [];
-//   for (var j = 0; j < installmentDataArray.length; j++) {
-//     const installObjects = installmentDataArray[j];
-//     for (let c in installObjects) {
-//       installmentArray.push(installObjects[c]);
-//     }
-//   }
-
-//   for (var k = 0; k < installmentArray.length; k++) {
-//     var headerTitle = 'Installment ' + (k + 1);
-
-//     var installmentTh = $('<th colspan="4">' + headerTitle + '</th>');
-//     headerRow.append(installmentTh);
-
-//     // Find the keys for the current installment in the installmentArray
-//     var dictionary = installmentArray[k];
-//     var installmentKeyed = Object.keys(dictionary);
-//     console.log(Object.values(dictionary),'****CONSOSS');
-// console.log(installmentKeyed,'**K=Inskey');
-//     // Add cells for the sub-headers directly under the installment header
-//     for (var i = 0; i < installmentKeyed.length; i++) {
-//       var key = installmentKeyed[i];
-//       var subHeaderTh = $('<th>' + key + '</th>');
-//       subHeaderRow.append(subHeaderTh);
-//     }
-//   }
-
-//   // Append the subHeaderRow to the mainTable
-//   mainTable.append($('<thead></thead>').append(subHeaderRow));
-
-//   // Calculate the combined length of otherDataArray and installmentDataArray
-//   let combinedLength = otherDataArray.length + installmentArray.length;
-//   // Initialize mainHeaders and subHeaders arrays
-//   let mainHeaders = [4, 0, 0, 0]; // Four rows for main headers
-//   let subHeaders = Array(installmentArray.length).fill(0); // Initialize with zeros
-//   // Loop through the data and populate main headers, sub-headers, and data rows
-//   let dataRow=[];
-//   debugger;
-  
-// function sortByKeyOrder(entries) {
-//     return keyOrder.map(key => entries.find(entry => entry[0] === key)).filter(entry => entry !== undefined);
-// }
-
-// // Populate main headers data
-// for (let i = 0; i < otherDataArray.length; i++) {
-//     let dataObject = otherDataArray[i];
-    
-//     // Add the values of the main headers to the dataRow array
-//     keyOrder.forEach(key => {
-//       if (dataObject.hasOwnProperty(key) && dataObject[key] !== undefined) {
-//         dataRow.push(dataObject[key]);
-//       } 
-     
-//     });
-//   }
-
-
-//  // Populate sub-headers data
-//  for (let i = 0; i < installmentArray.length; i++) {
-//     let installmentData = installmentArray[i];
-//     let subHeaderKeys = Object.keys(installmentData);
-//     let subHeaderValues = Object.values(installmentData);
-
-//     // Add the values of the sub-headers to the dataRow array
-//     subHeaderValues.forEach(value => {
-//       dataRow.push(value);
-//     });
-//   }
-
-//   // Create the dataRows array with a single row containing all the data
-//   const dataRows = [dataRow];
-
-//   // Set up the column visibility
-//   dataTable.columns().visible(false);
-//   for (let i = 0; i < mainHeaders.length; i++) {
-//     dataTable.column(i).visible(true);
-//   }
-
-//   // Add the rows to the DataTable
-//   debugger;
-//   console.log(dataRows,'**DATAROOOOOOWW');
-//   //dataTable.clear().rows.add(dataRows).draw();
-//   dataTable.clear().rows.add(dataRows).draw();
-
-//   // Apply the 'main-header' and 'sub-header' classes to the rows
-//  // Apply the 'main-header' and 'sub-header' classes to the rows
-// let rowCounter = 0;
-// let rows = dataTable.rows().nodes();
-// for (let i = 0; i < rows.length; i++) {
-//   if (mainHeaders[rowCounter] > 0) {
-//     $(rows[i]).addClass('main-header');
-//     mainHeaders[rowCounter]--;
-//   } else if (subHeaders[rowCounter] > 0) {
-//     $(rows[i]).addClass('sub-header');
-//     subHeaders[rowCounter]--;
-//   }
-
-//   if (i !== 0 && i % 5 === 0) {
-//     rowCounter++;
-//   }
-// }
-// }
-
-
-
-  // working js
-  // function loadUsers(paymentmodes) {
-  //   var url = '/summit_fees';
-  //   var requestData = {
-  //     paymentmodes: paymentmodes
-  //   };
-  //   $.ajax({
-  //     type: 'GET',
-  //     url: url,
-  //     data: requestData,
-  //     success: function (response) {
-  //       console.log("***RES", response);
-  //       // Clear the table body before populating it with new data
-  //       var dataTable = $('#accountTable').DataTable();
-  //       dataTable.clear().draw();
-
-  //       // Check if the "Action" column should be shown
-  //       var showActionColumn = paymentmodes === 'Seat Confirm';
-
-  //       // Update column visibility based on the value of paymentmodes
-  //       dataTable.column('.action-column').visible(showActionColumn);
-
-  //       // Handle dynamic installment columns for paymentmodes == 'Installment'
-  //       if (paymentmodes === 'Installment') {
-  //         var maxInstallments = 0;
-  //         var installmentKeys = [];
-
-  //         // Get the maximum number of installments and the installment keys from the response
-  //         for (var i = 0; i < response.data.length; i++) {
-  //           var history = response.data[i];
-  //           var keys = Object.keys(history);
-  //           var installments = keys.filter(key => key.startsWith('Installment'));
-  //           if (installments.length > maxInstallments) {
-  //             maxInstallments = installments.length;
-  //             installmentKeys = installments;
-  //           }
-  //         }
-
-  //         // Create dynamic installment headers
-  //         var headers = [
-  //           'Sl No.',
-  //           'Student CID',
-  //           'Index Number',
-  //           'Student Name'
-  //         ];
-
-  //         for (var j = 0; j < maxInstallments; j++) {
-  //           for (var k = 0; k < installmentKeys.length; k++) {
-  //             var header = 'Installment ' + (j + 1) + ' - ' + installmentKeys[k];
-  //             headers.push(header);
-  //           }
-  //         }
-
-  //         // If the "Action" column should be shown, add the action button header
-  //         if (showActionColumn) {
-  //           headers.push('Action');
-  //         }
-
-  //         // Set the dynamic headers for the DataTable
-  //         dataTable.columns().header().to$().each(function (el, idx) {
-  //           $(el).text(headers[idx]);
-  //         });
-
-  //         // Iterate over the response data and create table rows
-  //         for (var i = 0; i < response.data.length; i++) {
-  //           var history = response.data[i];
-  //           var row = [
-  //             i + 1,
-  //             history['Student CID'],
-  //             history['Index Number'],
-  //             history['Student Name']
-  //           ];
-
-  //           // Add dynamic installment data
-  //           for (var j = 0; j < maxInstallments; j++) {
-  //             for (var k = 0; k < installmentKeys.length; k++) {
-  //               var installmentKey = installmentKeys[k];
-  //               var value = history[installmentKey];
-  //               row.push(value ? value : '');
-  //             }
-  //           }
-
-  //           // If the "Action" column should be shown, add the action button HTML
-  //           if (showActionColumn) {
-  //             row.push('<button class="action-button" data-id="' + i + '">View</button>');
-  //           }
-
-  //           // Append the row to the table body
-  //           dataTable.row.add(row);
-  //         }
-  //       } else {
-  //         // For other payment modes, iterate over the response data and create table rows as before
-  //         for (var i = 0; i < response.data.length; i++) {
-  //           var history = response.data[i];
-  //           var row = [
-  //             i + 1,
-  //             history['Student CID'],
-  //             history['Index Number'],
-  //             history['Student Name'],
-  //             history['Account Holder'],
-  //             history['Bank Type'],
-  //             history['Journal No.'],
-  //             history['Amount'],
-  //             history['Payment Mode']
-  //           ];
-
-  //           // If the "Action" column should not be shown, add an empty cell
-  //           if (!showActionColumn) {
-  //             row.push('');
-  //           } else {
-  //             // If the "Action" column should be shown, add the action button HTML
-  //             row.push('<button class="action-button" data-id="' + i + '">View</button>');
-  //           }
-
-  //           // Append the row to the table body
-  //           dataTable.row.add(row);
-  //         }
-  //       }
-
-  //       // Redraw the table
-  //       dataTable.draw();
-  //     },
-  //     error: function () {
-  //       swal("An error occurred while retrieving the payment history.", "", "error");
-  //       clearFields(); // Clear names and hide fields
-  //     }
-  //   });
-  // }
-
-
-
-
-  // JavaScript//
-
-
-  // function loadUsers(paymentmodes) {
-  //   var url = '/summit_fees';
-  //   var requestData = {
-  //     paymentmodes: paymentmodes
-  //   };
-
-  //   $.ajax({
-  //     type: 'GET',
-  //     url: url,
-  //     data: requestData,
-  //     success: function (response) {
-  //       console.log(response.data);
-
-  //       // Clear the table body before populating it with new data
-  //       $('#accountTable').DataTable().clear().draw();
-
-  //       // Get the DataTable instance
-  //       var dataTable = $('#accountTable').DataTable();
-
-  //       // If paymentmodes is 'Installment', replace the column headers dynamically
-  //       if (paymentmodes === 'Installment') {
-  //         // Prepare the data array to hold all rows
-  //         var tableData = [];
-
-  //         // Iterate over the response data and populate the rows for each installment
-  //         for (var i = 0; i < response.data.length; i++) {
-  //           var history = response.data[i];
-
-  //           // Find the maximum number of installments available for this row
-  //           var maxInstallments = 0;
-  //           for (var key in history) {
-  //             if (key.startsWith('Installment')) {
-  //               var installmentNumber = key.split(' ')[1];
-  //               maxInstallments = Math.max(maxInstallments, parseInt(installmentNumber));
-  //             }
-  //           }
-
-  //           for (var j = 1; j <= maxInstallments; j++) {
-  //             var row = {
-  //               "Sl No.": history['Sl No.'],
-  //               "Student CID": history['Student CID'],
-  //               "Index Number": history['Index Number'],
-  //               "Student Name": history['Student Name']
-  //             };
-
-  //             var installmentData = {
-  //               "Account Holder": history[`Installment ${j} - Account Holder`],
-  //               "Amount": history[`Installment ${j} - Amount`],
-  //               "Bank Type": history[`Installment ${j} - Bank Type`],
-  //               "Journal No.": history[`Installment ${j} - Journal No.`]
-  //             };
-
-  //             row[`Installment ${j}`] = JSON.stringify(installmentData);
-
-  //             // Add the row object to the data array
-  //             tableData.push(row);
-  //           }
-  //         }
-
-  //         // Set the updated column headers with dynamic installment columns
-  //         var headers = ['Sl No.', 'Student CID', 'Index Number', 'Student Name'];
-  //         for (var i = 1; i <= maxInstallments; i++) {
-  //           headers.push(`Installment ${i}`);
-  //         }
-  //         dataTable.columns().header().to$().each(function (index) {
-  //           if (index < headers.length) {
-  //             $(this).html(headers[index]);
-  //             dataTable.column(index).visible(true);
-  //           } else {
-  //             dataTable.column(index).visible(false);
-  //           }
-  //         });
-
-  //         // Set the data source for DataTables
-  //         dataTable.clear();
-  //         dataTable.rows.add(tableData);
-  //         dataTable.draw();
-  //       } else {
-  //         // For other payment modes, use the existing code
-  //         // Prepare the data array to hold all rows
-  //         var tableData = [];
-  //         for (var i = 0; i < response.data.length; i++) {
-  //           var history = response.data[i];
-  //           var row = [
-  //             history['Sl No.'],
-  //             history['Student CID'],
-  //             history['Index Number'],
-  //             history['Student Name'],
-  //             history['Payment Mode'],
-  //             history['Account Holder'],
-  //             history['Bank Type'],
-  //             history['Journal No.'],
-  //             history['Amount'],
-  //           ];
-
-  //           // If the "Action" column should not be shown, add an empty cell
-  //           if (paymentmodes !== 'Seat Confirm') {
-  //             row.push('');
-  //           } else {
-  //             // If the "Action" column should be shown, add the action button HTML
-  //             row.push('<button class="action-button" data-id="' + i + '">View</button>');
-  //           }
-
-  //           // Add the row to the data array
-  //           tableData.push(row);
-  //         }
-
-  //         // Set the data source for DataTables
-  //         dataTable.clear();
-  //         dataTable.rows.add(tableData);
-  //         dataTable.draw();
-  //       }
-  //     },
-  //     error: function () {
-  //       alert('An error occurred while retrieving the payment history.');
-  //     },
-  //   });
-  // }
 
 
   // Add an event listener to the "Assign Section" button
@@ -1134,12 +697,13 @@ mainTable.DataTable().draw();
     let selectedSectionOption = $('#section').find(':selected');
     let selectedSectionId = selectedSectionOption.data('section-id');
     let selectedHostel=$('#hostel').val();
+    let accomodation=$('#boarder').val();
     let returnVal = false;
      // Reset error states
 $('#sectionError').hide();
 $('#section_group').removeClass('has-danger');
 
-$('#hostelError').hide();
+//$('#hostelError').hide();
 $('#hostel_group').removeClass('has-danger');
     if (className === 'VIII') {
       $('#section_group').hide();
@@ -1153,17 +717,17 @@ $('#hostel_group').removeClass('has-danger');
       }
     }
 
-    if (selectedHostel == '') {
-      $('#hostelError').show();
-      $('#hostel_group').addClass('has-danger');
-      returnVal = true;
-    } 
-    else{
-      alert(selectedHostel);
-      $('#hostelError').hide();
-      $('#hostel_group').removeClass('has-danger');
+    if(accomodation =="Boarder"){
+        if (selectedHostel == '') {
+          $('#hostelError').show();
+          $('#hostel_group').addClass('has-danger');
+          returnVal = true;
+        }else{
+          $('#hostelError').hide();
+          $('#hostel_group').removeClass('has-danger');
+        }
     }
-
+    
     if (returnVal) {
       return false; // Prevent form submission
     }
@@ -1172,15 +736,16 @@ $('#hostel_group').removeClass('has-danger');
     let requestData = {
       indexNumber: indexNumber,
       selectedSectionId: selectedSectionId,
-      selectedHostel: selectedHostel
+      selectedHostel: selectedHostel,
+      accomodation:accomodation
     };
-
     // Use AJAX to send the data to the server
     $.ajax({
       type: 'POST', // Or 'GET' depending on your server-side implementation
-      url: '/assignSectionUrl', // Replace with the actual server endpoint
+      url: '/assignSection', // Replace with the actual server endpoint
       data: requestData,
       success: function (response) {
+        debugger;
         if (response.hasOwnProperty("error")) {
           swal('Error', response.error, 'error');
         } else {

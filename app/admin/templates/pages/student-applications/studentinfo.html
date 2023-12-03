@@ -18,6 +18,7 @@
 
     {% endblock stylesheets %}
     {% block content %}
+
     <div class="main-panel">
         <div class="content-wrapper">
             <div class="row">
@@ -45,7 +46,7 @@
                                             href="#parent-detail">Parents Detail</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link btn btn-primary" class="btn  btn-xl" data-toggle="pill"
+                                        <a class="nav-link btn btn-primaary" class="btn  btn-xl" data-toggle="pill"
                                             href="#actions">Action</a>
 
                                     </li>
@@ -56,8 +57,6 @@
                                         enctype="multipart/form-data">
                                         <div class="tab-content">
                                         <div id="studentDetail" class="container tab-pane active">
-                                            <!-- forst display -->
-                                            <!-- student's detail -->
                                             <div class="student">
                                                 <div class="container mt-0">
                                                     <div class="row d-flex justify-content-center">
@@ -344,27 +343,14 @@
                                                                     disabled>
                                                             </div>
                                                         </div>
-                                                        <!-- <div class="form-group row" {% if(std.stream==None ) %} hidden
-                                                            {% endif %}>
-                                                            <label for="Stream"
-                                                                 class="control-label col-sm-4 text-right">Stream
-                                                                :</label>
-                                                            <div class="col-sm-8">
-                                                                <input type="text" class="form-control"
-                                                                    value="{{std.stream}}" name="stream" id="stream"
-                                                                    disabled>
-                                                            </div>
-                                                        </div> -->
-
                                                     </div>
                                                 </div> <br><br>
                                                 <!-- modal -->
                                                 <!-- Button trigger modal -->
                                                 <div class="col-md-12 text-center">
-                                                    <button type="button" class="btn btn-warning text-light text-center"
-                                                        data-toggle="modal" data-target="#exampleModal">
+                                                    <a href="{{ std.marksheet }}" target="_blank" class="btn btn-warning text-light text-center">
                                                         View Marksheet
-                                                    </button>
+                                                    </a>
                                                 </div>
 
                                                 <!-- Modal -->
@@ -379,18 +365,6 @@
                                                                     aria-label="Close">
                                                                     <span aria-hidden="true">&times;</span>
                                                                 </button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                <div class="col-md-4 col-lg-4">
-                                                                    <div class="gal-detail thumb ">
-                                                                        <a href="{{ std.marksheet }}"
-                                                                            class="image-popup" title="marksheet Photo">
-                                                                            <img src="{{ std.marksheet }}"
-                                                                                class="thumb-img-mark" width="400"
-                                                                                height="550" alt="Marksheet Image">
-                                                                        </a>
-                                                                    </div>
-                                                                </div>
                                                             </div>
                                                             <div class="modal-footer">
                                                                 <button type="button" class="btn btn-secondary"
@@ -452,7 +426,6 @@
 
                                         </div>
                                         <div id="actions" class="container tab-pane fade">
-                                            <!-- final display -->
                                             <div class="row">
                                                 <input type="hidden" name="email" value="{{ std.student_email }}">
                                                 <input type="hidden" name="name" value="{{ std.first_name }}">
@@ -494,10 +467,9 @@
                                                 <div class="col-md-12">
                                                     <button type="button" id="update"
                                                         class="btn btn-md btn-warning text-light">Submit</button>
-                                                </div>
+                                                        <a href="javascript:void(0);" id="printButton" class="btn btn-md btn-warning text-light" style="width: 70px;" onclick="printPage('{{ std.id }}')">Print</a>
+                                                    </div>
                                             </div>
-                                        </div>
-                                    </div>
                                     </form>
                             </div>
                         </div>
@@ -561,16 +533,6 @@
         });
 
 
-        // script for print
-
-        function printContent(el) {
-            var restorepage = document.body.innerHTML;
-            var printcontent = document.getElementById(el).innerHTML;
-            document.body.innerHTML = printcontent;
-            window.print();
-            document.body.innerHTML = restorepage;
-        }
-
         // DOWNLOAD
         async function generatePDF() {
             document.getElementById("downloadpages").innerHTML = " Downloading";
@@ -583,12 +545,28 @@
                 useCORS: true,
             }).then((canvas) => {
                 doc.addImage(canvas.toDataURL("image/png"), 'PNG', 100, 10, 600, 600)
-            })
+            }) 
             doc.save("Document.pdf");
             // DOWNLOADING CODE
             document.getElementById("downloadButton").innerHTML = "click to download";
 
         }
+
+            // script for print
+            
+function printPage(studentId) {
+    // Open a new window for the print action
+    var printWindow = window.open('/print/' + studentId, '_blank');
+
+    // Close the new window after printing
+    printWindow.onload = function() {
+        printWindow.print();
+        printWindow.onafterprint = function() {
+            printWindow.close();
+        };
+    };
+}
+
 
     </script>
 

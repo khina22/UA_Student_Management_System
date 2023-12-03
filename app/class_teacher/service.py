@@ -309,14 +309,14 @@ def get_std_in_class():
         data.append({'sl': index + 1,
                      'index_number': user.index_number,
                      'student_cid': user.student_cid,
-                    'first_name': user.first_name + ' ' + user.last_name,
+                     'first_name': user.first_name + ' ' + user.last_name,
                      'student_email': user.student_email,
                      'id': user.id})
         count = user.count_all
 
     respose_add_std = {
         "draw": int(draw),
-        "recordsTotal": count,
+        "recordsTotal": count, 
         "recordsFiltered": count,
         "data": data
     }
@@ -791,16 +791,6 @@ def get_subject_teacher_info(id):
                                      id).first()
     return render_template('/pages/add-student/view_std_mark.html', sub_teacher=sub_teacher)
 
-# def getdeletedMarks(id):
-#     sub_teacher = connection.execute('SELECT *, se.id FROM public.tbl_student_evaluation AS se '
-#                                      'INNER JOIN public."User" AS u ON u.id = se.subject_teacher_id '
-#                                      'INNER JOIN public.user_detail AS ud ON u.id = ud.user_id '
-#                                      'INNER JOIN public.tbl_students_personal_info AS sp ON sp.id = se.student_id '
-#                                      'INNER JOIN public.tbl_academic_detail AS ad ON sp.id = ad.std_personal_info_id '
-#                                      'WHERE se.id =%s',
-#                                      id).first()
-#     return render_template('/pages/add-student/view_std_mark.html', sub_teacher=sub_teacher)
-# edit teachers
 def editTheTeacher(id):
     data = connection.execute('SELECT *, U.id FROM public."User" as U '\
         'inner join public.user_detail as ud on U.id = ud.user_id WHERE U.id=%s', id).fetchone()
@@ -865,18 +855,22 @@ def get_time_table():
         'SELECT *, t.id FROM public.tbl_time_table AS t WHERE t.id IS NOT NULL ')
     return render_template('/pages/user-management/view_time_table.html', student_timeing_table = std_time_table)
 
-def subjectTeacher(class_id, section_id):
+
+def subjectTeacher():
+
+    user_query = '''SELECT grade, section_no FROM public.user_detail WHERE user_id = %s'''
+    user = connection.execute(user_query, (current_user.id)).fetchone()
+
     draw = request.form.get('draw')
     row = request.form.get('start')
     row_per_page = request.form.get('length')
     search_value = request.form['search[value]']
     search_query = ' '
 
-    user_id = current_user.id
-
     if search_value:
         search_query = f"AND (U.username LIKE '%%{search_value}%%' OR U.email LIKE '%%{search_value}%%' OR UD.role LIKE '%%{search_value}%%')"
 
+    # Modify your SQL query to filter by class_name and section
     str_query = f'''
         SELECT U.username, U.email, sub.subject_name, cl.class_name, sec.section, UD.grade, UD.role, count(*) OVER() AS count_all, U.id AS user_id
         FROM public."User" AS U
@@ -886,13 +880,13 @@ def subjectTeacher(class_id, section_id):
         LEFT JOIN public.section_subject ss ON UD.subject = ss.section_subject_id
         LEFT JOIN public.tbl_subjects sub ON ss.subject_id = sub.subject_code
         WHERE U.type IS NULL AND UD.role = %s
-    '''
-    str_query += search_query + '''
         AND cl.class_id = %s
         AND sec.section_id = %s
+    ''' + search_query + f'''
+        LIMIT {row_per_page} OFFSET {row}
     '''
 
-    subject_teacher = connection.execute(str_query, ('subject_teacher', class_id, section_id)).fetchall()
+    subject_teacher = connection.execute(str_query, ('subject_teacher', user.grade, user.section_no)).fetchall()
 
     data = []
     count = 0
@@ -918,6 +912,38 @@ def subjectTeacher(class_id, section_id):
     }
 
     return jsonify(response)
+
+def std_class(id):
+    student_details = connection.execute(
+        'SELECT *, P.id FROM public.tbl_students_personal_info AS P '
+        'inner join public.tbl_academic_detail as A on P.id = A.std_personal_info_id '
+        'inner join public.tbl_dzongkhag_list as dzo on dzo.dzo_id = P.student_present_dzongkhag '
+        'inner join public.tbl_gewog_list as gewog on gewog.gewog_id = P.student_present_gewog '
+        'inner join public.tbl_village_list as village on village.village_id = P.student_present_village '
+        'WHERE P.id =%s',
+        id).first()
+    
+    #fetch student marks
+    std_marks_query = '''select ev.*, sub.*, ss.* from public.tbl_student_evaluation ev 
+                    join public."User" uu on ev.subject_teacher_id=uu.id 
+                    join public.user_detail ud on (uu.id=ud.user_id and ev.subject_teacher_id=ud.user_id)
+                    join public.tbl_students_personal_info std on ev.student_id=std.id 
+                    join public.tbl_academic_detail ac on (std.id=ac.std_personal_info_id and ev.student_id=ac.std_personal_info_id)
+                    join public.class cl on (ac.admission_for_class=cl.class_id and ud.grade=cl.class_id)
+                    join public.std_section sec on (ac.section=sec.section_id and ud.section_no=sec.section_id and cl.class_id=sec.class_id)
+                    join public.section_subject ss on (ud.subject=ss.section_subject_id and ss.section_id=sec.section_id)
+                    join public.tbl_subjects sub on ss.subject_id=sub.subject_code
+                    WHERE ev.student_id = %s '''
+
+    std_marks = connection.execute(std_marks_query, id).fetchall()
+
+    #fetch student's academic details
+    std_academic = connection.execute(
+        'SELECT * FROM public.tbl_academic_summary AS std_result '
+        'WHERE std_id = %s',
+        id).first()
+    return render_template('/pages/add-student/print_result.html', std=student_details, std_marks=std_marks, std_academic=std_academic)
+
 
 
 

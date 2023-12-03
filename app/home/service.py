@@ -125,15 +125,19 @@ def store_contact_details():
 
 # Fetching Dzongkhag/gewog/village list from the database
 def get_dzo_list():
-    dzongkhag =text('SELECT * FROM public.tbl_dzongkhag_list')
+    dzongkhag = text('SELECT * FROM public.tbl_dzongkhag_list')
     dzo_List = connection.execute(dzongkhag).fetchall()
 
     get_user_info = text('select * from public.tbl_dzongkhag_list as dl ' \
                     'inner join public.tbl_gewog_list as gl on dl.dzo_id = gl.dzo_id ' \
                     'inner join public.tbl_village_list as vl on gl.gewog_id = vl.gewog_id')
     get_details = connection.execute(get_user_info).fetchall()
-  
-    return render_template('enroll_student.html', dzo_List=dzo_List, get_details=get_details)
+
+    slot_query = '''SELECT id, class7, class8, class9, class10, class11_arts, class11_com, class11_sci, class12_arts, class12_com, class12_sci FROM public.tbl_std_slots'''
+    slot = engine.execute(slot_query).fetchall()
+
+    # Pass the slot data to the template
+    return render_template('enroll_student.html', dzo_List=dzo_List, get_details=get_details, slot=slot)
 
 # Fetching gewog list from database
 def get_gewog():

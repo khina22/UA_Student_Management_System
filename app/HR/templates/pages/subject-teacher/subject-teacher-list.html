@@ -74,16 +74,6 @@
                                     <div class="row">
                                         <div class="col-lg-6">
                                             <div class="form-group">
-                                                <label class="form-control-label" for="subject">Subject</label>
-                                                <select name="subject" id="subject" class="form-control">
-                                                    <option value="">Select</option>
-                                                    {% for subject in subjects %}
-                                                    <option value="{{ subject.subject_code}}">{{ subject.subject_name}}</option>
-                                                    {% endfor %}
-                                                </select>                                            </div>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <div class="form-group">
                                                 <label class="form-control-label" for="grade"> Class</label>
                                                 <select name="grade" id="grade" class="form-control">
                                                     <option value="">Select</option>
@@ -104,6 +94,18 @@
                                                 </select>
                                             </div>
                                         </div>  
+
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="subject">Subject</label>
+                                                <select name="subject" id="subject" class="form-control">
+                                                    <option value="">Select</option>
+                                                    {% for subject in subjects %}
+                                                    <option value="{{ subject.subject_code}}">{{ subject.subject_name}}</option>
+                                                    {% endfor %}
+                                                </select>                                            </div>
+                                        </div>
+                                     
                                 </div>
                             </div>
                         </div>
@@ -135,7 +137,7 @@ crossorigin="anonymous"></script>
             'bDestroy': true,
             'serverMethod': 'POST',
             'ajax': {
-                'url': 'subjectTeacherList'
+                'url': 'hr/subjectTeacherList'
             },
             'columns': [
                 { data: 'sl' },
@@ -193,6 +195,46 @@ crossorigin="anonymous"></script>
 
         })
     }
+
+      // Function to handle the change event for the section select element
+  $("#section").on("change", function() {
+    var sectionId = $(this).val();
+  
+    // Fetch subjects based on the selected section_id
+    fetchSubjects(sectionId);
+  });
+
+  function fetchSubjects(sectionId) {
+    // Send an AJAX request to retrieve the subjects for the selected section
+    $.ajax({
+      url: '/get_subjects/' + sectionId,
+      type: 'GET',
+      success: function(response) {
+        if (response.length===0){
+            $('#subject').hide();
+        }
+        else{  
+        // Update the "Select Subject" dropdown with the retrieved subjects
+        var subjectDropdown = $('#subject');
+        subjectDropdown.empty();
+        subjectDropdown.append($('<option>', { value: '', text: '---Select Subject---' }));
+        for (var i = 0; i < response.length; i++) {
+          var subject = response[i];
+          var option = $('<option>');
+          option.val(subject.id);
+          option.text(subject.name);
+          subjectDropdown.append(option);
+        }
+        $('#subject').show();
+    }
+      },
+      error: function(xhr, status, error) {
+        // Handle the error if the AJAX request fails
+        console.error(error);
+      }
+    });
+  }
+
 
     // updating teacher
     $("#update_sub_teacherlist").click(function () {

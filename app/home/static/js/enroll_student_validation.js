@@ -3,12 +3,40 @@ const enrollForm = document.getElementById('registration_form');
 
 const enrollfv = FormValidation.formValidation(enrollForm, {
     fields: {
-        half_photo:{
-            validators:{
-                notEmpty:{
+        half_photo: {
+            validators: {
+                notEmpty: {
                     message: 'The Passport size photo is required',
-                }
-            }
+                },
+                file: {
+                    extension: 'jpeg,jpg,png', // Accept only these image file extensions
+                    type: 'image/jpeg,image/png', // Accept only JPEG and PNG images
+                    maxSize: 5 * 1024 * 1024, // 5MB
+                    message: 'Please upload a valid image file (JPEG or PNG) with a maximum size of 5MB',
+                    callback: {
+                        message: 'Please upload a passport-size photo (e.g., 200x250 pixels).',
+                        callback: function (value, validator, $field) {
+                            // Define the required dimensions for a passport-size photo
+                            const requiredWidth = 200;
+                            const requiredHeight = 250;
+
+                    // Check if the uploaded image matches the required dimensions
+                    const image = new Image();
+                    image.src = URL.createObjectURL($field[0].files[0]);
+
+                    return new Promise((resolve) => {
+                        image.onload = function () {
+                            if (image.width === requiredWidth && image.height === requiredHeight) {
+                                resolve({ valid: true });
+                            } else {
+                                resolve({ valid: false });
+                                    }
+                                };
+                            });
+                        },
+                    },
+                },
+            },
         },
 
         
@@ -30,6 +58,7 @@ const enrollfv = FormValidation.formValidation(enrollForm, {
                 },
                 stringLength: {
                     max: 11,
+                    min: 11,
                     message: 'The CID must be 11 characters'
                 },
                 numeric: {
@@ -40,6 +69,7 @@ const enrollfv = FormValidation.formValidation(enrollForm, {
                 }
             }
         },
+
         dob: {
             validators: {
                 notEmpty: {
@@ -71,6 +101,7 @@ const enrollfv = FormValidation.formValidation(enrollForm, {
                     message: 'This field is required',
                 },
                 stringLength: {
+                    max: 8,
                     min: 8,
                     message: 'The Phone number must be 8 digits'
                 },
@@ -130,8 +161,9 @@ const enrollfv = FormValidation.formValidation(enrollForm, {
                     message: 'This field is required',
                 },
                 stringLength: {
-                    min: 5,
-                    message: 'The student index must be 5 digits'
+                    max: 12,
+                    min: 12,
+                    message: 'The student index must be 12 digits'
                 },
                 numeric: {
                     message: 'The value is not a number',
@@ -175,6 +207,7 @@ const enrollfv = FormValidation.formValidation(enrollForm, {
                 },
                 stringLength: {
                     max: 11,
+                    min: 11,
                     message: 'The CID must be 11 characters'
                 },
                 numeric: {
@@ -192,7 +225,6 @@ const enrollfv = FormValidation.formValidation(enrollForm, {
                 }
             }
         },
-
 
 
         parent_number: {
@@ -590,6 +622,7 @@ $("#General").click(function (e) {
         enrollForm.reset();
     enrollfv.resetForm();
 });
+
 
 //---------------------------------Script ends------------------------------//
 

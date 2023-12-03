@@ -1,6 +1,7 @@
 from operator import add
 from uuid import uuid4
 from flask import request,jsonify
+from app.admin.service import send_application_mailUser
 from config import Config
 from sqlalchemy import create_engine,text
 from datetime import datetime
@@ -14,46 +15,91 @@ engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
 connection = engine.connect()
 random_id = randint(000, 999)
 
-def assignSection(indexNumber,selectedSection,selectedHostel):        
+def assignSection(indexNumber,selectedSection,selectedHostel,accomodation):      
+  
     check_section_query = 'SELECT section FROM public.tbl_academic_detail WHERE index_number = %s'
     section_exists = connection.execute(check_section_query, indexNumber).scalar()
     print(indexNumber,"**index",selectedSection,"**sectioN",section_exists,"**ifSection")
     select_query = 'SELECT no_ofstds FROM public.std_section WHERE section_id = %s'
     count_data = connection.execute(select_query, selectedSection).scalar()
-    current_no_ofstds = int(count_data)
+    
+    if count_data is not None:
+        current_no_ofstds = int(count_data)
+    else:
+        current_no_ofstds=40
     print(current_no_ofstds,'***CURENt Std No.')
-    checkHostelExist='select hostel_no from public.tbl_academic_detail where index_number=%s'
-    hostelExists=connection.execute(checkHostelExist,indexNumber).scalar()
-    selectHostel='select no_of_std from public.tbl_hostel where hostel_no=%s'
-    countHostel=connection.execute(selectHostel,selectedHostel).scalar()
-    if countHostel==0 and current_no_ofstds==0:
-        return {"error": "Both section and hostel is full"}
-    elif section_exists is not None and current_no_ofstds==0:
+    if accomodation =="Boarder":
+        checkHostelExist='select hostel_no from public.tbl_academic_detail where index_number=%s'
+        hostelExists=connection.execute(checkHostelExist,indexNumber).scalar()
+        selectHostel='select no_of_std from public.tbl_hostel where hostel_no=%s'
+        countHostel=connection.execute(selectHostel,selectedHostel).scalar()
+        if countHostel==500 and current_no_ofstds==40:
+            return {"error": "Both section and hostel is full"}
+        elif hostelExists is not None and countHostel==500:
+            return {"error": "There is already a Hostel assigned for this student and also the hostel is full"}
+        elif countHostel==40:
+            return {"error": "This hostel is full. Please select other hostels"}
+    if section_exists is not None and current_no_ofstds==40:
         print("****BOTH SECTION assigned and Section FULL****") 
         return {"error": "There is already a section assigned for this student and also the section is full"}
-    elif current_no_ofstds==0:
+    elif current_no_ofstds==50:
         print("***Section FULL***")
         return {"error": "This section is full. Please select Other sections" }
-    elif hostelExists is not None and countHostel==0:
-        return {"error": "There is already a Hostel assigned for this student and also the hostel is full"}
-    elif countHostel==0:
-        return {"error": "This hostel is full. Please select other hostels"}
-    
     else:
-        updateSection=connection.execute('UPDATE public.tbl_academic_detail SET section = %s, hostel_no=%s WHERE index_number = %s',
+        if accomodation=="Boarder":
+            updateSection=connection.execute('UPDATE public.tbl_academic_detail SET section = %s, hostel_no=%s WHERE index_number = %s',
                         selectedSection,selectedHostel, indexNumber)
+        else:
+            updateSection=connection.execute('UPDATE public.tbl_academic_detail SET section = %s WHERE index_number = %s',
+                        selectedSection, indexNumber)
         if updateSection:
          # Step 2: Decrement the value by 1
             #for i in range():
             decremented_no_ofstds = current_no_ofstds - 1
-            decremented_HostelNo=countHostel-1
+            
             connection.execute('UPDATE public.std_section SET no_ofstds = %s WHERE section_id = %s',
                         decremented_no_ofstds, selectedSection)
-            connection.execute('UPDATE public.tbl_hostel set no_of_std=%s where hostel_no=%s',
+            if accomodation=="Boarder":
+                decremented_HostelNo=countHostel-1
+                connection.execute('UPDATE public.tbl_hostel set no_of_std=%s where hostel_no=%s',
                                decremented_HostelNo,selectedHostel)
         return 'Success'    
-        
+    
+#belong to HR page
+def save_user_detail_table(user_id,password):
+    id = uuid4()
+    role = request.form['role']
+    section = request.form['section']
+    print(section,"######SECTION#####")
+    grade = request.form['grade']
+    subject = request.form['subject']
+    grade = request.form['grade']
+    # subject = request.form['subject']
+    if grade=='2':
+        section=3
+        print(section,"*****SECTIONSECTION")
+    else:
+        section = request.form['section']       
+    print(role,'**ROLE',grade,'**Grade',section,'*SECTION',subject,'***subject')
+    ip = request.remote_addr
+    browser = request.headers.get('User-Agent')
+    connection.execute('INSERT INTO public.user_detail ("id", "user_id", "role","grade", "section_no",  "subject", "ip_address", "browser", "created_at") VALUES (%s,%s, %s, %s, %s, %s, %s, %s, %s)',
+                       (id, user_id, role, grade,section,subject, ip, browser, datetime.now()))
+    getUser='select username,email,password from public."User" where id= %s'
+    userName=connection.execute(getUser,user_id).fetchone()
+    email = userName['email']
+    user_name = userName['username']
+    passwords=userName['password'].tobytes()
+    print(passwords,"**original")
+    getHash=passwords.decode('utf-8')
+    print(getHash,'**getHash')
+    # bytes_password =bytes.fromhex(getHash)
+    # decoded_password = bytes_password.decode('utf-8')
+    status='User Created'
+    send_application_mailUser(user_name,email,password,status,role)
+    return "saved"
 
+        
 def getModaldetails(stdCid):
     getDetails='''select cl.class_name,sec.section,sec.section_id from public.tbl_students_personal_info std 
         join public.tbl_academic_detail acc on std.id=acc.std_personal_info_id
@@ -487,5 +533,7 @@ class deleteUser:
     def delete_user_by_id(id):
         delete=connection.execute('DELETE FROM public."User" WHERE id=%s', id)
         return "done"    
+    
+
 
 
