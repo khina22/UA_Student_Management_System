@@ -97,6 +97,10 @@
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link btn btn-primary" data-toggle="pill"
+                                            href="#termrating">Term Rating </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link btn btn-primary" data-toggle="pill"
                                             href="#enter_std_marks">Continuous Assessment </a>
                                     </li>
 
@@ -143,6 +147,66 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div id="termrating" class="container tab-pane">
+                                        <form action="#" method="#" id="info">
+                                            <input type="hidden" name="sub_id" value="{{current_user.id}}">
+                                            <input type="hidden" name="std_id" id="std_id" value="{{std.id}}">
+    
+                                            <div class="container">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <h5 class="font-weight-bold mb-4">Term 1</h5>
+                                                        <div class="form-group row" id="termratingScales1">
+                                                            <label class="control-label col-sm-4 text-right" for="termratingScale1">Rating Scale (Block 1):</label>
+                                                            <div class="col-sm-8">
+                                                                <select name="termratingScale1" id="termratingScale1" class="form-control">
+                                                                    <option value="">---Select---</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                            
+                                                        <div class="form-group row" id="termratingScales2">
+                                                            <label class="control-label col-sm-4 text-right" for="termratingScale2">Rating Scale (Block 2):</label>
+                                                            <div class="col-sm-8">
+                                                                <select name="termratingScale2" id="termratingScale2" class="form-control">
+                                                                    <option value="">---Select---</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="col-md-6">
+                                                        <h5 class="font-weight-bold mb-4">Term 2</h5>
+                                                            <div class="form-group row" id="termratingScales3">
+                                                            <label class="control-label col-sm-4 text-right" for="termratingScale3">Rating Scale (Block 1):</label>
+                                                            <div class="col-sm-8">
+                                                                <select name="termratingScale3" id="termratingScale3" class="form-control">
+                                                                    <option value="">---Select---</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                            
+                                                        <div class="form-group row" id="termratingScales4">
+                                                            <label class="control-label col-sm-4 text-right" for="termratingScale4">Rating Scale (Block 2):</label>
+                                                            <div class="col-sm-8">
+                                                                <select name="termratingScale4" id="termratingScale4" class="form-control">
+                                                                    <option value="">---Select---</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+    
+                                            <div class="button-center text-center">
+                                                <button type="submit" id="{{std.id}}" class="btn btn-sm btn-warning"
+                                                    style="color: white; width: 101px; height: 40px; font-size: 16px;">Submit</button>
+                                            </div>
+                                            
+                                        </form>                                           
+                                        </div>
+    
 
                                     <div id="marks_std" class="container tab-pane fade">
                                         <div class="card-body">
@@ -869,6 +933,64 @@
     //         }
     //     });
     // }
+
+
+    // to populate the dropdowns of termrating 
+$.ajax({
+    url: '/get-dropdown-rating', // Flask route to fetch data
+    method: 'GET',
+    dataType: 'json',
+    success: function(data) {
+        // Populate Term 1 dropdowns
+        var term1Dropdown1 = $('#termratingScale1');
+        var term1Dropdown2 = $('#termratingScale2');
+
+        // Build the HTML string for options
+        var optionsHtml = data.map(function(item) {
+            return `<option value="${item.value}">${item.text}</option>`;
+        }).join('');
+
+        // Set the HTML for Term 1 dropdowns
+        term1Dropdown1.html(optionsHtml);
+        term1Dropdown2.html(optionsHtml);
+
+        // Populate Term 2 dropdowns
+        var term2Dropdown1 = $('#termratingScale3');
+        var term2Dropdown2 = $('#termratingScale4');
+
+        // Set the HTML for Term 2 dropdowns
+        term2Dropdown1.html(optionsHtml);
+        term2Dropdown2.html(optionsHtml);
+    },
+    error: function(xhr, status, error) {
+        console.log('Error fetching data:', error);
+    }
+});
+
+$.ajax({
+    type: 'GET',
+    url: '/dropdown_values_rating',
+    success: function(response) {
+        // Assuming 'selectElement' is the same for all dropdowns
+        let selectElement = $('#termratingSelect');
+
+        selectElement.empty();
+        selectElement.append($('<option value="">---Select---</option>'));
+
+        response.forEach(function(option) {
+            let optionElement = $('<option></option>').val(option.id).text(option.name);
+            selectElement.append(optionElement);
+        });
+
+        // Retrieve and display the selected value
+        let selectedValue = selectElement.val();
+        console.log('Selected value:', selectedValue);
+    },
+    error: function() {
+        // Handle error case
+    } 
+});
+
 
     let punctualityValue = $('#punctuality').val();      // fetching values from input fields with the IDs punctuality, 
     let disciplineValue = $('#discipline').val();        //discipline,

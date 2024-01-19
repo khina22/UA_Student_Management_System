@@ -12,6 +12,8 @@ from flask_mail import Message
 from app.admin.service import send_application_mail
 from app import mail
 import io
+import re
+
 
 engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
 connection = engine.connect()
@@ -249,22 +251,28 @@ def getClassIdGeneral():
     # Return the dropdown values as JSON
     return jsonify(dropdown_values)
 
+
 def checkIndexorCid(id):
-    checkStatus = "select status from public.tbl_students_personal_info where student_cid=%s"
+    # Check if the input matches the expected format for either an 11-digit CID or a 17-digit CID with dots
+    if not (re.match(r'^\d{11}$', id) or re.match(r'^\d+(\.\d+){3}$', id)):
+        return {"error": "Invalid CID format."}
+
+    # Continue with the database query for other cases
+    checkStatus = "SELECT status FROM public.tbl_students_personal_info WHERE student_cid = %s"
     checkStatusCid = engine.execute(checkStatus, id).scalar()
-    print(checkStatusCid, "*******CHECH")
+
     if checkStatusCid is None:
         return {"error": "No student found with the provided CID."}
     elif checkStatusCid != 'approved':
         return {"error": "Your application is not yet approved. Please wait for the admin to approve it."}
     else:
-        str_query = "select std.student_cid, \
-        string_agg(std.first_name || ' ' || std.last_name, ' ') as std_name, cl.class_name \
-        from public.tbl_students_personal_info std LEFT JOIN \
-        public.tbl_academic_detail b ON std.id=b.std_personal_info_id \
-        JOIN public.class cl on cl.class_id = b.admission_for_class \
-        where std.student_cid = %s and std.status = 'approved' \
-        group by std.student_cid, cl.class_name"
+        str_query = "SELECT std.student_cid, \
+            string_agg(std.first_name || ' ' || std.last_name, ' ') AS std_name, cl.class_name \
+            FROM public.tbl_students_personal_info std \
+            LEFT JOIN public.tbl_academic_detail b ON std.id = b.std_personal_info_id \
+            JOIN public.class cl ON cl.class_id = b.admission_for_class \
+            WHERE std.student_cid = %s AND std.status = 'approved' \
+            GROUP BY std.student_cid, cl.class_name"
         std_index = connection.execute(str_query, id).fetchall()
 
         # Convert the result to a list of dictionaries
@@ -279,8 +287,6 @@ def checkIndexorCid(id):
 
         # Return the data in JSON format
         return jsonify(result)
-
-
 
 def getstudentDetail():
      str_query = "select std.student_cid,b.index_number from public.tbl_students_personal_info std LEFT JOIN \
