@@ -96,11 +96,18 @@ def update_marks(id):
     annual_exam = request.form.get('editannual_exam')
     ratingScale2 = request.form.get('ratingScale2') 
 
-    # Removed extra comma in the SET clause
-    connection.execute('UPDATE public."tbl_student_evaluation" SET class_test_one=%s, ca1=%s, mid_term=%s, "ratingScale1"=%s, class_test_two=%s, ca2=%s, annual_exam=%s, "ratingScale2"=%s WHERE id=%s',
-                        (class_test_one, CA1, mid_term, ratingScale1, class_test_two, CA2, annual_exam, ratingScale2, id ))
+    connection.execute('UPDATE public."tbl_student_evaluation" SET class_test_one=%s, ca1=%s, mid_term=%s, "ratingScale1"=%s, class_test_two=%s, ca2=%s, annual_exam=%s, "ratingScale2"=%s WHERE student_id=%s',
+                       (class_test_one, CA1, mid_term, ratingScale1, class_test_two, CA2, annual_exam, ratingScale2, id))
 
-    return "successfully"
+                         # Print the SQL query and parameters
+    query = 'UPDATE public."tbl_student_evaluation" SET class_test_one=%s, ca1=%s, mid_term=%s, "ratingScale1"=%s, class_test_two=%s, ca2=%s, annual_exam=%s, "ratingScale2"=%s WHERE id=%s'
+    params = (class_test_one, CA1, mid_term, ratingScale1, class_test_two, CA2, annual_exam, ratingScale2, id)
+    print('Executing SQL Query:', query, 'with parameters', params)
+
+    connection.execute(query, params)
+
+    return ("success")
+    
  
 # This is the route for storing student into tbl_student_personal_info
 def store_student_assessment_details(stdId):
@@ -128,6 +135,23 @@ def store_student_assessment_details(stdId):
                    "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s, %s,%s,%s,%s)",
                    (id, userId, stdId, class_test_one, class_test_two, mid_term, annual_exam, ca1,ca2, rate1, rate2,status_remarks, punctuality, discipline, 
                    social_service,leadership_quality,created_at ))
+
+    return "successfully"
+
+#function for termrating 
+def term_rating(stdId):
+    id = uuid4()
+    subject_teacher_id= request.form.get("subject_teacher_id")
+    termraringScale1 = request.form.get("termraringScale1")
+    termratingScale2 = request.form.get("termratingScale2")
+    termratingScale3 = request.form.get("termratingScale3")
+    termratingScale4 = request.form.get('termratingScale4')
+    userId=current_user.id
+    
+    connection.execute("INSERT INTO public.term_rating (id, subject_teacher_id, student_id, Block1,  Block2, Block3, Block4 ) "
+                   "VALUES ("
+                   "%s,%s,%s,%s,%s,%s,%s)",
+                   (id, userId, stdId, subject_teacher_id, termraringScale1, termratingScale2, termratingScale3, termratingScale4))
 
     return "successfully"
 
@@ -444,9 +468,7 @@ def getStdGrade(id):
 
     return response
 
-def getRatings():
-    selectQuery='select "ratingScaleId", "ratingName" from public.tbl_rating_scale'
-    runQuery=connection.execute(selectQuery).fetchall()
-    data = [{'value': row[0], 'text': row[1]} for row in runQuery]
-    print(data,'**UAUUUAUHA')
-    return jsonify(data)
+
+
+
+

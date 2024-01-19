@@ -56,19 +56,12 @@ const enrollfv = FormValidation.formValidation(enrollForm, {
                 notEmpty: {
                     message: 'The CID field is required',
                 },
-                stringLength: {
-                    max: 11,
-                    min: 11,
-                    message: 'The CID must be 11 characters'
+                regexp: {
+                    regexp: /^.{11,17}$/,
+                    message: 'The CID must be between 11 and 17 characters, including a dot',
                 },
-                numeric: {
-                    message: 'The value is not a number',
-                    // The default separators
-                    thousandsSeparator: '',
-                    decimalSeparator: '.',
-                }
             }
-        },
+        },        
 
         dob: {
             validators: {
@@ -205,16 +198,9 @@ const enrollfv = FormValidation.formValidation(enrollForm, {
                 notEmpty: {
                     message: 'The CID field is required',
                 },
-                stringLength: {
-                    max: 11,
-                    min: 11,
-                    message: 'The CID must be 11 characters'
-                },
-                numeric: {
-                    message: 'The value is not a number',
-                    // The default separators
-                    thousandsSeparator: '',
-                    decimalSeparator: '.',
+                regexp: {
+                    regexp: /^.{11,17}$/,
+                    message: 'The CID must be between 11 and 13 characters',
                 },
             }
         },

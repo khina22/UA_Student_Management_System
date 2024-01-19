@@ -40,6 +40,10 @@
                                         href="#studentDetail">Student Detail</a>
                                 </li>
                                 <li class="nav-item">
+                                    <a class="nav-link btn btn-primary" data-toggle="pill"
+                                        href="#termrating">Term Rating</a>
+                                </li>
+                                <li class="nav-item">
                                     <a class="nav-link btn btn-primary" data-toggle="pill" href="#marks_std">Enter
                                         Marks</a>
                                 <li class="nav-item">
@@ -78,6 +82,68 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                
+                                <div id="termrating" class="container tab-pane">
+                                    <form action="/termrating" method="POST" id="info">
+                                        <input type="hidden" name="sub_id" value="{{current_user.id}}">
+                                        <input type="hidden" name="std_id" id="std_id" value="{{std.id}}">
+
+                                        <div class="container">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <h5 class="font-weight-bold mb-4">Term 1</h5>
+                                                    <div class="form-group row" id="termratingScales1">
+                                                        <label class="control-label col-sm-4 text-right" for="termratingScale1">Rating Scale (Block 1):</label>
+                                                        <div class="col-sm-8">
+                                                            <select name="termratingScale1" id="termratingScale1" class="form-control">
+                                                                <option value="">---Select---</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                        
+                                                    <div class="form-group row" id="termratingScales2">
+                                                        <label class="control-label col-sm-4 text-right" for="termratingScale2">Rating Scale (Block 2):</label>
+                                                        <div class="col-sm-8">
+                                                            <select name="termratingScale2" id="termratingScale2" class="form-control">
+                                                                <option value="">---Select---</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                        
+                                                <div class="col-md-6">
+                                                    <h5 class="font-weight-bold mb-4">Term 2</h5>
+                                                        <div class="form-group row" id="termratingScales3">
+                                                        <label class="control-label col-sm-4 text-right" for="termratingScale3">Rating Scale (Block 1):</label>
+                                                        <div class="col-sm-8">
+                                                            <select name="termratingScale3" id="termratingScale3" class="form-control">
+                                                                <option value="">---Select---</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                        
+                                                    <div class="form-group row" id="termratingScales4">
+                                                        <label class="control-label col-sm-4 text-right" for="termratingScale4">Rating Scale (Block 2):</label>
+                                                        <div class="col-sm-8">
+                                                            <select name="termratingScale4" id="termratingScale4" class="form-control">
+                                                                <option value="">---Select---</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="button-center text-center">
+                                            <button type="submit" id="{{std.id}}" class=" btn-sm btn-primary" onclick="termrating('{{std.id}}')"
+                                                style="color: white; width: 101px; height: 40px; font-size: 16px;">Submit</button>
+                                        </div>
+                                        
+                                    </form>                                           
+                                    </div>
+
+
                                 <div id="marks_std" class="container tab-pane fade">
                                     <form action="#" method="#" id="info">
                                         <input type="hidden" name="sub_id" value="{{current_user.id}}">
@@ -207,7 +273,7 @@
                                             <hr>
                                         
                                         <div class="button-center text-center">
-                                            <button type="submit" id="sub_sent" class="btn btn-sm btn-warning"
+                                            <button type="submit" id="sub_sent" class=" btn-sm btn-primary"
                                                 style="color: white; width: 101px; height: 40px; font-size: 16px;">Submit</button>
                                         </div>
                                     </form>
@@ -346,13 +412,13 @@
                                                             </select>
                                                         </div>
                                                     </div>
-                                                </div>    
-                                    </div>
-                                        </div>                                            
+                                                    </div>    
+                                                </div>
+                                            </div>                                            
                                             <hr>
-                                        
+
                                             <div class="button-center text-center">
-                                                <button type="submit" onclick="editFunction('{{std.id}}')" class="btn btn-sm btn-primary"
+                                                <button type="submit" onclick="updateFunction('{{std.id}}')" class="btn btn-sm btn-primary"
                                                     style="color: white; width: 101px; height: 40px; font-size: 16px;">Submit</button>
                                             </div>
                                             
@@ -454,7 +520,6 @@
 
 
 <script>
-
 
     // to enter in database
     function std_detail_validation() {
@@ -591,7 +656,102 @@ function populateSelectOptions(selectId, value) {
     });
 }
 
- $(document).ready(function () {
+// to populate the dropdowns of termrating 
+$.ajax({
+    url: '/eget-dropdown-rating', // Flask route to fetch data
+    method: 'GET',
+    dataType: 'json',
+    success: function(data) {
+        // Populate Term 1 dropdowns
+        var term1Dropdown1 = $('#termratingScale1');
+        var term1Dropdown2 = $('#termratingScale2');
+
+        // Build the HTML string for options
+        var optionsHtml = data.map(function(item) {
+            return `<option value="${item.value}">${item.text}</option>`;
+        }).join('');
+
+        // Set the HTML for Term 1 dropdowns
+        term1Dropdown1.html(optionsHtml);
+        term1Dropdown2.html(optionsHtml);
+
+        // Populate Term 2 dropdowns
+        var term2Dropdown1 = $('#termratingScale3');
+        var term2Dropdown2 = $('#termratingScale4');
+
+        // Set the HTML for Term 2 dropdowns
+        term2Dropdown1.html(optionsHtml);
+        term2Dropdown2.html(optionsHtml);
+    },
+    error: function(xhr, status, error) {
+        console.log('Error fetching data:', error);
+    }
+});
+
+$.ajax({
+    type: 'GET',
+    url: '/dropdown_values_rating',
+    success: function(response) {
+        // Assuming 'selectElement' is the same for all dropdowns
+        let selectElement = $('#termratingSelect');
+
+        selectElement.empty();
+        selectElement.append($('<option value="">---Select---</option>'));
+
+        response.forEach(function(option) {
+            let optionElement = $('<option></option>').val(option.id).text(option.name);
+            selectElement.append(optionElement);
+        });
+
+        // Retrieve and display the selected value
+        let selectedValue = selectElement.val();
+        console.log('Selected value:', selectedValue);
+    },
+    error: function() {
+        // Handle error case
+    } 
+});
+
+
+function termrating(id) {
+        // Get the selected values from the dropdowns
+        var term1Scale1 = $('#termratingScale1').val();
+        var term1Scale2 = $('#termratingScale2').val();
+        var term2Scale1 = $('#termratingScale3').val();
+        var term2Scale2 = $('#termratingScale4').val();
+
+          // Log the term data to the console
+        console.log('Term 1 Scale 1:', term1Scale1);
+        console.log('Term 1 Scale 2:', term1Scale2);
+        console.log('Term 2 Scale 1:', term2Scale1);
+        console.log('Term 2 Scale 2:', term2Scale2);
+
+        // Make an AJAX request or perform other operations as needed
+        console.log('Before AJAX request');
+        $.ajax({
+            type: 'POST',
+            url: '/termrating/' + id,  // Replace with your actual server endpoint
+            data: {
+                std_id: id,
+                 term1Scale1: term1Scale1,
+                term1Scale2: term1Scale2,
+                term2Scale1: term2Scale1,
+                term2Scale2: term2Scale2
+            },
+            success: function (response) {
+                // Handle the success response
+                console.log('Submission successful:', response);
+            },
+            error: function (error) {
+                // Handle the error response
+                console.error('Error submitting data:', error);
+            }
+        });
+        console.log('After AJAX request');
+    }
+
+
+ $(document).ready(function () { 
     $('a[data-toggle="pill"][href="#marks_view"]').click(function(e) {
     var id = $('#std_id').val();
     loadUsers(id);
@@ -640,7 +800,6 @@ function populateSelectOptions(selectId, value) {
 }
 
 function populateFormFields(data, studentId) {
-    // Assuming there is only one record in the data array
     var record = data[0];
     // Populate the form fields with the retrieved data
     $('#editForm input[name="editclass_test_1"]').val(record.class_test_one);
@@ -650,7 +809,7 @@ function populateFormFields(data, studentId) {
     $('#editForm input[name="editCA2"]').val(record.ca2);
     $('#editForm input[name="editannual_exam"]').val(record.annual_exam);
 
-    // Assuming 'ratingScale1' and 'ratingScale2' are select elements
+    // Assuming 'eratingScale1' and 'eratingScale2' are arrays of values
     populateeditSelectOptions('eratingScales1', record.eratingScale1);
     populateeditSelectOptions('eratingScales2', record.eratingScale2);
 
@@ -658,45 +817,27 @@ function populateFormFields(data, studentId) {
     $('#editForm input[name="std_id"]').val(record.student_id);
 }
 
-function populateeditSelectOptions(selectId, value) {
-    let selectElement = $('#editForm' + selectId);
+$.ajax({
+    url: '/eget-dropdown-rating', // Flask route to fetch data
+    method: 'GET',
+    dataType: 'json',
+    success: function(data) {
+        var dropdown1 = $('#eratingScale1');
+        var dropdown2 = $('#eratingScale2');
 
-        $.ajax({
-        url: '/eget-dropdown-rating', // Flask route to fetch data
-        method: 'GET',
-        dataType: 'json',
-        success: function(data) {
-            var dropdown = $('#eratingScale1');
-            $.each(data, function(index, item) {
-                dropdown.append($('<option>', {
-                    value: item.value,
-                    text: item.text
-                }));
-            });
-        },
-        error: function(xhr, status, error) {
-            console.log('Error fetching data:', error);
-        }
-    });
+        // Build the HTML string for options
+        var optionsHtml = data.map(function(item) {
+            return `<option value="${item.value}">${item.text}</option>`;
+        }).join('');
 
-    $.ajax({
-        url: '/eget-dropdown-rating', // Flask route to fetch data
-        method: 'GET',
-        dataType: 'json',
-        success: function(data) {
-            let dropdown = $('#eratingScale2');
-            $.each(data, function(index, item) {
-                dropdown.append($('<option>', {
-                    value: item.value,
-                    text: item.text
-                }));
-            });
-        },
-        error: function(xhr, status, error) {
-            console.log('Error fetching data:', error);
-        }
-    });
-
+        // Set the HTML for both dropdowns
+        dropdown1.html(optionsHtml);
+        dropdown2.html(optionsHtml);
+    },
+    error: function(xhr, status, error) {
+        console.log('Error fetching data:', error);
+    }
+});
 
     $.ajax({
         type: 'GET',
@@ -726,8 +867,6 @@ function populateeditSelectOptions(selectId, value) {
             // Handle error case
         }
     });
-}
-
 
 function loadRatings(studentId, subject) {
         $('#remarksTable').show();
@@ -819,7 +958,8 @@ function loadUsers(id) {
     });
 }
 
-function editFunction(id) {
+function updateFunction(id) {
+
     var form = document.getElementById("editForm"); // Corrected the ID
     var data = new FormData(form);
     $.ajax({

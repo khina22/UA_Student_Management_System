@@ -28,7 +28,7 @@
                 <div class="row">
                   <div class="col-lg-6">
                     <div class="form-group row">
-                      <label for="std_name" class="col-lg-6 col-form-label text-right">Student CID:</label>
+                      <label for="std_name" class="col-lg-6 col-form-label text-right">Student CID or Student Number:</label>
                       <div class="col-lg-6">
                         <div class="input-group">
                           <input type="text" placeholder="Enter your CID" class="form-control" name="studentCid" onkeypress="return isNumberKey(event)" id="studentCid" />
@@ -335,19 +335,20 @@ function onEnterStudentNumber(event) {
   if (studentCid.trim() === '') {
     // Show error message for empty field
     $('#studentCid').addClass('is-invalid');
-    $('#cidNoErrorMsg').text('CID is required').show();
+    $('#cidNoErrorMsg').text('CID or Student Number is required').show();
     clearFields(); // Clear names and hide fields
     return;
   }
 
-  // Check if the input contains exactly 11 digits
-  if (studentCid.length !== 11) {
-    // Show error message for invalid length
-    $('#studentCid').addClass('is-invalid');
-    $('#cidNoErrorMsg').text('CID should be 11 digits').show();
-    clearFields(); // Clear names and hide fields
-    return;
-  }
+  
+// Check if the input contains exactly 11 or 17 digits
+if (!(studentCid.length === 11 || studentCid.length === 17)) {
+  // Show error message for invalid length
+  $('#studentCid').addClass('is-invalid');
+  $('#cidNoErrorMsg').text('CID should be 11 digits or student number should be 17 digits').show();
+  clearFields(); // Clear names and hide fields
+  return;
+}
 
   // If validation passes, remove error classes and continue with further logic
   $('#studentCid').removeClass('is-invalid');
@@ -463,16 +464,19 @@ $('#account_dtl').submit(function(event) {
 });
 
 
-
+// function which only accepts number and dots only
 function isNumberKey(evt) {
-        var retval=true;
-        var cid = $('#studentCid').val();
-        var charCode = (evt.which) ? evt.which : event.keyCode
-        if (charCode > 31 && (charCode < 48 || charCode > 57)){
-            return false;
-            return true;
-        }
-    }
+  var charCode = (evt.which) ? evt.which : event.keyCode;
+
+  // Allow numeric values (0-9), the dot (.), and control keys (like backspace)
+  if ((charCode < 48 || charCode > 57) && charCode !== 46 && charCode !== 8) {
+    return false;
+  }
+
+  // Allow the input event
+  return true;
+}
+    
     $("#acc_summiting").on("click", function(event) {
     event.preventDefault(); // Prevent the default form submission
 
@@ -506,8 +510,6 @@ function isNumberKey(evt) {
       $("#screenshot_error").text("").hide();
     }
   }
-
-
 
     var form = document.getElementById("account_dtl");
     var data = new FormData(form);
